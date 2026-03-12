@@ -39,14 +39,10 @@ async def login_access_token(
             detail="Incorrect email or password",
         )
     elif not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
     access_token_expires = dt.timedelta(hours=settings.jwt_expiration_hours)
     return Token(
-        access_token=security.create_access_token(
-            user.id, expires_delta=access_token_expires
-        )
+        access_token=security.create_access_token(user.id, expires_delta=access_token_expires)
     )
 
 
@@ -70,9 +66,7 @@ async def oauth_callback(request: Request, db: SessionDep):
     token = await oauth.powerbeacon.authorize_access_token(request)
     user_info = token.get("userinfo")
 
-    user = user_crud.get_user_by_username(
-        session=db, username=user_info.get("preferred_username")
-    )
+    user = user_crud.get_user_by_username(session=db, username=user_info.get("preferred_username"))
 
     if not user:
         user_in = UserCreate(
@@ -84,14 +78,10 @@ async def oauth_callback(request: Request, db: SessionDep):
         user = user_crud.create_user(session=db, user_create=user_in)
 
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
 
     access_token_expires = dt.timedelta(hours=settings.jwt_expiration_hours)
-    jwt_token = security.create_access_token(
-        user.id, expires_delta=access_token_expires
-    )
+    jwt_token = security.create_access_token(user.id, expires_delta=access_token_expires)
 
     # Redirect back to frontend with token
     frontend_url = settings.frontend_url or "http://localhost:5173"

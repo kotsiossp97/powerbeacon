@@ -9,9 +9,7 @@ from sqlmodel import Session, select
 from powerbeacon.models.agents import Agent, AgentRegistration, AgentStatus
 
 
-def create_agent(
-    *, session: Session, agent_create: AgentRegistration
-) -> tuple[Agent, str]:
+def create_agent(*, session: Session, agent_create: AgentRegistration) -> tuple[Agent, str]:
     """
     Create a new agent and generate an authentication token.
 
@@ -65,9 +63,7 @@ def update_agent_heartbeat(*, session: Session, agent: Agent) -> Agent:
     return agent
 
 
-def update_agent_status(
-    *, session: Session, agent: Agent, status: AgentStatus
-) -> Agent:
+def update_agent_status(*, session: Session, agent: Agent, status: AgentStatus) -> Agent:
     """Update agent's status."""
     agent.status = status
     session.add(agent)

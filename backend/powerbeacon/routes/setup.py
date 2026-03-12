@@ -49,9 +49,7 @@ async def initialize_system(*, session: SessionDep, user_in: UserCreate) -> Any:
     user_in.role = UserRole.SUPERUSER
 
     # Check if username already exists (shouldn't happen, but just in case)
-    existing_user = user_crud.get_user_by_username(
-        session=session, username=user_in.username
-    )
+    existing_user = user_crud.get_user_by_username(session=session, username=user_in.username)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -140,13 +140,9 @@ async def update_user(
 
     # Check if changing username to one that already exists
     if user_in.username and user_in.username != db_user.username:
-        existing_user = user_crud.get_user_by_username(
-            session=session, username=user_in.username
-        )
+        existing_user = user_crud.get_user_by_username(session=session, username=user_in.username)
         if existing_user and existing_user.id != user_id:
-            raise HTTPException(
-                status_code=409, detail="User with this username already exists"
-            )
+            raise HTTPException(status_code=409, detail="User with this username already exists")
 
     db_user = user_crud.update_user(session=session, db_user=db_user, user_in=user_in)
     return db_user

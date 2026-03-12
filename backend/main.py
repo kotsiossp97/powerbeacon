@@ -76,9 +76,7 @@ async def get_linux_install_script():
     from fastapi.responses import PlainTextResponse
     import os
 
-    script_path = os.path.join(
-        os.path.dirname(__file__), "agent", "install", "install-agent.sh"
-    )
+    script_path = os.path.join(os.path.dirname(__file__), "agent", "install", "install-agent.sh")
 
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
@@ -95,9 +93,7 @@ async def get_windows_install_script():
     from fastapi.responses import PlainTextResponse
     import os
 
-    script_path = os.path.join(
-        os.path.dirname(__file__), "agents", "install", "install-agent.ps1"
-    )
+    script_path = os.path.join(os.path.dirname(__file__), "agents", "install", "install-agent.ps1")
 
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
@@ -127,16 +123,12 @@ async def get_agent_binary(platform: str, arch: str):
     )
 
     if not os.path.exists(binary_path):
-        raise HTTPException(
-            status_code=404, detail=f"Agent binary not found for {platform}-{arch}"
-        )
+        raise HTTPException(status_code=404, detail=f"Agent binary not found for {platform}-{arch}")
 
     # Set appropriate media type
     media_type = "application/octet-stream"
 
-    return FileResponse(
-        path=binary_path, media_type=media_type, filename=f"powerbeacon-agent{ext}"
-    )
+    return FileResponse(path=binary_path, media_type=media_type, filename=f"powerbeacon-agent{ext}")
 
 
 @app.exception_handler(Exception)
@@ -153,7 +145,5 @@ async def generic_exception_handler(request, exc):
 async def http_exception_handler(request, exc):
     return JSONResponse(
         status_code=exc.status_code,
-        content=ErrorResponse(
-            status_code=exc.status_code, message=exc.detail
-        ).model_dump(),
+        content=ErrorResponse(status_code=exc.status_code, message=exc.detail).model_dump(),
     )

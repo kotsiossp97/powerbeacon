@@ -104,9 +104,7 @@ async def update_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role != "superuser" and device.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to update this device"
-        )
+        raise HTTPException(status_code=403, detail="Not authorized to update this device")
 
     device_data = device_in.model_dump(exclude_unset=True)
     device.sqlmodel_update(device_data)
@@ -127,9 +125,7 @@ async def delete_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role != "superuser" and device.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to delete this device"
-        )
+        raise HTTPException(status_code=403, detail="Not authorized to delete this device")
 
     session.delete(device)
     session.commit()
@@ -147,13 +143,9 @@ async def wake_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role == "viewer":
-        raise HTTPException(
-            status_code=403, detail="Viewers cannot perform device actions"
-        )
+        raise HTTPException(status_code=403, detail="Viewers cannot perform device actions")
     if current_user.role != "superuser" and device.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to wake this device"
-        )
+        raise HTTPException(status_code=403, detail="Not authorized to wake this device")
 
     if not device.agent_id:
         raise HTTPException(

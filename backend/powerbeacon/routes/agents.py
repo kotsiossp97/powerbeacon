@@ -37,9 +37,7 @@ async def register_agent(
     Returns an agent ID and authentication token.
     """
     # Check if agent with same hostname already exists
-    existing_agent = agent_crud.get_agent_by_hostname(
-        session=session, hostname=agent_in.hostname
-    )
+    existing_agent = agent_crud.get_agent_by_hostname(session=session, hostname=agent_in.hostname)
 
     if existing_agent:
         # Update existing agent instead of creating new one

@@ -1,0 +1,68 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: powerbeacon-db
+    environment:
+      POSTGRES_USER: powerbeacon
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeMe}
+      POSTGRES_DB: powerbeacon
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - powerbeacon
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U powerbeacon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: powerbeacon-backend
+    environment:
+      DB_URL: postgresql://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      OIDC_SERVER_METADATA_URL: ${OIDC_SERVER_METADATA_URL:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      WOL_MODE: ${WOL_MODE:-relay}
+      WOL_BROADCAST_IP: ${WOL_BROADCAST_IP:-192.168.1.255}
+      WOL_PORT: ${WOL_PORT:-9}
+      WOL_SEND_STRATEGY: ${WOL_SEND_STRATEGY:-both}
+      WOL_RELAY_URL: ${WOL_RELAY_URL:-http://host.docker.internal:8089}
+      WOL_RELAY_TOKEN: ${WOL_RELAY_TOKEN:-change-me-relay-token}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - powerbeacon
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: powerbeacon-frontend
+    # environment:
+    #   VITE_API_BASE_URL: http://localhost:8000
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - powerbeacon
+
+volumes:
+  postgres_data:
+
+networks:
+  powerbeacon:
+    driver: bridge

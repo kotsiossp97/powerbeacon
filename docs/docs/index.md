@@ -16,14 +16,61 @@ tags:
 PowerBeacon helps you wake, manage, and monitor machines across distributed networks with a secure backend, a responsive frontend, and a lightweight cross-platform agent.
 </p>
 
+!!! tip "New to PowerBeacon?"
+   Start with [Setup Overview](setup/initial.md), then continue with [Architecture Overview](architecture/overview.md).
+
+## Product Snapshot
+
+```mermaid
+graph LR
+   A[Frontend\nReact + Vite] -->|REST API| B[Backend\nFastAPI]
+   B --> C[(PostgreSQL)]
+   B -->|Dispatch WOL| D[Agent\nGo]
+   D -->|UDP Broadcast| E[Managed Devices]
+   style A fill:#3b82f6,stroke:#1d4ed8,color:#fff
+   style B fill:#7c3aed,stroke:#5b21b6,color:#fff
+   style C fill:#db2777,stroke:#9d174d,color:#fff
+   style D fill:#0ea5e9,stroke:#0369a1,color:#fff
+   style E fill:#f59e0b,stroke:#b45309,color:#fff
+```
+
 ## Start Here
 
 | Area                      | What you will find                                                |
 | ------------------------- | ----------------------------------------------------------------- |
 | [Setup](setup/initial.md) | Local development setup, first run, and environment configuration |
-| Architecture              | How backend, frontend, and agent work together                    |
-| API                       | Backend endpoints, auth model, and integration patterns           |
-| Operations                | Deployment, monitoring, and production hardening notes            |
+| [Architecture](architecture/overview.md) | How backend, frontend, and agent work together                    |
+| [API](api/index.md)                       | Endpoint families, request patterns, and auth expectations        |
+| [Guides](guides/index.md)                 | Practical walkthroughs for common tasks                           |
+| [Operations](operations/index.md)         | Deployment, monitoring, and production hardening notes            |
+| [About](about/team.md)                    | Team and project context                                          |
+
+## Quick Start Paths
+
+=== "Docker (Recommended)"
+
+   ```bash
+   cp .env.example .env
+   docker compose up --build
+   ```
+
+   - Frontend: `http://localhost:3000`
+   - API docs: `http://localhost:8000/api/docs`
+
+=== "Local Development"
+
+   ```bash
+   cd backend
+   python -m venv .venv
+   # activate + install deps
+   uvicorn main:app --reload --port 8000
+   ```
+
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
 ## Platform At A Glance
 
@@ -52,6 +99,9 @@ Follow the path below if you are new to the project:
 3. Open the frontend and complete first configuration
 4. Register or connect agents
 5. Trigger your first wake operation
+
+!!! note "WOL on Docker Desktop"
+   On Windows and macOS, LAN broadcast from containers is unreliable. Use the agent-based dispatch model for production wake reliability.
 
 ## Documentation Map
 

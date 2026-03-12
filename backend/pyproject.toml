@@ -3,7 +3,7 @@ name = "powerbeacon-backend"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "authlib>=1.6.9",
     "fastapi[standard]>=0.135.1",

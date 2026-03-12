@@ -64,42 +64,7 @@ docker-compose -f docker-compose.dev.yml down
 
 ### Wake-on-LAN In Containerized Environments
 
-On Docker Desktop (Windows/macOS), containers run inside a VM and cannot reliably send LAN broadcast WOL packets directly.
-
-PowerBeacon now supports a production-safe relay mode:
-
-- `WOL_MODE=udp`: backend sends packet directly (best for native Linux hosts with LAN access)
-- `WOL_MODE=relay`: backend calls an authenticated WOL relay service running on the LAN broadcast domain
-
-Recommended production topology:
-
-- Keep `backend`, `frontend`, and `db` containerized as usual
-- Run `wol-relay` as a separate container on a Linux host in the target LAN (same broadcast domain as devices)
-- Configure backend with `WOL_MODE=relay`, `WOL_RELAY_URL`, and `WOL_RELAY_TOKEN`
-
-Important limitation:
-
-- Running `wol-relay` on the same Docker Desktop host (Windows/macOS) is not enough for LAN WOL in many setups.
-- Docker Desktop packets egress from VM/NAT interfaces instead of the physical LAN NIC, so magic packets may never reach sleeping devices.
-- Place `wol-relay` on a Linux machine with native LAN access (mini PC, Raspberry Pi, NAS, VM on the LAN).
-
-Example relay deployment:
-
-```bash
-# On the Linux host that has direct LAN access
-export WOL_RELAY_TOKEN='replace-with-long-random-secret'
-docker compose -f docker-compose.wol-relay.yml up -d --build
-```
-
-Example backend relay configuration:
-
-```env
-WOL_MODE=relay
-WOL_BROADCAST_IP=192.168.1.255
-WOL_PORT=9
-WOL_RELAY_URL=http://<lan-linux-relay-host-ip>:8089
-WOL_RELAY_TOKEN=replace-with-long-random-secret
-```
+On Docker Desktop (Windows/macOS), containers run inside a VM and cannot reliably send LAN broadcast WOL packets directly. PowerBeacon uses the **agent architecture** to solve this: install the lightweight `powerbeacon-agent` on any Linux machine in the target LAN, and the backend dispatches WOL packets through that agent.
 
 See [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed development setup.
 
@@ -185,11 +150,7 @@ JWT_SECRET=your-secret-key
 
 **OIDC** (e.g., Keycloak, Auth0):
 
-```env
-OIDC_ISSUER_URL=https://keycloak.example.com/realms/master
-OIDC_CLIENT_ID=powerbeacon
-OIDC_CLIENT_SECRET=secret
-```
+OIDC is configured at runtime via the **Settings** page in the UI. No environment variables are required.
 
 ## API Documentation
 
@@ -233,16 +194,14 @@ Check `DB_URL` in `.env` and ensure PostgreSQL is running.
 
 ### Wake packets not working
 
-- Ensure container has `NET_RAW` capability (see docker-compose.yml)
-- Check network broadcast configuration
 - Verify device MAC address is correct
-- On Docker Desktop (Windows/macOS), use relay mode (`WOL_MODE=relay`) instead of direct UDP broadcast from the backend container
+- Ensure an online agent is assigned to the device
+- On Docker Desktop (Windows/macOS), install the agent on a Linux host in the target LAN instead of relying on direct broadcast from the backend container
 
 ### OIDC authentication issues
 
-- Verify OIDC provider settings
-- Check `OIDC_ISSUER_URL` is accessible
-- Ensure `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` are correct
+- Verify OIDC provider configuration in **Settings**
+- Ensure the provider's server metadata URL is reachable from the backend
 
 ## Development
 

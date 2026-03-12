@@ -28,7 +28,9 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:
     try:
-        payload = jwt.decode(token, settings.jwt_secret, algorithms=[security.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.jwt_secret, algorithms=[security.ALGORITHM]
+        )
         token_data = TokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
@@ -48,7 +50,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.role == "superuser":
-        raise HTTPException(status_code=403, detail="The user doesn't have enough privileges")
+        raise HTTPException(
+            status_code=403, detail="The user doesn't have enough privileges"
+        )
     return current_user
 
 
@@ -58,7 +62,9 @@ CurrentActiveSuperuser = Annotated[User, Depends(get_current_active_superuser)]
 def get_user_management_access(current_user: CurrentUser) -> User:
     """Check if user has access to view users (user, admin, or superuser)"""
     if current_user.role not in ["user", "admin", "superuser"]:
-        raise HTTPException(status_code=403, detail="The user doesn't have enough privileges")
+        raise HTTPException(
+            status_code=403, detail="The user doesn't have enough privileges"
+        )
     return current_user
 
 

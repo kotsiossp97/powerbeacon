@@ -31,6 +31,7 @@ class AgentBase(SQLModel):
 
 class AgentRegistration(SQLModel):
     """Agent registration request payload"""
+
     hostname: str
     ip: str
     port: int = 18080
@@ -40,19 +41,22 @@ class AgentRegistration(SQLModel):
 
 class AgentRegistrationResponse(SQLModel):
     """Agent registration response"""
+
     agent_id: str
     token: str
 
 
 class AgentHeartbeat(SQLModel):
     """Agent heartbeat request payload"""
+
     agent_id: str
 
 
 class Agent(AgentBase, table=True):
     """Agent database model"""
+
     __tablename__ = "agents"
-    
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     token: str = Field(index=True)  # Authentication token for agent
     status: AgentStatus = Field(default=AgentStatus.OFFLINE)
@@ -68,6 +72,7 @@ class Agent(AgentBase, table=True):
 
 class AgentPublic(AgentBase):
     """Public agent response model"""
+
     id: uuid.UUID
     status: AgentStatus
     last_seen: datetime
@@ -76,5 +81,6 @@ class AgentPublic(AgentBase):
 
 class AgentsPublic(SQLModel):
     """List of public agents"""
+
     agents: list[AgentPublic]
     count: int

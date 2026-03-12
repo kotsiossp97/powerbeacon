@@ -8,6 +8,9 @@ tags:
 
 This is the recommended setup path for running PowerBeacon with minimal host dependencies.
 
+!!! tip "Use this page if"
+  You want the fastest path to a working environment with minimal host setup.
+
 ## Prerequisites
 
 - Docker Engine / Docker Desktop
@@ -37,6 +40,9 @@ DB_PASSWORD=changeMe
 JWT_SECRET=replace-with-strong-secret
 ```
 
+!!! warning "Production safety"
+  Replace default secrets before exposing the service beyond local development.
+
 ## Run Production-Like Stack
 
 Uses `docker-compose.yml`.
@@ -56,6 +62,19 @@ Stop:
 ```bash
 docker compose down
 ```
+
+=== "Run Foreground (debug)"
+
+  ```bash
+  docker compose up --build
+  ```
+
+=== "Run Detached"
+
+  ```bash
+  docker compose up -d --build
+  docker compose logs -f
+  ```
 
 ## Run Development Stack (Hot Reload)
 
@@ -83,6 +102,18 @@ Stop:
 docker compose -f docker-compose.dev.yml down
 ```
 
+```mermaid
+flowchart TD
+  A[Start docker-compose.dev.yml] --> B[Backend with reload]
+  A --> C[Frontend with Vite HMR]
+  A --> D[PostgreSQL]
+  B --> E[Instant API feedback]
+  C --> F[Instant UI feedback]
+  style A fill:#0284c7,stroke:#075985,color:#fff
+  style E fill:#16a34a,stroke:#166534,color:#fff
+  style F fill:#16a34a,stroke:#166534,color:#fff
+```
+
 ## Verify Containers
 
 ```bash
@@ -95,20 +126,12 @@ Expected services:
 - `backend`
 - `frontend`
 
-## WOL Mode Notes
+## WOL and the Agent Architecture
 
-Default compose config uses relay mode:
+On Docker Desktop (Windows/macOS), direct UDP broadcast from containers is unreliable for LAN wake. PowerBeacon solves this with agents: install the lightweight `powerbeacon-agent` on a Linux machine in the target LAN, register it in the UI, and assign it to your devices. The backend dispatches WOL packets through the agent over HTTP instead of broadcasting directly.
 
-```env
-WOL_MODE=relay
-WOL_RELAY_URL=http://host.docker.internal:8089
-WOL_RELAY_TOKEN=change-me-relay-token
-```
-
-Important behavior:
-
-- On Docker Desktop (Windows/macOS), direct UDP broadcast from containers is often unreliable for LAN wake.
-- For reliable production wake, run a relay on a Linux host within the same LAN broadcast domain as target devices.
+!!! note "Recommended production pattern"
+  Keep backend/frontend/db containerized, and deploy one or more agents close to the target subnets.
 
 ## Troubleshooting
 

@@ -7,6 +7,19 @@ tags:
 
 Use this section to get PowerBeacon running quickly, then choose the setup path that matches your workflow.
 
+```mermaid
+flowchart LR
+  A[Choose Setup Path] --> B{Docker or Local?}
+  B -->|Docker| C[Run compose stack]
+  B -->|Local| D[Run backend + frontend directly]
+  C --> E[Verify health and login]
+  D --> E
+  E --> F[Register agents and wake devices]
+  style A fill:#2563eb,stroke:#1e3a8a,color:#fff
+  style E fill:#16a34a,stroke:#166534,color:#fff
+  style F fill:#7c3aed,stroke:#5b21b6,color:#fff
+```
+
 ## Choose Your Setup Path
 
 | Path | Best for | Time | Main command |
@@ -19,6 +32,9 @@ Use this section to get PowerBeacon running quickly, then choose the setup path 
 - Git
 - Docker Desktop (recommended path)
 - Or for local development: Python 3.13+, Node.js 20+, PostgreSQL 16+
+
+!!! info "Suggested path"
+  If you are evaluating the platform, start with Docker. If you are contributing code, use Local Development.
 
 ## Project Layout (High Level)
 
@@ -69,6 +85,9 @@ Use this checklist before moving on:
 2. `GET /health` returns status `ok`.
 3. You can log in and see the dashboard.
 4. Device list page opens without API errors.
+
+!!! success "Ready to continue"
+  If all checks pass, continue with either [Docker Setup](docker.md) or [Local Development](development.md) for deeper workflows.
 
 ## First Steps After Setup
 

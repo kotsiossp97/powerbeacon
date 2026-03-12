@@ -1,4 +1,5 @@
 """Agent management API routes."""
+
 import uuid
 from datetime import datetime, timezone
 
@@ -20,20 +21,26 @@ from powerbeacon.crud import agent_crud
 router = APIRouter(prefix="/agents", tags=["Agents"])
 
 
-@router.post("/register", response_model=AgentRegistrationResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=AgentRegistrationResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def register_agent(
     agent_in: AgentRegistration,
     session: SessionDep,
 ):
     """
     Register a new agent.
-    
+
     This endpoint is called by agents when they start up to register with the backend.
     Returns an agent ID and authentication token.
     """
     # Check if agent with same hostname already exists
-    existing_agent = agent_crud.get_agent_by_hostname(session=session, hostname=agent_in.hostname)
-    
+    existing_agent = agent_crud.get_agent_by_hostname(
+        session=session, hostname=agent_in.hostname
+    )
+
     if existing_agent:
         # Update existing agent instead of creating new one
         existing_agent.ip = agent_in.ip
@@ -44,15 +51,15 @@ async def register_agent(
         session.add(existing_agent)
         session.commit()
         session.refresh(existing_agent)
-        
+
         return AgentRegistrationResponse(
             agent_id=str(existing_agent.id),
             token=existing_agent.token,
         )
-    
+
     # Create new agent
     agent, token = agent_crud.create_agent(session=session, agent_create=agent_in)
-    
+
     return AgentRegistrationResponse(
         agent_id=str(agent.id),
         token=token,
@@ -67,7 +74,7 @@ async def agent_heartbeat(
 ):
     """
     Receive heartbeat from an agent.
-    
+
     Agents should send heartbeats every 30 seconds to indicate they are still online.
     """
     # Verify agent token
@@ -76,9 +83,9 @@ async def agent_heartbeat(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing authorization header",
         )
-    
+
     token = authorization[7:]  # Remove "Bearer " prefix
-    
+
     try:
         agent_id = uuid.UUID(heartbeat.agent_id)
     except ValueError:
@@ -86,25 +93,25 @@ async def agent_heartbeat(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid agent ID format",
         )
-    
+
     agent = agent_crud.get_agent_by_id(session=session, agent_id=agent_id)
-    
+
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Agent not found",
         )
-    
+
     # Verify token matches
     if agent.token != token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid agent token",
         )
-    
+
     # Update heartbeat
     agent_crud.update_agent_heartbeat(session=session, agent=agent)
-    
+
     return None
 
 
@@ -117,7 +124,7 @@ async def list_agents(
 ):
     """
     List all registered agents.
-    
+
     Requires admin or superuser role.
     """
     if current_user.role not in ["admin", "superuser"]:
@@ -125,15 +132,15 @@ async def list_agents(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
-    
+
     # Check for offline agents
     agent_crud.check_offline_agents(session=session)
-    
+
     count_stmt = select(func.count()).select_from(Agent)
     count = session.exec(count_stmt).one()
-    
+
     agents = agent_crud.get_agents(session=session, skip=skip, limit=limit)
-    
+
     return AgentsPublic(agents=agents, count=count)
 
 
@@ -145,7 +152,7 @@ async def get_agent(
 ):
     """
     Get details of a specific agent.
-    
+
     Requires admin or superuser role.
     """
     if current_user.role not in ["admin", "superuser"]:
@@ -153,15 +160,15 @@ async def get_agent(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
-    
+
     agent = agent_crud.get_agent_by_id(session=session, agent_id=agent_id)
-    
+
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Agent not found",
         )
-    
+
     return agent
 
 
@@ -173,7 +180,7 @@ async def delete_agent(
 ):
     """
     Delete an agent.
-    
+
     Requires admin or superuser role.
     This only removes the agent from the database, it does not uninstall it from the host.
     """
@@ -182,13 +189,13 @@ async def delete_agent(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
-    
+
     success = agent_crud.delete_agent(session=session, agent_id=agent_id)
-    
+
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Agent not found",
         )
-    
+
     return Message(message="Agent deleted successfully")

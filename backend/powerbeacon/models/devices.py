@@ -24,7 +24,9 @@ class DeviceBase(SQLModel):
     is_active: bool = True
     description: str | None = None
     tags: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    agent_id: uuid.UUID | None = Field(default=None, foreign_key="agents.id", index=True)
+    agent_id: uuid.UUID | None = Field(
+        default=None, foreign_key="agents.id", index=True
+    )
 
 
 class DeviceCreate(DeviceBase):

@@ -18,9 +18,6 @@ class Settings(BaseSettings):
     # Security
     password_min_length: int = 8
 
-    # WOL
-    wol_broadcast_ip: str = "192.168.1.255"
-
     class Config:
         env_file = ".env"
         case_sensitive = False

@@ -36,12 +36,12 @@ async def list_users(
     """
     statement = select(User).offset(skip).limit(limit)
     users = session.exec(statement).all()
-    
+
     count_statement = select(User)
     count = len(session.exec(count_statement).all())
-    
+
     # If user role is 'user', filter response to only show certain fields
-    if current_user.role == 'user':
+    if current_user.role == "user":
         filtered_users = [
             UserPublic(
                 id=user.id,
@@ -55,7 +55,7 @@ async def list_users(
             for user in users
         ]
         return UsersPublic(data=filtered_users, count=count)
-    
+
     return UsersPublic(data=users, count=count)
 
 
@@ -111,7 +111,7 @@ async def update_user(
     user_in: UserUpdate,
 ) -> Any:
     """
-    Update a user. 
+    Update a user.
     - Superuser: can update all fields (username, email, full_name, password, role, is_active)
     - Admin: can only update role and is_active
     - User/Viewer: cannot update other users (no access)
@@ -137,12 +137,16 @@ async def update_user(
                 status_code=403,
                 detail="Admins can only edit user role and active status",
             )
-    
+
     # Check if changing username to one that already exists
     if user_in.username and user_in.username != db_user.username:
-        existing_user = user_crud.get_user_by_username(session=session, username=user_in.username)
+        existing_user = user_crud.get_user_by_username(
+            session=session, username=user_in.username
+        )
         if existing_user and existing_user.id != user_id:
-            raise HTTPException(status_code=409, detail="User with this username already exists")
+            raise HTTPException(
+                status_code=409, detail="User with this username already exists"
+            )
 
     db_user = user_crud.update_user(session=session, db_user=db_user, user_in=user_in)
     return db_user

@@ -11,6 +11,7 @@ def get_datetime_utc() -> datetime:
 
 class OIDCSettingsBase(SQLModel):
     """OIDC settings configuration."""
+
     enabled: bool = False
     server_metadata_url: str | None = Field(default=None, max_length=500)
     client_id: str | None = Field(default=None, max_length=255)
@@ -19,11 +20,13 @@ class OIDCSettingsBase(SQLModel):
 
 class OIDCSettingsCreate(OIDCSettingsBase):
     """Create OIDC settings."""
+
     pass
 
 
 class OIDCSettings(OIDCSettingsBase, table=True):
     """OIDC settings stored in database."""
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
@@ -37,6 +40,7 @@ class OIDCSettings(OIDCSettingsBase, table=True):
 
 class OIDCSettingsPublic(OIDCSettingsBase):
     """Public OIDC settings (without secret)."""
+
     id: uuid.UUID
     created_at: datetime | None = None
     updated_at: datetime | None = None

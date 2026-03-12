@@ -1,0 +1,31 @@
+{
+  "js/ts.preferences.organizeImports": {
+    "removeUnusedImports": true,
+    "sortImports": true
+  },
+
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+
+  "[json]": {
+    "editor.tabSize": 2
+  },
+  "[python]": {
+    "editor.tabSize": 4,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.defaultColorDecorators": "auto",
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnType": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    },
+    "editor.rulers": [100]
+  },
+  "black-formatter.args": ["--line-length", "100"],
+
+  "[typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    }
+  }
+}

@@ -75,20 +75,17 @@ async def get_linux_install_script():
     """Serve the Linux/macOS agent installation script."""
     from fastapi.responses import PlainTextResponse
     import os
-    
+
     script_path = os.path.join(
-        os.path.dirname(__file__),
-        "agent",
-        "install",
-        "install-agent.sh"
+        os.path.dirname(__file__), "agent", "install", "install-agent.sh"
     )
-    
+
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
-    
+
     with open(script_path, "r") as f:
         content = f.read()
-    
+
     return PlainTextResponse(content=content, media_type="text/x-shellscript")
 
 
@@ -97,20 +94,17 @@ async def get_windows_install_script():
     """Serve the Windows agent installation script."""
     from fastapi.responses import PlainTextResponse
     import os
-    
+
     script_path = os.path.join(
-        os.path.dirname(__file__),
-        "agents",
-        "install",
-        "install-agent.ps1"
+        os.path.dirname(__file__), "agents", "install", "install-agent.ps1"
     )
-    
+
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
-    
+
     with open(script_path, "r") as f:
         content = f.read()
-    
+
     return PlainTextResponse(content=content, media_type="text/plain")
 
 
@@ -121,30 +115,27 @@ async def get_agent_binary(platform: str, arch: str):
     """Serve agent binaries for different platforms."""
     from fastapi.responses import FileResponse
     import os
-    
+
     # Determine file extension
     ext = ".exe" if platform == "windows" else ""
-    
+
     binary_path = os.path.join(
         os.path.dirname(__file__),
         "agents",
         "binaries",
-        f"powerbeacon-agent-{platform}-{arch}{ext}"
+        f"powerbeacon-agent-{platform}-{arch}{ext}",
     )
-    
+
     if not os.path.exists(binary_path):
         raise HTTPException(
-            status_code=404,
-            detail=f"Agent binary not found for {platform}-{arch}"
+            status_code=404, detail=f"Agent binary not found for {platform}-{arch}"
         )
-    
+
     # Set appropriate media type
     media_type = "application/octet-stream"
-    
+
     return FileResponse(
-        path=binary_path,
-        media_type=media_type,
-        filename=f"powerbeacon-agent{ext}"
+        path=binary_path, media_type=media_type, filename=f"powerbeacon-agent{ext}"
     )
 
 
@@ -162,5 +153,7 @@ async def generic_exception_handler(request, exc):
 async def http_exception_handler(request, exc):
     return JSONResponse(
         status_code=exc.status_code,
-        content=ErrorResponse(status_code=exc.status_code, message=exc.detail).model_dump(),
+        content=ErrorResponse(
+            status_code=exc.status_code, message=exc.detail
+        ).model_dump(),
     )

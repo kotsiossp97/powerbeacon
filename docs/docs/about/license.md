@@ -8,6 +8,9 @@ tags:
 
 **MIT License**
 
+!!! note "Summary"
+  You can use, modify, and distribute this software, including for commercial use, as long as the original copyright and license notice are preserved.
+
 Copyright (c) 2026 Konstantinos Andreou
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,3 +30,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
+
+## Practical Guidance
+
+=== "Allowed"
+
+  - Private or public use
+  - Modification and redistribution
+  - Commercial usage
+
+=== "Required"
+
+  - Keep the MIT license text in distributed copies
+  - Retain copyright notice
+
+=== "Not provided"
+
+  - Warranty
+  - Liability coverage

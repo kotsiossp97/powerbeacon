@@ -1,23 +1,26 @@
 """CRUD operations for Agent model."""
+
 import secrets
 import uuid
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlmodel import Session, select
 
 from powerbeacon.models.agents import Agent, AgentRegistration, AgentStatus
 
 
-def create_agent(*, session: Session, agent_create: AgentRegistration) -> tuple[Agent, str]:
+def create_agent(
+    *, session: Session, agent_create: AgentRegistration
+) -> tuple[Agent, str]:
     """
     Create a new agent and generate an authentication token.
-    
+
     Returns:
         tuple: (Agent, token) - The created agent and its authentication token
     """
     # Generate a secure token for the agent
     token = secrets.token_urlsafe(32)
-    
+
     db_obj = Agent(
         hostname=agent_create.hostname,
         ip=agent_create.ip,
@@ -62,7 +65,9 @@ def update_agent_heartbeat(*, session: Session, agent: Agent) -> Agent:
     return agent
 
 
-def update_agent_status(*, session: Session, agent: Agent, status: AgentStatus) -> Agent:
+def update_agent_status(
+    *, session: Session, agent: Agent, status: AgentStatus
+) -> Agent:
     """Update agent's status."""
     agent.status = status
     session.add(agent)
@@ -85,28 +90,27 @@ def check_offline_agents(*, session: Session, timeout_minutes: int = 2) -> list[
     """
     Check for agents that haven't sent a heartbeat in the specified timeout
     and mark them as offline.
-    
+
     Args:
         session: Database session
         timeout_minutes: Minutes after which an agent is considered offline (default: 2)
-        
+
     Returns:
         List of agents that were marked as offline
     """
     cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=timeout_minutes)
     statement = select(Agent).where(
-        Agent.last_seen < cutoff_time,
-        Agent.status == AgentStatus.ONLINE
+        Agent.last_seen < cutoff_time, Agent.status == AgentStatus.ONLINE
     )
     offline_agents = list(session.exec(statement).all())
-    
+
     for agent in offline_agents:
         agent.status = AgentStatus.OFFLINE
         session.add(agent)
-    
+
     if offline_agents:
         session.commit()
-    
+
     return offline_agents
 
 

@@ -28,7 +28,11 @@ async def list_devices(
     count_stmt = select(func.count()).select_from(Device)
     count = session.exec(count_stmt).one()
     statement = (
-        select(Device, User.full_name.label("owner_name"), Agent.hostname.label("agent_hostname"))
+        select(
+            Device,
+            User.full_name.label("owner_name"),
+            Agent.hostname.label("agent_hostname"),
+        )
         .join(User, Device.owner_id == User.id, isouter=True)
         .join(Agent, Device.agent_id == Agent.id, isouter=True)
         .order_by(col(Device.created_at).desc())
@@ -37,7 +41,9 @@ async def list_devices(
     )
     devices = session.exec(statement).all()
     devices_public = [
-        DevicePublic.model_validate(device, update={"owner_name": owner_name, "agent_hostname": agent_hostname})
+        DevicePublic.model_validate(
+            device, update={"owner_name": owner_name, "agent_hostname": agent_hostname}
+        )
         for device, owner_name, agent_hostname in devices
     ]
     return DevicesPublic(devices=devices_public, count=count)
@@ -51,7 +57,11 @@ async def get_device(
 ):
     """Get a specific device. All authenticated users can view any device."""
     statement = (
-        select(Device, User.full_name.label("owner_name"), Agent.hostname.label("agent_hostname"))
+        select(
+            Device,
+            User.full_name.label("owner_name"),
+            Agent.hostname.label("agent_hostname"),
+        )
         .join(User, Device.owner_id == User.id, isouter=True)
         .join(Agent, Device.agent_id == Agent.id, isouter=True)
         .where(Device.id == device_id)
@@ -60,7 +70,9 @@ async def get_device(
     if not result:
         raise HTTPException(status_code=404, detail="Device not found")
     device, owner_name, agent_hostname = result
-    return DevicePublic.model_validate(device, update={"owner_name": owner_name, "agent_hostname": agent_hostname})
+    return DevicePublic.model_validate(
+        device, update={"owner_name": owner_name, "agent_hostname": agent_hostname}
+    )
 
 
 @router.post("/", response_model=DevicePublic, status_code=status.HTTP_201_CREATED)
@@ -92,7 +104,9 @@ async def update_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role != "superuser" and device.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to update this device")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to update this device"
+        )
 
     device_data = device_in.model_dump(exclude_unset=True)
     device.sqlmodel_update(device_data)
@@ -113,7 +127,9 @@ async def delete_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role != "superuser" and device.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this device")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to delete this device"
+        )
 
     session.delete(device)
     session.commit()
@@ -131,9 +147,13 @@ async def wake_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role == "viewer":
-        raise HTTPException(status_code=403, detail="Viewers cannot perform device actions")
+        raise HTTPException(
+            status_code=403, detail="Viewers cannot perform device actions"
+        )
     if current_user.role != "superuser" and device.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to wake this device")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to wake this device"
+        )
 
     if not device.agent_id:
         raise HTTPException(

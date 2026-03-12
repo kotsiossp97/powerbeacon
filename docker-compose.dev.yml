@@ -27,15 +27,6 @@ services:
       DB_URL: ${DB_URL:-postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon}
       # DB_URL: postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@localhost:5432/powerbeacon
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
-      OIDC_SERVER_METADATA_URL: ${OIDC_SERVER_METADATA_URL:-}
-      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
-      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
-      WOL_MODE: ${WOL_MODE:-relay}
-      WOL_BROADCAST_IP: ${WOL_BROADCAST_IP:-192.168.1.255}
-      WOL_PORT: ${WOL_PORT:-9}
-      WOL_SEND_STRATEGY: ${WOL_SEND_STRATEGY:-both}
-      WOL_RELAY_URL: ${WOL_RELAY_URL:-http://host.docker.internal:8089}
-      WOL_RELAY_TOKEN: ${WOL_RELAY_TOKEN:-change-me-relay-token}
       PYTHONUNBUFFERED: 1
     volumes:
       - ./backend:/app

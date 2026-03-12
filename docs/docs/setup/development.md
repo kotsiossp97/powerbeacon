@@ -7,12 +7,26 @@ tags:
 
 Use this setup when you want fast iteration, debugging, and direct access to backend/frontend processes.
 
+```mermaid
+flowchart LR
+  A[Prepare env] --> B[Run PostgreSQL]
+  B --> C[Start backend]
+  C --> D[Start frontend]
+  D --> E[Run optional agent]
+  E --> F[Verify login and wake flow]
+  style A fill:#2563eb,stroke:#1e3a8a,color:#fff
+  style F fill:#16a34a,stroke:#166534,color:#fff
+```
+
 ## Prerequisites
 
 - Python 3.13+
 - Node.js 20+
 - PostgreSQL 16+
 - Git
+
+!!! info "Who should use this"
+  Choose Local Development if you are implementing features, debugging routes, or iterating on frontend and backend together.
 
 ## 1. Clone and Configure
 
@@ -80,6 +94,26 @@ Run API with auto-reload:
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+=== "PowerShell"
+
+  ```powershell
+  cd backend
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  uvicorn main:app --reload --host 0.0.0.0 --port 8000
+  ```
+
+=== "Bash"
+
+  ```bash
+  cd backend
+  python -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  uvicorn main:app --reload --host 0.0.0.0 --port 8000
+  ```
+
 Backend URLs:
 
 - API: `http://localhost:8000`
@@ -101,6 +135,9 @@ Frontend URL:
 - `http://localhost:5173`
 
 If needed, configure API base URL in frontend environment to point at `http://localhost:8000`.
+
+!!! tip "Fast frontend loop"
+  Keep backend and frontend in separate terminals to preserve hot reload on both sides.
 
 ## 5. Agent Development (Optional)
 
@@ -174,6 +211,9 @@ JWT_SECRET=<non-default-secret>
 ```
 
 For OIDC, verify issuer/client settings in `.env` and that provider endpoints are reachable.
+
+!!! warning "Token confusion"
+  If login behavior seems inconsistent, clear `localStorage` in the browser and retry. Stale JWTs commonly cause misleading UI states.
 
 ## Next Step
 

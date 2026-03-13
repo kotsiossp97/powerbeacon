@@ -241,7 +241,7 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
 
 === "Linux/macOS One-Liner"
 
-    ```bash
+    ```bash linenums="1"
     curl -fsSL http://<backend-host>:8000/install-agent.sh | bash -s -- \
       --backend http://<backend-host>:8000 \
       --advertise-ip 192.168.1.50
@@ -255,7 +255,7 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
 
 === "Manual (Any OS)"
 
-    ```bash
+    ```bash linenums="1"
     # Download binary
     curl -O http://<backend-host>:8000/agents/linux-amd64
     chmod +x powerbeacon-agent
@@ -269,7 +269,7 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
 
 === "Docker"
 
-    ```bash
+    ```bash linenums="1"
     docker run -d \
       --name powerbeacon-agent \
       --network host \

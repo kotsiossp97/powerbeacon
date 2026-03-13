@@ -1,3 +1,5 @@
+[![Documentation](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml)
+
 # PowerBeacon
 
 PowerBeacon is a self-hosted Wake-on-LAN orchestration platform built around three layers: a FastAPI backend, a React frontend, and one or more Go agents that run close to the target LAN.

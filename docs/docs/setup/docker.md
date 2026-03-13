@@ -9,7 +9,7 @@ tags:
 This is the recommended setup path for running PowerBeacon with minimal host dependencies.
 
 !!! tip "Use this page if"
-  You want the fastest path to a working environment with minimal host setup.
+    You want the fastest path to a working environment with minimal host setup.
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ JWT_SECRET=replace-with-strong-secret
 ```
 
 !!! warning "Production safety"
-  Replace default secrets before exposing the service beyond local development.
+    Replace default secrets before exposing the service beyond local development.
 
 ## Run Production-Like Stack
 
@@ -65,16 +65,16 @@ docker compose down
 
 === "Run Foreground (debug)"
 
-  ```bash
-  docker compose up --build
-  ```
+    ```bash
+    docker compose up --build
+    ```
 
 === "Run Detached"
 
-  ```bash
-  docker compose up -d --build
-  docker compose logs -f
-  ```
+    ```bash
+    docker compose up -d --build
+    docker compose logs -f
+    ```
 
 ## Run Development Stack (Hot Reload)
 
@@ -131,7 +131,7 @@ Expected services:
 On Docker Desktop (Windows/macOS), direct UDP broadcast from containers is unreliable for LAN wake. PowerBeacon solves this with agents: install the lightweight `powerbeacon-agent` on a Linux machine in the target LAN, register it in the UI, and assign it to your devices. The backend dispatches WOL packets through the agent over HTTP instead of broadcasting directly.
 
 !!! note "Recommended production pattern"
-  Keep backend/frontend/db containerized, and deploy one or more agents close to the target subnets.
+    Keep backend/frontend/db containerized, and deploy one or more agents close to the target subnets.
 
 ## Troubleshooting
 

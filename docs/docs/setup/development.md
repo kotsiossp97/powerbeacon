@@ -26,26 +26,26 @@ flowchart LR
 - Git
 
 !!! info "Who should use this"
-  Choose Local Development if you are implementing features, debugging routes, or iterating on frontend and backend together.
+    Choose Local Development if you are implementing features, debugging routes, or iterating on frontend and backend together.
 
 ## 1. Clone and Configure
 
-```bash
+```bash linenums="1"
 git clone https://github.com/kotsiossp97/powerbeacon.git
-cd kotsios-powerbeacon
+cd powerbeacon
 ```
 
 Create root environment file:
 
 Linux/macOS:
 
-```bash
+```bash linenums="1"
 cp .env.example .env
 ```
 
 PowerShell:
 
-```powershell
+```powershell linenums="1"
 Copy-Item .env.example .env
 ```
 
@@ -63,56 +63,32 @@ DB_URL=postgresql+psycopg2://powerbeacon:changeMe@localhost:5432/powerbeacon
 
 From repository root:
 
-```bash
+```bash linenums="1"
 cd backend
-python -m venv .venv
+uv run fastapi dev main.py --host 0.0.0.0 --port 8000
 ```
 
-Activate environment:
+Alternatively, using `pip`:
 
-Linux/macOS:
+=== "Linux/macOS"
 
-```bash
-source .venv/bin/activate
-```
-
-PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run API with auto-reload:
-
-```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
+    ```bash linenums="1"
+    cd backend
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    fastapi dev main.py --host 0.0.0.0 --port 8000
+    ```
 
 === "PowerShell"
 
-  ```powershell
-  cd backend
-  python -m venv .venv
-  .\.venv\Scripts\Activate.ps1
-  pip install -r requirements.txt
-  uvicorn main:app --reload --host 0.0.0.0 --port 8000
-  ```
-
-=== "Bash"
-
-  ```bash
-  cd backend
-  python -m venv .venv
-  source .venv/bin/activate
-  pip install -r requirements.txt
-  uvicorn main:app --reload --host 0.0.0.0 --port 8000
-  ```
+    ```powershell linenums="1"
+    cd backend
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    pip install -r requirements.txt
+    fastapi dev main.py --host 0.0.0.0 --port 8000
+    ```
 
 Backend URLs:
 
@@ -137,7 +113,7 @@ Frontend URL:
 If needed, configure API base URL in frontend environment to point at `http://localhost:8000`.
 
 !!! tip "Fast frontend loop"
-  Keep backend and frontend in separate terminals to preserve hot reload on both sides.
+    Keep backend and frontend in separate terminals to preserve hot reload on both sides.
 
 ## 5. Agent Development (Optional)
 
@@ -145,6 +121,7 @@ From repository root:
 
 ```bash
 cd agent
+go mod download
 go test ./...
 ```
 
@@ -164,11 +141,12 @@ go build -o build/powerbeacon-agent ./cmd/agent
 
 ## Useful Commands
 
-Backend tests:
+Backend formatting and linting:
 
 ```bash
 cd backend
-pytest
+uv run ruff check --fix
+uv run ruff format
 ```
 
 Frontend lint/build:
@@ -213,7 +191,7 @@ JWT_SECRET=<non-default-secret>
 For OIDC, verify issuer/client settings in `.env` and that provider endpoints are reachable.
 
 !!! warning "Token confusion"
-  If login behavior seems inconsistent, clear `localStorage` in the browser and retry. Stale JWTs commonly cause misleading UI states.
+    If login behavior seems inconsistent, clear `localStorage` in the browser and retry. Stale JWTs commonly cause misleading UI states.
 
 ## Next Step
 

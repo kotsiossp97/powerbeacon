@@ -27,7 +27,7 @@ site_author = "Konstantinos Andreou"
 # The site_url is the canonical URL for your site. When building online
 # documentation you should set this.
 # Read more: https://zensical.org/docs/setup/basics/#site_url
-#site_url = "https://www.example.com/"
+site_url = "https://kotsiossp97.github.io/powerbeacon/"
 
 # The copyright notice appears in the page footer and can contain an HTML
 # fragment.
@@ -121,7 +121,6 @@ nav = [
 #
 favicon = "assets/favicon.png"
 
-logo = "assets/badge-512.png"
 # Zensical supports more than 60 different languages. This means that the
 # labels and tooltips that Zensical's templates produce are translated.
 # The "language" option allows you to set the language used. This language
@@ -281,7 +280,7 @@ features = [
 # option in the "theme" subsection. The logo must be a relative path to a file
 # in your "docs_dir", e.g., to use `docs/assets/logo.png` you would set:
 # ----------------------------------------------------------------------------
-#logo = "assets/logo.png"
+logo = "assets/badge-512.png"
 
 # ----------------------------------------------------------------------------
 # If you don't have a dedicated project logo, you can use a built-in icon from
@@ -301,8 +300,8 @@ features = [
 # of suitably licensed fonts. There are options for a normal text font and for
 # a monospaced font used in code blocks.
 # ----------------------------------------------------------------------------
-#[project.theme.font]
-#text = "Inter"
+[project.theme.font]
+text = "Figtree Variable"
 #code = "Jetbrains Mono"
 
 # ----------------------------------------------------------------------------
@@ -315,14 +314,16 @@ features = [
 # - https://zensical.org/docs/setup/colors/
 # ----------------------------------------------------------------------------
 [[project.theme.palette]]
-scheme = "system"
+scheme = "default"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
+primary = "indigo"
 
 [[project.theme.palette]]
 scheme = "slate"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
+primary = "indigo"
 
 # ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.

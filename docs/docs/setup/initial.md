@@ -25,7 +25,7 @@ flowchart LR
 | Path | Best for | Time | Main command |
 | --- | --- | --- | --- |
 | [Docker Setup](docker.md) | Most users, fastest onboarding | 5-10 min | `docker compose up --build` |
-| [Local Development](development.md) | Contributing and debugging internals | 15-30 min | `uvicorn main:app --reload` + `npm run dev` |
+| [Local Development](development.md) | Contributing and debugging internals | 15-30 min | `uv run fastapi dev main.py ` + `npm run dev` |
 
 ## Prerequisites
 
@@ -49,7 +49,7 @@ flowchart LR
 
 ```bash
 git clone https://github.com/kotsiossp97/powerbeacon.git
-cd kotsios-powerbeacon
+cd powerbeacon
 ```
 
 ### 2. Create local environment file

@@ -34,7 +34,7 @@ flowchart LR
 - Or for local development: Python 3.13+, Node.js 20+, PostgreSQL 16+
 
 !!! info "Suggested path"
-  If you are evaluating the platform, start with Docker. If you are contributing code, use Local Development.
+    If you are evaluating the platform, start with Docker. If you are contributing code, use Local Development.
 
 ## Project Layout (High Level)
 
@@ -87,7 +87,7 @@ Use this checklist before moving on:
 4. Device list page opens without API errors.
 
 !!! success "Ready to continue"
-  If all checks pass, continue with either [Docker Setup](docker.md) or [Local Development](development.md) for deeper workflows.
+    If all checks pass, continue with either [Docker Setup](docker.md) or [Local Development](development.md) for deeper workflows.
 
 ## First Steps After Setup
 

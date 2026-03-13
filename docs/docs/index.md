@@ -21,7 +21,7 @@ Clusters group devices and agents, devices can use multiple agents, and wake ope
 </p>
 
 !!! tip "New to PowerBeacon?"
-   Start with [Setup Overview](setup/initial.md), then continue with [Architecture Overview](architecture/overview.md).
+      Start with [Setup Overview](setup/initial.md), then continue with [Architecture Overview](architecture/overview.md).
 
 ## Product Snapshot
 
@@ -53,28 +53,28 @@ graph LR
 
 === "Docker (Recommended)"
 
-   ```bash linenums="1"
-   cp .env.example .env
-   docker compose up --build
-   ```
+      ```bash linenums="1"
+      cp .env.example .env
+      docker compose up --build
+      ```
 
-   - Frontend: `http://localhost:3000`
-   - API docs: `http://localhost:8000/api/docs`
+      - Frontend: `http://localhost:3000`
+      - API docs: `http://localhost:8000/api/docs`
 
 === "Local Development"
 
-   ```bash linenums="1"
-   cd backend
-   python -m venv .venv
-   # activate + install deps
-   uvicorn main:app --reload --port 8000
-   ```
+      ```bash linenums="1"
+      cd backend
+      python -m venv .venv
+      # activate + install deps
+      uvicorn main:app --reload --port 8000
+      ```
 
-   ```bash linenums="1"
-   cd frontend
-   npm install
-   npm run dev
-   ```
+      ```bash linenums="1"
+      cd frontend
+      npm install
+      npm run dev
+      ```
 
 ## Platform At A Glance
 

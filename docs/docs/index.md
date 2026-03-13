@@ -53,7 +53,7 @@ graph LR
 
 === "Docker (Recommended)"
 
-   ```bash
+   ```bash linenums="1"
    cp .env.example .env
    docker compose up --build
    ```
@@ -63,14 +63,14 @@ graph LR
 
 === "Local Development"
 
-   ```bash
+   ```bash linenums="1"
    cd backend
    python -m venv .venv
    # activate + install deps
    uvicorn main:app --reload --port 8000
    ```
 
-   ```bash
+   ```bash linenums="1"
    cd frontend
    npm install
    npm run dev

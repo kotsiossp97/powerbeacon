@@ -78,7 +78,7 @@ async def get_linux_install_script():
 
     from fastapi.responses import PlainTextResponse
 
-    script_path = os.path.join(os.path.dirname(__file__), "agent", "install", "install-agent.sh")
+    script_path = os.path.join(os.path.dirname(__file__), "agents", "install", "install-agent.sh")
 
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
@@ -146,13 +146,6 @@ async def generic_exception_handler(request, exc):
 
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request, exc):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content=ErrorResponse(status_code=exc.status_code, message=exc.detail).model_dump(),
-    )
-
-
 async def http_exception_handler(request, exc):
     return JSONResponse(
         status_code=exc.status_code,

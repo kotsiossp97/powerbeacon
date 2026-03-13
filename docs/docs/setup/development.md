@@ -100,7 +100,7 @@ Backend URLs:
 
 Open a second terminal from repository root:
 
-```bash
+```bash linenums="1"
 cd frontend
 npm install
 npm run dev

@@ -1,5 +1,8 @@
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Select,
   SelectContent,
@@ -7,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Search } from "lucide-react";
 
 interface UsersFiltersProps {
   searchQuery: string;
@@ -26,16 +30,17 @@ export const UsersFilters = ({
   onStatusFilterChange,
 }: UsersFiltersProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
+    <div className="flex flex-col sm:flex-row gap-4 rounded-xl border border-border bg-card p-4">
+      <InputGroup>
+        <InputGroupInput
           placeholder="Search users by name, email, or username..."
           value={searchQuery}
           onChange={(event) => onSearchQueryChange(event.target.value)}
-          className="pl-10"
         />
-      </div>
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+      </InputGroup>
 
       <Select value={roleFilter} onValueChange={onRoleFilterChange}>
         <SelectTrigger className="w-full sm:w-37.5">

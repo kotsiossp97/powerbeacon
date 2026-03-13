@@ -8,7 +8,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Cluster } from "@/types";
-import { Edit, MoreVertical, Network, Trash2 } from "lucide-react";
+import {
+  Edit,
+  Monitor,
+  MoreVertical,
+  Network,
+  Server,
+  Trash2,
+} from "lucide-react";
 import { Link } from "react-router";
 
 interface ClusterCardProps {
@@ -76,15 +83,29 @@ export const ClusterCard = ({
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-lg border border-border bg-background/60 p-3">
-            <div className="text-muted-foreground">Devices</div>
-            <div className="mt-1 text-xl font-semibold text-foreground">
-              {cluster.device_count}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center h-8 w-8 rounded bg-secondary">
+                <Monitor className="w-4 h-4 text-foreground" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold text-foreground">
+                  {cluster.device_count}
+                </p>
+                <p className="text-muted-foreground">Devices</p>
+              </div>
             </div>
           </div>
           <div className="rounded-lg border border-border bg-background/60 p-3">
-            <div className="text-muted-foreground">Agents</div>
-            <div className="mt-1 text-xl font-semibold text-foreground">
-              {cluster.agent_count}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center h-8 w-8 rounded bg-secondary">
+                <Server className="w-4 h-4 text-foreground" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold text-foreground">
+                  {cluster.agent_count}
+                </p>
+                <p className="text-muted-foreground">Agents</p>
+              </div>
             </div>
           </div>
         </div>

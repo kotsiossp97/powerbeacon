@@ -1,23 +1,11 @@
 /**
  * Device card component
  */
-import { type Device } from "@/types";
 import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
-import { useState } from "react";
-import { toast } from "sonner";
-import {
-  Power,
-  MoreVertical,
-  Edit,
-  Trash2,
-  Copy,
-  Clock,
-} from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import osIcons from "../misc/os-icons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +13,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { type Device } from "@/types";
+import {
+  Clock,
+  Copy,
+  Edit,
+  MoreVertical,
+  Network,
+  Power,
+  Server,
+  Trash2,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import osIcons from "../misc/os-icons";
 
 interface DeviceCardProps {
   device: Device;
@@ -49,7 +56,9 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         response.data?.message || "Wake command sent successfully!",
       );
     } catch (err) {
-      const error = err as { response?: { data?: { detail?: string; message?: string } } };
+      const error = err as {
+        response?: { data?: { detail?: string; message?: string } };
+      };
       toast.error(
         error.response?.data?.detail ||
           error.response?.data?.message ||
@@ -66,13 +75,20 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
   };
 
   return (
-    <Card className="bg-card border-border hover:border-primary/30 transition-colors shadow-lg">
+    <Card className="border border-card hover:border-primary/40 transition-colors shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary text-foreground">
-              {osIcons[device.os_type] || osIcons.other}
-            </div>
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary text-foreground">
+                  {osIcons[device.os_type] || osIcons.other}
+                </div>
+                <TooltipContent className="capitalize">
+                  {device.os_type ? device.os_type : "OS type not specified"}
+                </TooltipContent>
+              </TooltipTrigger>
+            </Tooltip>
             <div>
               <h3 className="font-medium text-foreground leading-tight">
                 {device.name}
@@ -121,7 +137,11 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         <div className="flex items-center gap-2 flex-wrap">
           <Badge
             variant="outline"
-            className={device.is_active ? "border-success text-success" : "border-muted-foreground text-muted-foreground"}
+            className={
+              device.is_active
+                ? "border-success text-success"
+                : "border-muted-foreground text-muted-foreground"
+            }
           >
             <span
               className={`w-1.5 h-1.5 rounded-full mr-1.5 ${device.is_active ? "bg-success" : "bg-muted-foreground"}`}
@@ -148,12 +168,14 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Owner</span>
-            <span className="text-foreground">{device.owner_name}</span>
+            <span className="text-foreground">
+              {device.owner_name || "Unassigned"}
+            </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Agent</span>
+            <span className="text-muted-foreground">Cluster</span>
             <span className="text-foreground">
-              {device.agent_hostname ?? (
+              {device.cluster_name ?? (
                 <span className="text-muted-foreground italic">None</span>
               )}
             </span>
@@ -165,6 +187,39 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
                 <Clock className="w-3 h-3" />
                 {new Date(device.created_at).toLocaleDateString()}
               </span>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Server className="h-4 w-4" />
+            <span>
+              {device.agents.length > 0
+                ? `${device.agents.length} associated agent(s)`
+                : "No associated agents"}
+            </span>
+          </div>
+          {device.agents.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {device.agents.map((agent) => (
+                <Badge key={agent.id} variant="secondary" className="gap-1.5">
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      agent.status === "online"
+                        ? "bg-green-500"
+                        : "bg-muted-foreground"
+                    }`}
+                  />
+                  {agent.hostname}
+                </Badge>
+              ))}
+            </div>
+          )}
+          {device.cluster_name && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Network className="h-4 w-4" />
+              <span>{device.cluster_name}</span>
             </div>
           )}
         </div>

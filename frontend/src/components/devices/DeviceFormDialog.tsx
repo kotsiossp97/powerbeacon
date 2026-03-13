@@ -1,48 +1,63 @@
 /**
  * Device form dialog component
  */
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { type Agent, type Device } from "@/types";
-import {
-  deviceFormSchema,
-  getDeviceFormDefaults,
-  mapDeviceFormToPayload,
-} from "@/components/devices/deviceForm";
 import type { DeviceFormData } from "@/components/devices/deviceForm";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    deviceFormSchema,
+    getDeviceFormDefaults,
+    mapDeviceFormToPayload,
+} from "@/components/devices/deviceForm";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import {
+    type Agent,
+    type Cluster,
+    type Device,
+    type DeviceCreate,
+    type DeviceUpdate,
+} from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
 interface DeviceFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   device?: Device | null;
   agents: Agent[];
-  onSubmit: (data: Partial<Device>) => void;
+  clusters: Cluster[];
+  onSubmit: (data: DeviceCreate | DeviceUpdate) => void;
 }
 
 export const DeviceFormDialog = ({
@@ -50,6 +65,7 @@ export const DeviceFormDialog = ({
   onOpenChange,
   device,
   agents,
+  clusters,
   onSubmit,
 }: DeviceFormDialogProps) => {
   const form = useForm<DeviceFormData>({
@@ -61,10 +77,60 @@ export const DeviceFormDialog = ({
   // When creating, default to the first available agent
   useEffect(() => {
     if (open) {
-      const defaultAgentId = !device && agents.length > 0 ? agents[0].id : undefined;
-      form.reset(getDeviceFormDefaults(device, defaultAgentId));
+      form.reset(getDeviceFormDefaults(device));
     }
   }, [open, device, agents, form]);
+
+  const selectedClusterId = useWatch({
+    control: form.control,
+    name: "cluster_id",
+    defaultValue: "",
+  });
+  const selectedAgentIds = useWatch({
+    control: form.control,
+    name: "agent_ids",
+    defaultValue: [],
+  });
+  const selectedOsType = useWatch({
+    control: form.control,
+    name: "os_type",
+    defaultValue: "linux",
+  });
+  const availableAgents = agents.filter((agent) => {
+    if (!selectedClusterId) {
+      return !agent.cluster_id;
+    }
+    return agent.cluster_id === selectedClusterId;
+  });
+
+  useEffect(() => {
+    const availableAgentIds = new Set(availableAgents.map((agent) => agent.id));
+    const filteredAgentIds = selectedAgentIds.filter((agentId) =>
+      availableAgentIds.has(agentId),
+    );
+    if (filteredAgentIds.length !== selectedAgentIds.length) {
+      form.setValue("agent_ids", filteredAgentIds, { shouldDirty: true });
+      return;
+    }
+
+    // For new devices, auto-select the first matching cluster agent
+    // when a cluster is chosen and no agent has been selected yet.
+    if (
+      !device &&
+      selectedClusterId &&
+      filteredAgentIds.length === 0 &&
+      availableAgents.length > 0
+    ) {
+      form.setValue("agent_ids", [availableAgents[0].id], { shouldDirty: true });
+    }
+  }, [availableAgents, device, form, selectedAgentIds, selectedClusterId]);
+
+  const toggleAgentSelection = (agentId: string) => {
+    const nextAgentIds = selectedAgentIds.includes(agentId)
+      ? selectedAgentIds.filter((currentId) => currentId !== agentId)
+      : [...selectedAgentIds, agentId];
+    form.setValue("agent_ids", nextAgentIds, { shouldDirty: true });
+  };
 
   const handleSubmit = (data: DeviceFormData) => {
     onSubmit(mapDeviceFormToPayload(data));
@@ -133,7 +199,7 @@ export const DeviceFormDialog = ({
               <FieldLabel>Operating System</FieldLabel>
               <FieldContent>
                 <Select
-                  value={form.watch("os_type")}
+                  value={selectedOsType}
                   onValueChange={(value) =>
                     form.setValue("os_type", value as "linux" | "windows" | "macos")
                   }
@@ -183,46 +249,85 @@ export const DeviceFormDialog = ({
             </Field>
 
             <Field>
-              <FieldLabel>Agent</FieldLabel>
+              <FieldLabel>Cluster</FieldLabel>
               <FieldContent>
                 <Select
-                  value={form.watch("agent_id") || ""}
+                  value={selectedClusterId || "__none__"}
                   onValueChange={(value) =>
-                    form.setValue("agent_id", value === "__none__" ? "" : value)
+                    form.setValue("cluster_id", value === "__none__" ? "" : value, {
+                      shouldDirty: true,
+                    })
                   }
-                  disabled={agents.length === 0}
                 >
                   <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        agents.length === 0 ? "No agents available" : "Select agent"
-                      }
-                    />
+                    <SelectValue placeholder="Select cluster" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="__none__">No agent assigned</SelectItem>
-                    {agents.map((agent) => (
-                      <SelectItem key={agent.id} value={agent.id}>
-                        <span className="flex items-center gap-2">
-                          <span
-                            className={`inline-block w-2 h-2 rounded-full ${
-                              agent.status === "online"
-                                ? "bg-green-500"
-                                : "bg-muted-foreground"
-                            }`}
-                          />
-                          {agent.hostname}
-                          <span className="text-muted-foreground text-xs">
-                            ({agent.ip})
-                          </span>
-                        </span>
+                    <SelectItem value="__none__">No cluster</SelectItem>
+                    {clusters.map((cluster) => (
+                      <SelectItem key={cluster.id} value={cluster.id}>
+                        {cluster.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </FieldContent>
               <FieldDescription>
-                The agent that will send Wake-on-LAN packets for this device.
+                Devices can only use agents from the same cluster.
+              </FieldDescription>
+            </Field>
+
+            <Field>
+              <FieldLabel>Associated Agents</FieldLabel>
+              <FieldContent>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-between"
+                      disabled={availableAgents.length === 0}
+                    >
+                      <span>
+                        {selectedAgentIds.length > 0
+                          ? `${selectedAgentIds.length} agent(s) selected`
+                          : availableAgents.length > 0
+                            ? "Select agents"
+                            : "No matching agents available"}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="max-h-64 w-80">
+                    <DropdownMenuLabel>Wake-on-LAN agents</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {availableAgents.map((agent) => (
+                      <DropdownMenuCheckboxItem
+                        key={agent.id}
+                        checked={selectedAgentIds.includes(agent.id)}
+                        onCheckedChange={() => toggleAgentSelection(agent.id)}
+                      >
+                        <span className="flex w-full items-center justify-between gap-3">
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={`inline-block h-2 w-2 rounded-full ${
+                                agent.status === "online"
+                                  ? "bg-green-500"
+                                  : "bg-muted-foreground"
+                              }`}
+                            />
+                            {agent.hostname}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {agent.ip}
+                          </span>
+                        </span>
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </FieldContent>
+              <FieldDescription>
+                All selected agents will receive the wake request for this device.
               </FieldDescription>
             </Field>
           </FieldGroup>

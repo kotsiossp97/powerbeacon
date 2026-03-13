@@ -1,24 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
-import { Plus, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
-import { deviceApi } from "@/api/devices";
 import { agentsApi } from "@/api/agents";
+import { clustersApi } from "@/api/clusters";
+import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
-import type { Agent, Device } from "@/types";
-import { Button } from "@/components/ui/button";
-import { DeviceFormDialog } from "@/components/devices/DeviceFormDialog";
 import {
-  DashboardFilters,
-  DashboardStats,
-  DeleteDeviceDialog,
-  DeviceGridSection,
+    DashboardFilters,
+    DashboardStats,
+    DeleteDeviceDialog,
+    DeviceGridSection,
 } from "@/components/dashboard";
+import { DeviceFormDialog } from "@/components/devices/DeviceFormDialog";
+import { Button } from "@/components/ui/button";
+import type { Agent, Cluster, Device, DeviceCreate, DeviceUpdate } from "@/types";
+import { Plus, RefreshCw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const DashboardPage = () => {
   const { user, hasPermission } = useAuthStore();
 
   const [devices, setDevices] = useState<Device[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [osFilter, setOsFilter] = useState<string>("all");
@@ -54,9 +56,19 @@ const DashboardPage = () => {
     }
   };
 
+  const fetchClusters = async () => {
+    try {
+      const data = await clustersApi.list();
+      setClusters(data);
+    } catch {
+      // Viewers and restricted users can still use the dashboard without cluster metadata.
+    }
+  };
+
   useEffect(() => {
     fetchDevices();
     fetchAgents();
+    fetchClusters();
   }, []);
 
   const filteredDevices = useMemo(() => {
@@ -89,17 +101,9 @@ const DashboardPage = () => {
     setIsRefreshing(false);
   };
 
-  const handleCreateDevice = async (data: Partial<Device>) => {
+  const handleCreateDevice = async (data: DeviceCreate | DeviceUpdate) => {
     try {
-      await deviceApi.create({
-        name: data.name!,
-        mac_address: data.mac_address!,
-        ip_address: data.ip_address,
-        os_type: data.os_type!,
-        description: data.description,
-        tags: data.tags,
-        agent_id: data.agent_id,
-      });
+      await deviceApi.create(data as DeviceCreate);
       toast.success("Device created successfully");
       fetchDevices();
     } catch (err) {
@@ -108,19 +112,11 @@ const DashboardPage = () => {
     }
   };
 
-  const handleUpdateDevice = async (data: Partial<Device>) => {
+  const handleUpdateDevice = async (data: DeviceCreate | DeviceUpdate) => {
     if (!editingDevice) return;
 
     try {
-      await deviceApi.update(editingDevice.id, {
-        name: data.name,
-        mac_address: data.mac_address,
-        ip_address: data.ip_address,
-        os_type: data.os_type,
-        description: data.description,
-        tags: data.tags,
-        agent_id: data.agent_id,
-      });
+      await deviceApi.update(editingDevice.id, data as DeviceUpdate);
       toast.success("Device updated successfully");
       setEditingDevice(null);
       fetchDevices();
@@ -218,6 +214,7 @@ const DashboardPage = () => {
         }}
         device={editingDevice}
         agents={agents}
+        clusters={clusters}
         onSubmit={editingDevice ? handleUpdateDevice : handleCreateDevice}
       />
 

@@ -41,6 +41,7 @@ graph LR
     - Check service health endpoints
     - Review failed wake attempts
     - Confirm active agents and heartbeat freshness
+    - Review cluster coverage for devices that require more than one relay path
 
 === "Weekly"
 

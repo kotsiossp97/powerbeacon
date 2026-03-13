@@ -1,12 +1,25 @@
 /**
  * Header component
  */
-import { useLocation, useNavigate, Link } from "react-router";
-import { useAuthStore } from "@/auth/useAuth";
+import logoBadge from "@/assets/badge-512.png";
 import { useLocalAuth } from "@/auth/localAuth";
-import { useState } from "react";
+import { useAuthStore } from "@/auth/useAuth";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { cn } from "@/lib/utils";
+import {
+  BookOpen,
+  BookOpenText,
+  Boxes,
   ChevronDown,
   LayoutDashboard,
   LogOut,
@@ -16,22 +29,18 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { getUserInitials } from "../users";
-import logoBadge from "@/assets/badge-512.png";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  {
+    name: "Clusters",
+    href: "/clusters",
+    icon: Boxes,
+    permission: "view_devices" as const,
+  },
   {
     name: "Users",
     href: "/users",
@@ -169,13 +178,43 @@ export const Header = () => {
                     <ThemeToggle />
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-2" />
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="text-destructive bg-destructive/10 font-semibold border-destructive/50 border-2 focus:text-destructive hover:bg-destructive/20 transition-colors"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                {/* <DropdownMenuSeparator className="my-2" /> */}
+                <DropdownMenuItem className="mt-1" asChild>
+                  <Button
+                    variant={"destructive"}
+                    className="w-full"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </Button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="my-3" />
+                <DropdownMenuItem asChild>
+                  <Button variant="outline" className="w-full" asChild>
+                    <a
+                      className="gap-2"
+                      href="https://powerbeacon.github.io/docs"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      PowerBeacon Docs
+                    </a>
+                  </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="mt-1" asChild>
+                  <Button variant="outline" className="w-full" asChild>
+                    <a
+                      className="gap-2"
+                      href="/api/docs"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <BookOpenText className="h-4 w-4" />
+                      API Documentation
+                    </a>
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

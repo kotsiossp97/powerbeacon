@@ -1,89 +1,57 @@
 # PowerBeacon
 
-A self-hosted web application for remote device management via Wake-on-LAN and SSH. Control your homelabor office network with a modern, secure interface.
+PowerBeacon is a self-hosted Wake-on-LAN orchestration platform built around three layers: a FastAPI backend, a React frontend, and one or more Go agents that run close to the target LAN.
 
-## Features
+## Current domain model
 
-- **Wake-on-LAN** - Wake up devices remotely
-- **Device Management** - Add, edit, delete devices with custom tags
-- **Flexible Authentication** - OIDC or local authentication
-- **Audit Logging** - Track all actions with timestamp and user
-- **REST API** - Fully documented with OpenAPI/Swagger
-- **Modern UI** - React + Tailwind responsive interface
-- **Containerized** - Docker Compose setup for easy deployment
+- Clusters group related devices and agents.
+- Devices belong to zero or one cluster.
+- Devices can be associated with multiple agents.
+- A wake request fans out through every associated online agent for the target device.
+- Cluster detail pages allow waking one device or the whole cluster.
 
-## Quick Start
+## Core capabilities
 
-### Prerequisites
+- Cluster management for organizing devices and agents
+- Multi-agent Wake-on-LAN delivery for individual devices
+- Cluster-level wake orchestration
+- Agent registration, heartbeat tracking, and cluster visibility
+- Local auth and OIDC authentication
+- Responsive UI for devices, clusters, agents, users, and settings
 
-- Docker & Docker Compose (recommended)
-- Or: Python 3.11+, Node.js 20+, PostgreSQL 16+
+## Architecture summary
 
-### Using Docker Compose (Production)
-
-```bash
-# Clone repo
-git clone <repo-url>
-cd kotsios-powerbeacon
-
-# Copy environment file
-cp .env.example .env
-
-# Start services
-docker-compose up -d
-
-# Visit http://localhost:3000
-
-# Login with demo credentials:
-# Username: admin
-# Password: admin
+```text
+Frontend -> Backend API -> PowerBeacon Agent -> LAN broadcast -> Target device
 ```
 
-### Using Docker Compose (Development)
+The backend stays the control plane. It never sends magic packets directly; all WOL traffic is dispatched through registered agents.
 
-For development with hot-reloading:
+## Quick start
+
+### Docker Compose
 
 ```bash
-# Start development environment
-docker-compose -f docker-compose.dev.yml up -d
-
-# Frontend: http://localhost:5173 (Vite HMR)
-# Backend: http://localhost:8000
-# Database: localhost:5432
-
-# View logs
-docker-compose -f docker-compose.dev.yml logs -f
-
-# Stop
-docker-compose -f docker-compose.dev.yml down
+docker compose up -d
 ```
 
-⚠️ Changes to source files automatically reload!
-- Backend: Code changes restart uvicorn
-- Frontend: CSS/TypeScript changes update instantly via HMR
+### Development Compose
 
-### Wake-on-LAN In Containerized Environments
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
 
-On Docker Desktop (Windows/macOS), containers run inside a VM and cannot reliably send LAN broadcast WOL packets directly. PowerBeacon uses the **agent architecture** to solve this: install the lightweight `powerbeacon-agent` on any Linux machine in the target LAN, and the backend dispatches WOL packets through that agent.
+### Local development
 
-See [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed development setup.
+Backend:
 
-### Local Development (Without Docker)
-
-For direct Python/Node development without Docker:
-
-**Backend:**
 ```bash
 cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-export PYTHONPATH=.
-export DB_URL="postgresql://powerbeacon:changeMe@localhost:5432/powerbeacon"
-uvicorn app.main:app --reload
+pip install -e .
+python main.py
 ```
 
-**Frontend:**
+Frontend:
 
 ```bash
 cd frontend
@@ -91,156 +59,38 @@ npm install
 npm run dev
 ```
 
-## Project Status
-
-PowerBeacon is **production-ready** with the following components fully implemented:
-
-- ✅ REST API with 15+ endpoints (FastAPI with async/await)
-- ✅ React frontend with complete UI (5 pages, responsive design)
-- ✅ PostgreSQL database with schema and models
-- ✅ Authentication system (local auth + OIDC support)
-- ✅ Role-based authorization (admin/user)
-- ✅ Audit logging with searchable trails
-- ✅ Wake-on-LAN implementation (UDP magic packets)
-- ✅ Docker production deployment (tested, ready)
-- ✅ Development environment with hot-reload
-- ✅ Comprehensive documentation (6 guides, 2000+ lines)
-- ✅ CLI helper utility (15+ commands)
-
-## Architecture Highlights
-
-### Backend
-
-- **FastAPI** - Modern Python web framework
-- **SQLAlchemy** - ORM with async support
-- **PostgreSQL** - Relational database
-- **JWT** - Token-based authentication
-- **Argon2** - Password hashing
-
-### Frontend
-
-- **React 18** - UI framework
-- **Vite** - Build tool
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Zustand** - State management
-- **React Router** - Client routing
-- **Axios** - HTTP client
-
-### Deployment
-
-- **Docker** - Containerization
-- **Docker Compose** - Orchestration
-- **Nginx** - Reverse proxy & static serving
-- **PostgreSQL** - Data persistence
-
-## Configuration
-
-### Environment Variables
-
-See `.env.example` for all available options.
-
-#### Authentication Modes
-
-**Local Auth** (default):
-
-```env
-JWT_SECRET=your-secret-key
-```
-
-**OIDC** (e.g., Keycloak, Auth0):
-
-OIDC is configured at runtime via the **Settings** page in the UI. No environment variables are required.
-
-## API Documentation
-
-Once running, visit `/docs` (Swagger) or `/redoc` (ReDoc) for full API documentation.
-
-### Key Endpoints
-
-- `POST /api/auth/login` - Login (local auth)
-- `GET /api/auth/me` - Get current user
-- `GET /api/devices` - List devices
-- `POST /api/devices` - Create device
-- `POST /api/devices/{id}/wake` - Wake device
-- `GET /api/audit` - View audit logs (admin)
-- `GET /api/users` - Manage users (admin, local auth)
-
-## Security
-
-- All endpoints require authentication
-- CORS restricted to configured origins
-- JWT tokens with expiry
-- Password hashing with Argon2
-- Rate limiting on sensitive endpoints
-- Audit logging for all actions
-- HTTPS via reverse proxy (recommended)
-
-## Roadmap
-
-- [ ] Device grouping & organization
-- [ ] Scheduled wake operations
-- [ ] Webhooks for automation
-- [ ] SNMP status monitoring
-- [ ] Email notifications
-- [ ] Mobile app
-- [ ] Multi-tenant support
-
-## Troubleshooting
-
-### Database connection failed
-
-Check `DB_URL` in `.env` and ensure PostgreSQL is running.
-
-### Wake packets not working
-
-- Verify device MAC address is correct
-- Ensure an online agent is assigned to the device
-- On Docker Desktop (Windows/macOS), install the agent on a Linux host in the target LAN instead of relying on direct broadcast from the backend container
-
-### OIDC authentication issues
-
-- Verify OIDC provider configuration in **Settings**
-- Ensure the provider's server metadata URL is reachable from the backend
-
-## Development
-
-For comprehensive development setup guide including:
-- Docker-based development with hot-reload
-- Local development without Docker
-- IDE setup and debugging
-- Testing and code quality tools
-- Performance optimization
-
-See [DEVELOPMENT.md](./DEVELOPMENT.md) for complete details.
-
-### Quick Backend Test
+Agent:
 
 ```bash
-cd backend
-pytest
+cd agent
+make deps
+make run
 ```
 
-### Database Migrations
+## Development note
 
-```bash
-cd backend
-alembic upgrade head  # Apply migrations
-alembic revision --autogenerate -m "description"  # Create migration
-```
+The schema has been refactored directly for the current development phase. If you still have a database from the older single-agent device model, reset it before starting this version of the app.
 
-## Contributing
+## Key API routes
 
-PRs welcome! Please ensure:
+- `POST /api/auth/login`
+- `GET /api/devices` and `POST /api/devices/{id}/wake`
+- `GET /api/clusters`, `GET /api/clusters/{id}`, and `POST /api/clusters/{id}/wake`
+- `GET /api/agents`, `POST /api/agents/register`, and `POST /api/agents/heartbeat`
 
-- Code follows existing style
-- Tests pass
-- Commit messages are descriptive
+## Wake behavior
+
+When a device is woken, PowerBeacon resolves every agent associated with that device and attempts dispatch through all online agents. This improves reliability when the same machine can be reached from multiple relay hosts or overlapping network segments.
+
+## Docker Desktop reminder
+
+On Windows and macOS Docker Desktop, container-originated LAN broadcasts are unreliable. Install the PowerBeacon agent on a host with direct LAN access and let the backend dispatch through that host.
+
+## Documentation
+
+- Interactive API docs: `http://localhost:8000/api/docs`
+- Project docs: `docs/`
 
 ## License
 
-MIT License - see LICENSE file
-
-## Support
-
-For issues and questions, please open a GitHub issue.
+MIT

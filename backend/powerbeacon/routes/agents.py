@@ -3,22 +3,33 @@
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, HTTPException, status, Header
-from sqlmodel import select, func
-
-from powerbeacon.core.deps import SessionDep, CurrentUser
-from powerbeacon.models.generic import Message
+from fastapi import APIRouter, Header, HTTPException, status
+from powerbeacon.core.deps import CurrentUser, SessionDep
+from powerbeacon.crud import agent_crud
 from powerbeacon.models.agents import (
     Agent,
-    AgentRegistration,
-    AgentRegistrationResponse,
     AgentHeartbeat,
     AgentPublic,
+    AgentRegistration,
+    AgentRegistrationResponse,
     AgentsPublic,
+    AgentStatus,
 )
-from powerbeacon.crud import agent_crud
+from powerbeacon.models.generic import Message
+from powerbeacon.services.inventory_service import serialize_agent
+from sqlalchemy.orm import selectinload
+from sqlmodel import func, select
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
+
+
+def _get_agent_with_relationships(session: SessionDep, agent_id: uuid.UUID) -> Agent | None:
+    statement = (
+        select(Agent)
+        .where(Agent.id == agent_id)
+        .options(selectinload(Agent.cluster), selectinload(Agent.devices))
+    )
+    return session.exec(statement).first()
 
 
 @router.post(
@@ -45,6 +56,7 @@ async def register_agent(
         existing_agent.port = agent_in.port
         existing_agent.os = agent_in.os
         existing_agent.version = agent_in.version
+        existing_agent.status = AgentStatus.ONLINE
         existing_agent.last_seen = datetime.now(timezone.utc)
         session.add(existing_agent)
         session.commit()
@@ -123,9 +135,9 @@ async def list_agents(
     """
     List all registered agents.
 
-    Requires admin or superuser role.
+    Requires any authenticated user except viewers.
     """
-    if current_user.role not in ["admin", "superuser"]:
+    if current_user.role == "viewer":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
@@ -137,9 +149,15 @@ async def list_agents(
     count_stmt = select(func.count()).select_from(Agent)
     count = session.exec(count_stmt).one()
 
-    agents = agent_crud.get_agents(session=session, skip=skip, limit=limit)
+    statement = (
+        select(Agent)
+        .options(selectinload(Agent.cluster), selectinload(Agent.devices))
+        .offset(skip)
+        .limit(limit)
+    )
+    agents = list(session.exec(statement).all())
 
-    return AgentsPublic(agents=agents, count=count)
+    return AgentsPublic(agents=[serialize_agent(agent) for agent in agents], count=count)
 
 
 @router.get("/{agent_id}", response_model=AgentPublic)
@@ -151,15 +169,15 @@ async def get_agent(
     """
     Get details of a specific agent.
 
-    Requires admin or superuser role.
+    Requires any authenticated user except viewers.
     """
-    if current_user.role not in ["admin", "superuser"]:
+    if current_user.role == "viewer":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
 
-    agent = agent_crud.get_agent_by_id(session=session, agent_id=agent_id)
+    agent = _get_agent_with_relationships(session, agent_id)
 
     if not agent:
         raise HTTPException(
@@ -167,7 +185,7 @@ async def get_agent(
             detail="Agent not found",
         )
 
-    return agent
+    return serialize_agent(agent)
 
 
 @router.delete("/{agent_id}")

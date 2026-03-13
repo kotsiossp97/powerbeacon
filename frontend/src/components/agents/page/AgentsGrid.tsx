@@ -1,7 +1,5 @@
-import { Copy, MoreVertical, Server } from "lucide-react";
-import type { Agent } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -10,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import type { Agent } from "@/types";
+import { Copy, MoreVertical, Server } from "lucide-react";
 import { agentStatusConfig } from "./agentStatusConfig";
 
 interface AgentsGridProps {
@@ -87,6 +87,19 @@ export const AgentsGrid = ({
                 <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                   v{agent.version}
                 </Badge>
+              </div>
+
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between gap-4">
+                  <span>Cluster</span>
+                  <span className="text-foreground">
+                    {agent.cluster_name || "Unassigned"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span>Devices</span>
+                  <span className="text-foreground">{agent.device_count}</span>
+                </div>
               </div>
 
               {agent.status === "online" && (

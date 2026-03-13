@@ -21,9 +21,9 @@ Execution checklist:
 
 Component command reference:
 - Frontend: npm run lint, npm run build
-- Backend: ruff check ., python main.py or uvicorn powerbeacon.main:app --reload
+- Backend: uv run ruff check ., uv run format ., python main.py or uvicorn powerbeacon.main:app --reload
 - Agent: make test, make local or make build
-- Docs: zensical build
+- Docs: uv run zensical build
 - Root Docker: docker compose up -d or docker compose -f docker-compose.dev.yml up -d
 
 Output format:

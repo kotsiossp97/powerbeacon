@@ -1,8 +1,9 @@
 /**
  * Agent card component
  */
-import { type Agent } from "@/types";
 import { agentsApi } from "@/api/agents";
+import { type Agent } from "@/types";
+import { AxiosError } from "axios";
 import { useState } from "react";
 
 interface AgentCardProps {
@@ -19,9 +20,13 @@ export const AgentCard = ({ agent, onRefresh }: AgentCardProps) => {
     try {
       await agentsApi.delete(agent.id);
       onRefresh?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Delete error:", err);
-      alert(err.response?.data?.detail || "Failed to delete agent");
+      const message =
+        err instanceof AxiosError && typeof err.response?.data?.detail === "string"
+          ? err.response.data.detail
+          : "Failed to delete agent";
+      alert(message);
     } finally {
       setLoading(false);
       setShowDeleteConfirm(false);

@@ -1,9 +1,15 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING, Optional
 
+from powerbeacon.models.links import DeviceAgentLink
 from sqlalchemy import DateTime
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from powerbeacon.models.clusters import Cluster
+    from powerbeacon.models.devices import Device
 
 
 def get_datetime_utc() -> datetime:
@@ -27,6 +33,7 @@ class AgentBase(SQLModel):
     port: int = Field(default=18080)  # Port the agent API listens on
     os: AgentOS
     version: str
+    cluster_id: uuid.UUID | None = Field(default=None, foreign_key="clusters.id", index=True)
 
 
 class AgentRegistration(SQLModel):
@@ -68,6 +75,11 @@ class Agent(AgentBase, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),
     )
+    cluster: Optional["Cluster"] = Relationship(back_populates="agents")
+    devices: list["Device"] = Relationship(
+        back_populates="agents",
+        link_model=DeviceAgentLink,
+    )
 
 
 class AgentPublic(AgentBase):
@@ -77,6 +89,8 @@ class AgentPublic(AgentBase):
     status: AgentStatus
     last_seen: datetime
     created_at: datetime
+    cluster_name: str | None = None
+    device_count: int = 0
 
 
 class AgentsPublic(SQLModel):

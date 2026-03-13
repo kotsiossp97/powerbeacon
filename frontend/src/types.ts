@@ -11,12 +11,20 @@ export interface Device {
   is_active: boolean;
   description?: string;
   tags: string[];
-  agent_id?: string;
-  agent_hostname?: string;
-  owner_id: string;
-  owner_name: string;
+  cluster_id?: string;
+  cluster_name?: string;
+  agents: DeviceAgentSummary[];
+  owner_id?: string;
+  owner_name?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface DeviceAgentSummary {
+  id: string;
+  hostname: string;
+  ip: string;
+  status: "online" | "offline";
 }
 
 export interface DeviceCreate {
@@ -26,7 +34,8 @@ export interface DeviceCreate {
   os_type: "linux" | "macos" | "windows";
   description?: string;
   tags?: string[];
-  agent_id?: string;
+  cluster_id?: string;
+  agent_ids?: string[];
 }
 
 export interface DeviceUpdate {
@@ -36,7 +45,8 @@ export interface DeviceUpdate {
   os_type?: "linux" | "macos" | "windows";
   description?: string;
   tags?: string[];
-  agent_id?: string;
+  cluster_id?: string;
+  agent_ids?: string[];
 }
 
 export type UserRole = "superuser" | "admin" | "user" | "viewer";
@@ -117,6 +127,9 @@ export interface Agent {
   status: "online" | "offline";
   last_seen: string;
   created_at: string;
+  cluster_id?: string;
+  cluster_name?: string;
+  device_count: number;
 }
 
 export interface AgentRegistration {
@@ -132,5 +145,44 @@ export interface AgentHeartbeat {
 
 export interface AgentsPublic {
   agents: Agent[];
+  count: number;
+}
+
+export interface Cluster {
+  id: string;
+  name: string;
+  description?: string;
+  tags: string[];
+  owner_id?: string;
+  owner_name?: string;
+  device_count: number;
+  agent_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClusterDetail extends Cluster {
+  devices: Device[];
+  agents: Agent[];
+}
+
+export interface ClusterCreate {
+  name: string;
+  description?: string;
+  tags?: string[];
+  device_ids?: string[];
+  agent_ids?: string[];
+}
+
+export interface ClusterUpdate {
+  name?: string;
+  description?: string;
+  tags?: string[];
+  device_ids?: string[];
+  agent_ids?: string[];
+}
+
+export interface ClustersPublic {
+  clusters: Cluster[];
   count: number;
 }

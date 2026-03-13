@@ -7,6 +7,13 @@ tags:
 
 PowerBeacon is a three-tier application: a Python backend API, a React frontend, and one or more lightweight Go agents deployed on LAN-adjacent hosts. All three components communicate over HTTP.
 
+At the domain level, the application is cluster-aware:
+
+- A cluster groups related devices and agents.
+- A device belongs to zero or one cluster.
+- A device can have multiple associated agents.
+- A wake request is dispatched through every associated online agent.
+
 ## System Diagram
 
 ```mermaid
@@ -53,13 +60,15 @@ sequenceDiagram
     
     User->>Frontend: Click "Wake Device"
     Frontend->>Backend: POST /api/devices/{id}/wake<br/>Authorization: Bearer {jwt}
-    Backend->>Backend: Authenticate<br/>Resolve device → agent
-    Backend->>Agent: POST /wol<br/>Authorization: Bearer {token}<br/>{mac, broadcast, port}
-    Agent->>Agent: Validate token<br/>Build magic packet
-    Agent->>Device: UDP broadcast<br/>102-byte magic packet<br/>Port 9
-    Device->>Device: Receive magic packet<br/>Wake up
-    Device-->>Agent: (no response)
-    Agent-->>Backend: 200 OK
+    Backend->>Backend: Authenticate<br/>Resolve device → associated agents
+    loop For each online agent
+        Backend->>Agent: POST /wol<br/>Authorization: Bearer {token}<br/>{mac, broadcast, port}
+        Agent->>Agent: Validate token<br/>Build magic packet
+        Agent->>Device: UDP broadcast<br/>102-byte magic packet<br/>Port 9
+        Device->>Device: Receive magic packet<br/>Wake up
+        Device-->>Agent: (no response)
+        Agent-->>Backend: 200 OK
+    end
     Backend-->>Frontend: 200 OK
     Frontend-->>User: Success notification
 ```

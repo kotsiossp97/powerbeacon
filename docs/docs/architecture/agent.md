@@ -8,6 +8,8 @@ tags:
 
 The PowerBeacon Agent is a small, self-contained Go binary. Its purpose is to receive authenticated Wake-on-LAN dispatch commands from the backend and deliver UDP magic packets to devices on the local network.
 
+With the cluster-aware backend, one device wake action can now be dispatched to multiple agents. Each agent still receives its own authenticated `/wol` request and executes independently.
+
 ## Why a Separate Agent?
 
 Containers running on Docker Desktop (Windows/macOS) cannot send UDP broadcast packets that reliably reach sleeping devices on the physical LAN, because Docker Desktop routes traffic through an internal VM with NAT. The agent runs as a native process or container directly on a Linux host (e.g., a Raspberry Pi, NAS, or mini PC) that has a real NIC on the same broadcast domain as the target devices.

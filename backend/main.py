@@ -2,24 +2,24 @@
 Main FastAPI application.
 """
 
-from fastapi import FastAPI, APIRouter, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 from contextlib import asynccontextmanager
 
+from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from powerbeacon.core import settings
 from powerbeacon.models.generic import ErrorResponse
 
 # Import routers
-from powerbeacon.routes import login, users, devices, setup, config, agents
+from powerbeacon.routes import agents, clusters, config, devices, login, setup, users
+from starlette.middleware.sessions import SessionMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Perform any startup tasks here (e.g., initialize database, load models)
-    from sqlmodel import Session
     from powerbeacon.core.db import engine, init_db
+    from sqlmodel import Session
 
     with Session(engine) as session:
         init_db(session)
@@ -59,6 +59,7 @@ api_router.include_router(login.router)
 api_router.include_router(users.router)
 api_router.include_router(devices.router)
 api_router.include_router(agents.router)
+api_router.include_router(clusters.router)
 app.include_router(api_router)
 
 
@@ -73,8 +74,9 @@ def health():
 @app.get("/install-agent.sh", tags=["Agent"])
 async def get_linux_install_script():
     """Serve the Linux/macOS agent installation script."""
-    from fastapi.responses import PlainTextResponse
     import os
+
+    from fastapi.responses import PlainTextResponse
 
     script_path = os.path.join(os.path.dirname(__file__), "agent", "install", "install-agent.sh")
 
@@ -90,8 +92,9 @@ async def get_linux_install_script():
 @app.get("/install-agent.ps1", tags=["Agent"])
 async def get_windows_install_script():
     """Serve the Windows agent installation script."""
-    from fastapi.responses import PlainTextResponse
     import os
+
+    from fastapi.responses import PlainTextResponse
 
     script_path = os.path.join(os.path.dirname(__file__), "agents", "install", "install-agent.ps1")
 
@@ -109,8 +112,9 @@ async def get_windows_install_script():
 @app.get("/agents/{platform}-{arch}.exe", tags=["Agent"])
 async def get_agent_binary(platform: str, arch: str):
     """Serve agent binaries for different platforms."""
-    from fastapi.responses import FileResponse
     import os
+
+    from fastapi.responses import FileResponse
 
     # Determine file extension
     ext = ".exe" if platform == "windows" else ""
@@ -142,6 +146,13 @@ async def generic_exception_handler(request, exc):
 
 
 @app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ErrorResponse(status_code=exc.status_code, message=exc.detail).model_dump(),
+    )
+
+
 async def http_exception_handler(request, exc):
     return JSONResponse(
         status_code=exc.status_code,

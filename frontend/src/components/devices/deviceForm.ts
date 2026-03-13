@@ -1,5 +1,5 @@
 import * as z from "zod";
-import type { Device } from "@/types";
+import type { Device, DeviceCreate, DeviceUpdate } from "@/types";
 
 export const deviceFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(50, "Name too long"),
@@ -14,14 +14,14 @@ export const deviceFormSchema = z.object({
   os_type: z.enum(["linux", "windows", "macos"]),
   description: z.string().optional(),
   tags: z.string().optional(),
-  agent_id: z.string().optional(),
+  cluster_id: z.string().optional(),
+  agent_ids: z.array(z.string()),
 });
 
 export type DeviceFormData = z.infer<typeof deviceFormSchema>;
 
 export const getDeviceFormDefaults = (
   device?: Device | null,
-  defaultAgentId?: string,
 ): DeviceFormData => ({
   name: device?.name || "",
   mac_address: device?.mac_address || "",
@@ -29,10 +29,13 @@ export const getDeviceFormDefaults = (
   os_type: device?.os_type || "linux",
   description: device?.description || "",
   tags: device?.tags?.join(", ") || "",
-  agent_id: device?.agent_id || defaultAgentId || "",
+  cluster_id: device?.cluster_id || "",
+  agent_ids: device?.agents?.map((agent) => agent.id) || [],
 });
 
-export const mapDeviceFormToPayload = (data: DeviceFormData): Partial<Device> => {
+export const mapDeviceFormToPayload = (
+  data: DeviceFormData,
+): DeviceCreate | DeviceUpdate => {
   const tags = data.tags
     ? data.tags
         .split(",")
@@ -41,8 +44,13 @@ export const mapDeviceFormToPayload = (data: DeviceFormData): Partial<Device> =>
     : [];
 
   return {
-    ...data,
+    name: data.name,
+    mac_address: data.mac_address,
+    ip_address: data.ip_address || undefined,
+    os_type: data.os_type,
+    description: data.description || undefined,
     tags,
-    agent_id: data.agent_id || undefined,
+    cluster_id: data.cluster_id || undefined,
+    agent_ids: data.agent_ids,
   };
 };

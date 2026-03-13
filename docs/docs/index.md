@@ -16,6 +16,10 @@ tags:
 PowerBeacon helps you wake, manage, and monitor machines across distributed networks with a secure backend, a responsive frontend, and a lightweight cross-platform agent.
 </p>
 
+<p align="center">
+Clusters group devices and agents, devices can use multiple agents, and wake operations fan out through all associated online relays.
+</p>
+
 !!! tip "New to PowerBeacon?"
    Start with [Setup Overview](setup/initial.md), then continue with [Architecture Overview](architecture/overview.md).
 
@@ -25,7 +29,7 @@ PowerBeacon helps you wake, manage, and monitor machines across distributed netw
 graph LR
    A[Frontend\nReact + Vite] -->|REST API| B[Backend\nFastAPI]
    B --> C[(PostgreSQL)]
-   B -->|Dispatch WOL| D[Agent\nGo]
+   B -->|Dispatch WOL| D[Agents\nGo]
    D -->|UDP Broadcast| E[Managed Devices]
    style A fill:#3b82f6,stroke:#1d4ed8,color:#fff
    style B fill:#7c3aed,stroke:#5b21b6,color:#fff
@@ -98,7 +102,8 @@ Follow the path below if you are new to the project:
 2. Run the stack with Docker Compose
 3. Open the frontend and complete first configuration
 4. Register or connect agents
-5. Trigger your first wake operation
+5. Create a cluster if you want to group devices and relays
+6. Trigger your first device or cluster wake operation
 
 !!! note "WOL on Docker Desktop"
    On Windows and macOS, LAN broadcast from containers is unreliable. Use the agent-based dispatch model for production wake reliability.

@@ -1,6 +1,7 @@
 /**
  * Local authentication hook
  */
+import { AxiosError } from "axios";
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { authApi } from "@/api/auth";
@@ -32,8 +33,11 @@ export const useLocalAuth = () => {
 
         navigate("/");
         return true;
-      } catch (err: any) {
-        const message = err.response?.data?.detail || "Login failed";
+      } catch (err: unknown) {
+        const message =
+          err instanceof AxiosError && typeof err.response?.data?.detail === "string"
+            ? err.response.data.detail
+            : "Login failed";
         setError(message);
         return false;
       } finally {

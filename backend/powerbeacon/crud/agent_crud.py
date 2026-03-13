@@ -4,9 +4,8 @@ import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from sqlmodel import Session, select
-
 from powerbeacon.models.agents import Agent, AgentRegistration, AgentStatus
+from sqlmodel import Session, select
 
 
 def create_agent(*, session: Session, agent_create: AgentRegistration) -> tuple[Agent, str]:
@@ -77,6 +76,7 @@ def delete_agent(*, session: Session, agent_id: uuid.UUID) -> bool:
     agent = get_agent_by_id(session=session, agent_id=agent_id)
     if not agent:
         return False
+    agent.devices = []
     session.delete(agent)
     session.commit()
     return True

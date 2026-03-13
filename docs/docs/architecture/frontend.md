@@ -38,6 +38,7 @@ frontend/src/
 │   ├── client.ts       # Axios instance: base URL, JWT interceptor, 401 handler
 │   ├── auth.ts         # authApi: login, getCurrentUser
 │   ├── devices.ts      # devicesApi: CRUD + wake action
+│   ├── clusters.ts     # clustersApi: CRUD, detail, wake action
 │   ├── agents.ts       # agentsApi: list, delete
 │   ├── users.ts        # usersApi: CRUD
 │   ├── config.ts       # configApi: OIDC config read/write
@@ -49,7 +50,8 @@ frontend/src/
 │   └── ProtectedRoute.tsx  # Route guard: redirects unauthenticated users to /login
 ├── components/
 │   ├── layout/         # Layout shell, navigation sidebar, header
-│   ├── devices/        # DeviceCard, DeviceList, DeviceForm, WakeButton
+│   ├── devices/        # DeviceCard, device form, wake button, device summaries
+│   ├── clusters/       # Cluster cards, forms, delete dialog, detail helpers
 │   ├── agents/         # AgentCard, AgentList
 │   ├── users/          # UserTable, UserForm
 │   └── ui/             # Base UI primitives (shadcn/ui wrappers)
@@ -57,6 +59,8 @@ frontend/src/
 │   ├── LoginPage.tsx
 │   ├── OnboardingPage.tsx
 │   ├── DashboardPage.tsx
+│   ├── ClustersPage.tsx
+│   ├── ClusterDetailPage.tsx
 │   ├── UsersPage.tsx
 │   ├── AgentsPage.tsx
 │   └── SettingsPage.tsx
@@ -85,6 +89,8 @@ React Router 7 with `BrowserRouter`. Routes are declared in `App.tsx`:
 | `/onboarding` | `OnboardingPage` | Redirects to `/` when setup is complete |
 | `/` | `Layout` | `ProtectedRoute` — redirects to `/login` if unauthenticated |
 | `/dashboard` | `DashboardPage` | Inside protected layout |
+| `/clusters` | `ClustersPage` | Inside protected layout |
+| `/clusters/:clusterId` | `ClusterDetailPage` | Inside protected layout |
 | `/users` | `UsersPage` | Inside protected layout |
 | `/agents` | `AgentsPage` | Inside protected layout |
 | `/settings` | `SettingsPage` | Inside protected layout |
@@ -172,6 +178,8 @@ graph TD
 
 Components and pages call `useAuthStore().hasPermission("manage_devices")` (or similar) to conditionally render actions such as create/edit/delete buttons and wake controls.
 
+The cluster pages reuse the same permission model: device-management permissions unlock cluster create and edit actions, while wake permissions unlock cluster-wide wake actions.
+
 ## OIDC Login Flow (Frontend side)
 
 !!! tip "OIDC Support"
@@ -217,7 +225,8 @@ flowchart TD
 Components are organized by domain under `components/`:
 
 - `layout/` — Persistent shell rendered by the protected `Layout` route. Contains the sidebar navigation and top header.
-- `devices/` — All device-related views including card display, list view, create/edit form, and wake action button.
+- `devices/` — All device-related views including card display, list view, multi-agent create/edit form, and wake action button.
+- `clusters/` — Cluster cards, create/edit dialogs, delete confirmation, and cluster-specific management UI.
 - `agents/` — Agent status cards and list view.
 - `users/` — User management table and forms (admin only).
 - `ui/` — Low-level primitives generated or adapted from shadcn/ui: `Button`, `Input`, `Dialog`, `Table`, `Badge`, etc.

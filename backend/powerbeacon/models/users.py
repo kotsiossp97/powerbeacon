@@ -1,9 +1,14 @@
 import uuid
 from datetime import datetime, timezone
+from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime
-from sqlmodel import Field, SQLModel
-from enum import Enum
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from powerbeacon.models.clusters import Cluster
+    from powerbeacon.models.devices import Device
 
 
 class UserRole(str, Enum):
@@ -50,12 +55,16 @@ class UpdatePassword(SQLModel):
 
 # Database model, database table inferred from class name
 class User(UserBase, table=True):
+    __tablename__ = "users"
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
+    devices: list["Device"] = Relationship(back_populates="owner")
+    clusters: list["Cluster"] = Relationship(back_populates="owner")
 
 
 # Properties to return via API, id is always required

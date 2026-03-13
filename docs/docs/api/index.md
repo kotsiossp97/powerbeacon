@@ -18,6 +18,7 @@ PowerBeacon exposes a REST API under the `/api` prefix. The API is organized by 
 | --- | --- | --- |
 | Authentication | `/api/auth` | Local login, current user, OIDC entry/callback |
 | Devices | `/api/devices` | CRUD and wake operations |
+| Clusters | `/api/clusters` | Cluster CRUD, detail, and cluster-level wake operations |
 | Agents | `/api/agents` | Registration, heartbeat, inventory |
 | Users | `/api/users` | User and role management |
 | Config | `/api/config` | OIDC and runtime configuration |
@@ -59,6 +60,12 @@ flowchart LR
     2. Pick device ID
     3. `POST /api/devices/{id}/wake`
 
+=== "Wake a cluster"
+
+    1. `GET /api/clusters/`
+    2. Pick cluster ID
+    3. `POST /api/clusters/{id}/wake`
+
 === "Agent lifecycle"
 
     1. `POST /api/agents/register`
@@ -70,3 +77,7 @@ flowchart LR
 - Use Setup pages to get an environment running
 - Use Architecture pages to understand internals
 - Use Swagger UI for endpoint-level details
+
+## Wake orchestration note
+
+Device wake requests are cluster-aware and multi-agent aware. The backend resolves every agent associated with a device and attempts dispatch through all online agents instead of routing through a single assigned relay.

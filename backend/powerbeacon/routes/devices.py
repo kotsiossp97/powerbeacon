@@ -1,20 +1,83 @@
+import uuid
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, HTTPException, status
-from powerbeacon.core.deps import SessionDep, CurrentUser
-from powerbeacon.models.generic import Message
-from powerbeacon.models.users import User
-from powerbeacon.models.agents import Agent, AgentStatus
+from powerbeacon.core.deps import CurrentUser, SessionDep
+from powerbeacon.models.agents import Agent
+from powerbeacon.models.clusters import Cluster
 from powerbeacon.models.devices import (
     Device,
-    DevicesPublic,
-    DevicePublic,
     DeviceCreate,
+    DevicePublic,
+    DevicesPublic,
     DeviceUpdate,
 )
-from sqlmodel import select, func, col
-import uuid
-from powerbeacon.services.agent_service import agent_service
+from powerbeacon.models.generic import Message
+from powerbeacon.services.inventory_service import can_manage_owned_resource, serialize_device
+from powerbeacon.services.wake_service import wake_service
+from sqlalchemy.orm import selectinload
+from sqlmodel import func, select
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
+
+
+def _get_device(session: SessionDep, device_id: uuid.UUID) -> Device | None:
+    statement = (
+        select(Device)
+        .where(Device.id == device_id)
+        .options(
+            selectinload(Device.owner),
+            selectinload(Device.cluster),
+            selectinload(Device.agents),
+        )
+    )
+    return session.exec(statement).first()
+
+
+def _get_cluster(session: SessionDep, cluster_id: uuid.UUID | None) -> Cluster | None:
+    if not cluster_id:
+        return None
+
+    cluster = session.get(Cluster, cluster_id)
+    if not cluster:
+        raise HTTPException(status_code=404, detail="Cluster not found")
+    return cluster
+
+
+def _get_agents(session: SessionDep, agent_ids: list[uuid.UUID]) -> list[Agent]:
+    if not agent_ids:
+        return []
+
+    statement = select(Agent).where(Agent.id.in_(agent_ids))
+    agents = list(session.exec(statement).all())
+    if len(agents) != len(set(agent_ids)):
+        raise HTTPException(status_code=404, detail="One or more agents were not found")
+    return agents
+
+
+def _validate_agent_cluster_alignment(cluster_id: uuid.UUID | None, agents: list[Agent]) -> None:
+    invalid_agents = [agent.hostname for agent in agents if agent.cluster_id != cluster_id]
+    if invalid_agents:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=(
+                "Selected agents must belong to the same cluster as the device. "
+                f"Invalid agents: {', '.join(sorted(invalid_agents))}."
+            ),
+        )
+
+
+def _build_wake_message(
+    device: Device, successful: list[str], failed: list[str], offline: list[str]
+) -> str:
+    parts = [
+        f"Wake request for '{device.name}' dispatched through {len(successful)} agent(s).",
+    ]
+    if failed:
+        parts.append(f"Failed: {', '.join(sorted(failed))}.")
+    if offline:
+        parts.append(f"Offline: {', '.join(sorted(offline))}.")
+    return " ".join(parts)
 
 
 @router.get("/")
@@ -24,29 +87,21 @@ async def list_devices(
     skip: int = 0,
     limit: int = 100,
 ):
-    # All authenticated users (viewer, user, admin, superuser) can view all devices
     count_stmt = select(func.count()).select_from(Device)
     count = session.exec(count_stmt).one()
     statement = (
-        select(
-            Device,
-            User.full_name.label("owner_name"),
-            Agent.hostname.label("agent_hostname"),
+        select(Device)
+        .options(
+            selectinload(Device.owner),
+            selectinload(Device.cluster),
+            selectinload(Device.agents),
         )
-        .join(User, Device.owner_id == User.id, isouter=True)
-        .join(Agent, Device.agent_id == Agent.id, isouter=True)
-        .order_by(col(Device.created_at).desc())
+        .order_by(Device.created_at.desc())
         .offset(skip)
         .limit(limit)
     )
-    devices = session.exec(statement).all()
-    devices_public = [
-        DevicePublic.model_validate(
-            device, update={"owner_name": owner_name, "agent_hostname": agent_hostname}
-        )
-        for device, owner_name, agent_hostname in devices
-    ]
-    return DevicesPublic(devices=devices_public, count=count)
+    devices = list(session.exec(statement).all())
+    return DevicesPublic(devices=[serialize_device(device) for device in devices], count=count)
 
 
 @router.get("/{device_id}", response_model=DevicePublic)
@@ -55,24 +110,10 @@ async def get_device(
     current_user: CurrentUser,
     session: SessionDep,
 ):
-    """Get a specific device. All authenticated users can view any device."""
-    statement = (
-        select(
-            Device,
-            User.full_name.label("owner_name"),
-            Agent.hostname.label("agent_hostname"),
-        )
-        .join(User, Device.owner_id == User.id, isouter=True)
-        .join(Agent, Device.agent_id == Agent.id, isouter=True)
-        .where(Device.id == device_id)
-    )
-    result = session.exec(statement).first()
-    if not result:
+    device = _get_device(session, device_id)
+    if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    device, owner_name, agent_hostname = result
-    return DevicePublic.model_validate(
-        device, update={"owner_name": owner_name, "agent_hostname": agent_hostname}
-    )
+    return serialize_device(device)
 
 
 @router.post("/", response_model=DevicePublic, status_code=status.HTTP_201_CREATED)
@@ -81,15 +122,26 @@ async def create_device(
     current_user: CurrentUser,
     session: SessionDep,
 ):
-    """Create a new device. Viewers cannot create devices."""
     if current_user.role == "viewer":
         raise HTTPException(status_code=403, detail="Viewers cannot create devices")
 
-    device = Device.model_validate(device_in, update={"owner_id": current_user.id})
+    cluster = _get_cluster(session, device_in.cluster_id)
+    if cluster and not can_manage_owned_resource(current_user, cluster.owner_id):
+        raise HTTPException(status_code=403, detail="Not authorized to use this cluster")
+
+    agents = _get_agents(session, device_in.agent_ids)
+    _validate_agent_cluster_alignment(device_in.cluster_id, agents)
+
+    device_data = device_in.model_dump(exclude={"agent_ids"})
+    device = Device.model_validate(
+        {**device_data, "owner_id": current_user.id},
+    )
     session.add(device)
+    device.agents = agents
     session.commit()
-    session.refresh(device)
-    return device
+    device = _get_device(session, device.id)
+    assert device is not None
+    return serialize_device(device)
 
 
 @router.put("/{device_id}", response_model=DevicePublic)
@@ -99,19 +151,30 @@ async def update_device(
     current_user: CurrentUser,
     session: SessionDep,
 ):
-    """Update a device. Only superuser or device owner can update."""
-    device = session.get(Device, device_id)
+    device = _get_device(session, device_id)
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if current_user.role != "superuser" and device.owner_id != current_user.id:
+    if not can_manage_owned_resource(current_user, device.owner_id):
         raise HTTPException(status_code=403, detail="Not authorized to update this device")
 
     device_data = device_in.model_dump(exclude_unset=True)
+    next_cluster_id = device_data.get("cluster_id", device.cluster_id)
+    cluster = _get_cluster(session, next_cluster_id)
+    if cluster and not can_manage_owned_resource(current_user, cluster.owner_id):
+        raise HTTPException(status_code=403, detail="Not authorized to use this cluster")
+
+    agent_ids = device_data.pop("agent_ids", [agent.id for agent in device.agents])
+    agents = _get_agents(session, agent_ids)
+    _validate_agent_cluster_alignment(next_cluster_id, agents)
+
     device.sqlmodel_update(device_data)
+    device.updated_at = datetime.now(timezone.utc)
+    device.agents = agents
     session.add(device)
     session.commit()
-    session.refresh(device)
-    return device
+    device = _get_device(session, device.id)
+    assert device is not None
+    return serialize_device(device)
 
 
 @router.delete("/{device_id}")
@@ -120,13 +183,13 @@ async def delete_device(
     current_user: CurrentUser,
     session: SessionDep,
 ):
-    """Delete a device. Only superuser or device owner can delete."""
-    device = session.get(Device, device_id)
+    device = _get_device(session, device_id)
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if current_user.role != "superuser" and device.owner_id != current_user.id:
+    if not can_manage_owned_resource(current_user, device.owner_id):
         raise HTTPException(status_code=403, detail="Not authorized to delete this device")
 
+    device.agents = []
     session.delete(device)
     session.commit()
     return Message(message="Device deleted successfully")
@@ -138,50 +201,38 @@ async def wake_device(
     current_user: CurrentUser,
     session: SessionDep,
 ):
-    """Wake a device. Only superuser or device owner can perform actions."""
-    device = session.get(Device, device_id)
+    device = _get_device(session, device_id)
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if current_user.role == "viewer":
         raise HTTPException(status_code=403, detail="Viewers cannot perform device actions")
-    if current_user.role != "superuser" and device.owner_id != current_user.id:
+    if not can_manage_owned_resource(current_user, device.owner_id):
         raise HTTPException(status_code=403, detail="Not authorized to wake this device")
 
-    if not device.agent_id:
+    if not device.agents:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Device has no agent assigned. Assign an agent before sending a wake request.",
+            detail="Device has no associated agents. Associate at least one agent before sending a wake request.",
         )
 
-    agent = session.get(Agent, device.agent_id)
-    if not agent:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Assigned agent not found.",
-        )
-    if agent.status != AgentStatus.ONLINE:
+    result = wake_service.dispatch_device_wake(device)
+    if not result.successful_agents:
+        offline_suffix = ""
+        if result.offline_agents:
+            offline_suffix = f" Offline agents: {', '.join(sorted(result.offline_agents))}."
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Assigned agent '{agent.hostname}' is currently offline.",
+            detail=(
+                "Failed to dispatch Wake-on-LAN packet through any associated agent."
+                f"{offline_suffix}"
+            ),
         )
 
-    # Determine broadcast address from device IP (assuming /24) or fall back to subnet broadcast
-    broadcast_address = "255.255.255.255"
-    if device.ip_address:
-        parts = device.ip_address.split(".")
-        if len(parts) == 4:
-            parts[3] = "255"
-            broadcast_address = ".".join(parts)
-
-    wake_success = agent_service.dispatch_wol(
-        agent=agent,
-        mac_address=device.mac_address,
-        broadcast_address=broadcast_address,
+    return Message(
+        message=_build_wake_message(
+            device,
+            result.successful_agents,
+            result.failed_agents,
+            result.offline_agents,
+        )
     )
-    if not wake_success:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Failed to dispatch Wake-on-LAN packet. Agent communication error.",
-        )
-
-    return Message(message="Wake-on-LAN packet dispatched successfully")

@@ -6,7 +6,7 @@ tags:
 
 # Backend Architecture
 
-The backend is a Python 3.13 API service built with FastAPI. It handles authentication, user and device management, agent lifecycle, and Wake-on-LAN dispatch coordination.
+The backend is a Python 3.13 API service built with FastAPI. It handles authentication, user, device, cluster, and agent management, plus Wake-on-LAN dispatch coordination.
 
 ## Technology Stack
 
@@ -37,8 +37,10 @@ backend/
     │   └── security.py        # JWT creation, password hash/verify
     ├── models/
     │   ├── users.py           # User, UserPublic, UserCreate, UserRole enum
-    │   ├── devices.py         # Device, DevicePublic, DeviceCreate, OSType enum
+    │   ├── devices.py         # Device, device DTOs, and device-agent summaries
     │   ├── agents.py          # Agent, AgentRegistration, AgentHeartbeat, AgentStatus
+    │   ├── clusters.py        # Cluster models and cluster detail DTOs
+    │   ├── links.py           # DeviceAgentLink many-to-many association table
     │   ├── config.py          # Config DB models (OIDC settings)
     │   └── generic.py         # Token, TokenPayload, Message, ErrorResponse
     ├── routes/
@@ -46,6 +48,7 @@ backend/
     │   ├── users.py           # CRUD /api/users
     │   ├── devices.py         # CRUD /api/devices, POST /api/devices/{id}/wake
     │   ├── agents.py          # Register, heartbeat, list, delete /api/agents
+    │   ├── clusters.py        # CRUD /api/clusters, detail, and cluster wake operations
     │   ├── config.py          # OIDC configuration /api/config
     │   └── setup.py           # First-run setup /api/setup
     ├── crud/
@@ -53,7 +56,9 @@ backend/
     │   ├── agent_crud.py      # Agent DB operations
     │   └── config_crud.py     # Config DB operations
     └── services/
-        ├── agent_service.py   # AgentService: WOL dispatch and health checks
+        ├── agent_service.py   # Low-level agent HTTP communication
+        ├── inventory_service.py # DTO serialization helpers for devices, agents, clusters
+        ├── wake_service.py    # Multi-agent wake orchestration for devices and clusters
         └── oidc.py            # Authlib OAuth client factory
 ```
 
@@ -124,13 +129,28 @@ devices table
 ├── is_active      bool
 ├── description    str  optional
 ├── tags           JSON  (list of strings)
-├── agent_id       UUID FK → agents.id (optional)
-├── owner_id       UUID (user ID, not FK — loose coupling)
+├── cluster_id     UUID FK → clusters.id (optional)
+├── owner_id       UUID FK → users.id (optional)
 ├── created_at     timestamptz
 └── updated_at     timestamptz
 ```
 
-`agent_id` links a device to the agent responsible for sending its WOL packet. If `agent_id` is null, the device cannot be woken via relay mode.
+Devices are associated with agents through the `device_agent_links` table. This allows one device to fan out a wake request to multiple agents.
+
+### Cluster
+
+```
+clusters table
+├── id             UUID PK
+├── name           str
+├── description    str  optional
+├── tags           JSON (list of strings)
+├── owner_id       UUID FK → users.id (optional)
+├── created_at     timestamptz
+└── updated_at     timestamptz
+```
+
+Clusters group devices and agents for organization and wake orchestration. Devices still control their own final list of wake agents, but those agents must belong to the same cluster as the device.
 
 ### Agent
 
@@ -142,6 +162,7 @@ agents table
 ├── port       int  default 18080
 ├── os         enum: linux | windows | darwin
 ├── version    str
+├── cluster_id UUID FK → clusters.id (optional)
 ├── token      str  indexed (bearer token)
 ├── status     enum: online | offline
 ├── last_seen  timestamptz
@@ -247,12 +268,18 @@ The `token` field is a randomly generated secret issued at agent registration. T
 | `GET` | `/api/devices/` | User | List all devices |
 | `GET` | `/api/devices/{id}` | User | Get device |
 | `POST` | `/api/devices/` | User (non-viewer) | Create device |
-| `PUT` | `/api/devices/{id}` | Owner or superuser | Update device |
-| `DELETE` | `/api/devices/{id}` | Owner or superuser | Delete device |
+| `PUT` | `/api/devices/{id}` | Owner, admin, or superuser | Update device |
+| `DELETE` | `/api/devices/{id}` | Owner, admin, or superuser | Delete device |
 | `POST` | `/api/devices/{id}/wake` | User | Dispatch WOL |
+| `GET` | `/api/clusters/` | User | List clusters |
+| `GET` | `/api/clusters/{id}` | User | Get cluster details |
+| `POST` | `/api/clusters/` | User (non-viewer) | Create cluster |
+| `PUT` | `/api/clusters/{id}` | Owner, admin, or superuser | Update cluster |
+| `DELETE` | `/api/clusters/{id}` | Owner, admin, or superuser | Delete cluster |
+| `POST` | `/api/clusters/{id}/wake` | User | Wake all devices in a cluster |
 | `POST` | `/api/agents/register` | No (agent call) | Register agent |
 | `POST` | `/api/agents/heartbeat` | Agent token | Agent heartbeat |
-| `GET` | `/api/agents/` | User | List agents |
+| `GET` | `/api/agents/` | User (non-viewer) | List agents |
 | `DELETE` | `/api/agents/{id}` | Admin+ | Remove agent |
 | `GET` | `/api/users/` | Admin+ | List users |
 | `POST` | `/api/users/` | Superuser | Create user |
@@ -271,14 +298,14 @@ flowchart TD
     Start["User calls POST /api/devices/{id}/wake"]
     Auth["Authenticate JWT"]
     Load["Load Device from database"]
-    Check{"Device has<br/>agent_id?"}
-    NotFound["❌ No agent assigned<br/>Return error"]
-    Found["✅ Load Agent record"]
+    Check{"Device has<br/>associated agents?"}
+    NotFound["❌ No agents associated<br/>Return error"]
+    Found["✅ Load associated agents"]
     Build["Build WOL request<br/>{mac, broadcast, port}"]
-    Dispatch["HTTP POST to agent<br/>Authorization: Bearer {token}"]
-    AgentCheck{"Agent responds<br/>200?"}
+    Dispatch["HTTP POST to each online agent<br/>Authorization: Bearer {token}"]
+    AgentCheck{"At least one agent<br/>responds 200?"}
     Success["✅ Return success<br/>to client"]
-    Failure["❌ Log error<br/>Return error"]
+    Failure["❌ Log partial or total failure<br/>Return error"]
     
     Start --> Auth
     Auth --> Load
@@ -300,11 +327,11 @@ flowchart TD
 When a client calls `POST /api/devices/{id}/wake`:
 
 1. Route handler loads the `Device` from the database.
-2. If `device.agent_id` is set, it loads the corresponding `Agent`.
-3. Calls `agent_service.dispatch_wol(agent, mac_address, broadcast_address, port)`.
+2. The backend resolves every associated `Agent` linked to that device.
+3. Online agents are dispatched in turn through `wake_service`, which uses `agent_service.dispatch_wol()` for the actual HTTP call.
 4. `AgentService.dispatch_wol()` builds the JSON payload and calls `POST http://{agent.ip}:{agent.port}/wol` using `httpx`, including `Authorization: Bearer {agent.token}`.
-5. If the HTTP call succeeds (2xx), returns success to the caller.
-6. On network error or non-2xx response, logs the failure and returns an error to the caller.
+5. If at least one associated online agent succeeds, the request returns success to the caller.
+6. If no agent succeeds, or if every associated agent is offline, the route returns an error.
 
 ## Database Initialization
 

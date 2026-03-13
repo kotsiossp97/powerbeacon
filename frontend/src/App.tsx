@@ -1,18 +1,20 @@
 /**
  * Main App component with routing
  */
-import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
-import { useAuthStore } from "@/auth/useAuth";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
-import { LoginPage } from "@/routes/LoginPage";
-import { UsersPage } from "@/routes/UsersPage";
-import { SettingsPage } from "@/routes/SettingsPage";
-import { AgentsPage } from "@/routes/AgentsPage";
-import OnboardingPage from "@/routes/OnboardingPage";
+import { useAuthStore } from "@/auth/useAuth";
 import "@/index.css";
-import DashboardPage from "./routes/DashboardPage";
+import { AgentsPage } from "@/routes/AgentsPage";
+import ClusterDetailPage from "@/routes/ClusterDetailPage";
+import ClustersPage from "@/routes/ClustersPage";
+import { LoginPage } from "@/routes/LoginPage";
+import OnboardingPage from "@/routes/OnboardingPage";
+import { SettingsPage } from "@/routes/SettingsPage";
+import { UsersPage } from "@/routes/UsersPage";
+import { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "./components/layout/Layout";
+import DashboardPage from "./routes/DashboardPage";
 
 function App() {
   // const isSetupComplete = false;
@@ -76,6 +78,8 @@ function App() {
         >
           <Route index element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/clusters" element={<ClustersPage />} />
+          <Route path="/clusters/:clusterId" element={<ClusterDetailPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/agents" element={<AgentsPage />} />
           <Route path="/settings" element={<SettingsPage />} />

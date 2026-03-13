@@ -194,7 +194,7 @@ export const Header = () => {
                   <Button variant="outline" className="w-full" asChild>
                     <a
                       className="gap-2"
-                      href="https://powerbeacon.github.io/docs"
+                      href="https://kotsiossp97.github.io/powerbeacon"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

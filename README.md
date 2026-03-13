@@ -89,7 +89,7 @@ On Windows and macOS Docker Desktop, container-originated LAN broadcasts are unr
 ## Documentation
 
 - Interactive API docs: `http://localhost:8000/api/docs`
-- Project docs: `docs/`
+- Project docs: [PowerBeacon Documentation](https://kotsiossp97.github.io/powerbeacon/)
 
 ## License
 

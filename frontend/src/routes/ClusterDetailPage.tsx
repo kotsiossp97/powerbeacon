@@ -3,6 +3,7 @@ import { clustersApi } from "@/api/clusters";
 import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
 import { ClusterFormDialog } from "@/components/clusters/ClusterFormDialog";
+import SingleClusterStats from "@/components/clusters/SingleClusterStats";
 import { DeviceCard } from "@/components/devices/DeviceCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,10 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Agent, ClusterDetail, Device } from "@/types";
 import { ArrowLeft, Network, Power, RefreshCw, Server } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
 const ClusterDetailPage = () => {
+  const navigate = useNavigate();
   const { clusterId } = useParams();
   const { user, hasPermission } = useAuthStore();
   const [cluster, setCluster] = useState<ClusterDetail | null>(null);
@@ -25,12 +27,15 @@ const ClusterDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
-  const canManageCluster = hasPermission("manage_devices") && user?.role !== "viewer";
-  const canWakeCluster = hasPermission("wake_device") && user?.role !== "viewer";
+  const canManageCluster =
+    hasPermission("manage_devices") && user?.role !== "viewer";
+  const canWakeCluster =
+    hasPermission("wake_device") && user?.role !== "viewer";
 
   useEffect(() => {
     const loadCluster = async () => {
       if (!clusterId) {
+        navigate("/clusters");
         return;
       }
 
@@ -48,8 +53,25 @@ const ClusterDetailPage = () => {
           setAllAgents(agentsResponse);
         }
       } catch (err) {
-        const apiError = err as { response?: { data?: { detail?: string } } };
-        setError(apiError.response?.data?.detail || "Failed to load cluster details");
+        const apiError = err as {
+          response?: { data?: { detail?: string | unknown[] } };
+        };
+        const detail = apiError.response?.data?.detail;
+        if (Array.isArray(detail)) {
+          // If detail is an array, join all messages
+          setError(
+            detail
+              .map(
+                (d) =>
+                  (typeof d === "object" && d !== null && "msg" in d
+                    ? (d as { msg?: string }).msg
+                    : undefined) || JSON.stringify(d),
+              )
+              .join("; "),
+          );
+        } else {
+          setError(detail || "Failed to load cluster details");
+        }
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -57,6 +79,7 @@ const ClusterDetailPage = () => {
     };
 
     void loadCluster();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canManageCluster, clusterId, reloadToken]);
 
   const manageableDevices = useMemo(() => {
@@ -75,10 +98,23 @@ const ClusterDetailPage = () => {
     }
     try {
       const response = await clustersApi.wake(cluster.id);
-      toast.success(response.data?.message || "Cluster wake dispatched successfully");
+      toast.success(
+        response.data?.message || "Cluster wake dispatched successfully",
+      );
     } catch (err) {
-      const apiError = err as { response?: { data?: { detail?: string } } };
-      toast.error(apiError.response?.data?.detail || "Failed to wake cluster");
+      const apiError = err as {
+        response?: { data?: { detail?: string | object[] } };
+      };
+      const detail = apiError.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        toast.error(
+          detail
+            .map((d: { msg?: string }) => d.msg || JSON.stringify(d))
+            .join("; "),
+        );
+      } else {
+        toast.error(detail || "Failed to wake cluster");
+      }
     }
   };
 
@@ -100,8 +136,25 @@ const ClusterDetailPage = () => {
       setLoading(true);
       setReloadToken((current) => current + 1);
     } catch (err) {
-      const apiError = err as { response?: { data?: { detail?: string } } };
-      toast.error(apiError.response?.data?.detail || "Failed to update cluster");
+      const apiError = err as {
+        response?: { data?: { detail?: string | unknown[] } };
+      };
+      const detail = apiError.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        // If detail is an array, join all messages
+        toast.error(
+          detail
+            .map(
+              (d) =>
+                (typeof d === "object" && d !== null && "msg" in d
+                  ? (d as { msg?: string }).msg
+                  : undefined) || JSON.stringify(d),
+            )
+            .join("; "),
+        );
+      } else {
+        toast.error(detail || "Failed to update cluster");
+      }
     }
   };
 
@@ -116,7 +169,10 @@ const ClusterDetailPage = () => {
   if (!cluster) {
     return (
       <div className="space-y-4">
-        <Link to="/clusters" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+        <Link
+          to="/clusters"
+          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+        >
           <ArrowLeft className="h-4 w-4" />
           Back to clusters
         </Link>
@@ -131,14 +187,20 @@ const ClusterDetailPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
-          <Link to="/clusters" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+          <Link
+            to="/clusters"
+            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to clusters
           </Link>
           <div>
-            <h1 className="text-3xl font-semibold text-foreground">{cluster.name}</h1>
+            <h1 className="text-3xl font-semibold text-foreground">
+              {cluster.name}
+            </h1>
             <p className="mt-2 max-w-3xl text-muted-foreground">
-              {cluster.description || "No description provided for this cluster."}
+              {cluster.description ||
+                "No description provided for this cluster."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -159,7 +221,9 @@ const ClusterDetailPage = () => {
             }}
             disabled={refreshing}
           >
-            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           {canWakeCluster && (
@@ -182,26 +246,11 @@ const ClusterDetailPage = () => {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground">Devices</div>
-            <div className="mt-2 text-3xl font-semibold text-foreground">{cluster.devices.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground">Agents</div>
-            <div className="mt-2 text-3xl font-semibold text-foreground">{cluster.agents.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground">Owner</div>
-            <div className="mt-2 text-xl font-semibold text-foreground">{cluster.owner_name || "Unknown"}</div>
-          </CardContent>
-        </Card>
-      </div>
+      <SingleClusterStats
+        totalDevices={cluster.devices.length}
+        totalAgents={cluster.agents.length}
+        ownerName={cluster.owner_name || "Unknown"}
+      />
 
       <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
         <Card>
@@ -240,19 +289,32 @@ const ClusterDetailPage = () => {
               </div>
             ) : (
               cluster.agents.map((agent) => (
-                <div key={agent.id} className="rounded-lg border border-border bg-background/60 p-4">
+                <div
+                  key={agent.id}
+                  className="rounded-lg border border-border bg-background/60 p-4"
+                >
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="font-medium text-foreground">{agent.hostname}</div>
-                      <div className="text-sm text-muted-foreground">{agent.ip}</div>
+                      <div className="font-medium text-foreground">
+                        {agent.hostname}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {agent.ip}
+                      </div>
                     </div>
-                    <Badge variant={agent.status === "online" ? "outline" : "secondary"}>
+                    <Badge
+                      variant={
+                        agent.status === "online" ? "outline" : "secondary"
+                      }
+                    >
                       {agent.status}
                     </Badge>
                   </div>
                   <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
                     <span>Assigned devices</span>
-                    <span className="text-foreground">{agent.device_count}</span>
+                    <span className="text-foreground">
+                      {agent.device_count}
+                    </span>
                   </div>
                 </div>
               ))

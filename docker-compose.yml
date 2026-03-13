@@ -31,23 +31,17 @@ services:
         condition: service_healthy
     networks:
       - powerbeacon
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: powerbeacon-frontend
-    # environment:
-    #   VITE_API_BASE_URL: http://localhost:8000
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - powerbeacon
 

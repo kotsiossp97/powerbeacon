@@ -25,16 +25,13 @@ services:
     container_name: powerbeacon-backend-dev
     environment:
       DB_URL: ${DB_URL:-postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon}
-      # DB_URL: postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@localhost:5432/powerbeacon
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
       PYTHONUNBUFFERED: 1
     volumes:
       - ./backend:/app
-      - ./agent/install:/app/agent/install:ro
-      - ./agent/build:/app/agent/build:ro
+      - /app/.venv
     ports:
       - "8000:8000"
-      # - "9:9/udp" # Maps port 9 (standard WOL) from container to Windows host
     depends_on:
       db:
         condition: service_healthy

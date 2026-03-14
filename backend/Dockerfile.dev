@@ -1,7 +1,6 @@
 FROM python:3.12-slim
 
 WORKDIR /app
-
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -16,10 +15,13 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 # Ensure the installed binary is on the `PATH`
 ENV PATH="/root/.local/bin/:$PATH"
 
+# Omit development dependencies
+ENV UV_NO_DEV=1
+
+
 # Install dependencies and copy source code
-RUN --mount=type=bind,source=./backend/uv.lock,target=uv.lock \
-    --mount=type=bind,source=./backend/pyproject.toml,target=pyproject.toml \
-    uv sync --locked
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked
 
 COPY . .
 

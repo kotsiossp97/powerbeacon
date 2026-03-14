@@ -1,3 +1,4 @@
+[![Docker Image CI/CD](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml)
 [![Documentation](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml)
 
 # PowerBeacon

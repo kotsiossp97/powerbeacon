@@ -1,15 +1,15 @@
-import { Lock, Settings as SettingsIcon, Shield } from "lucide-react";
-import type { OIDCConfigPublic } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import type { OIDCConfigPublic } from "@/types";
+import { Lock, Settings as SettingsIcon, Shield } from "lucide-react";
 
 interface OIDCOverviewCardProps {
   config: OIDCConfigPublic | null;

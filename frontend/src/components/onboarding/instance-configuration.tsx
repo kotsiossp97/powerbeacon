@@ -1,9 +1,9 @@
-import React from "react";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Toggle } from "@/components/ui/toggle";
 import { CircleCheck, XCircle } from "lucide-react";
-import { PasswordInput } from "@/components/ui/password-input";
+import React from "react";
 import { ThemeToggle } from "../ui/theme-toggle";
 
 export interface OnboardingInstanceFormData {

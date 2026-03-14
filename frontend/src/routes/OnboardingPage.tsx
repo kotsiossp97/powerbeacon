@@ -1,39 +1,39 @@
 /**
  * Onboarding page for creating the first superuser
  */
-import { useCallback, useState } from "react";
-import { useNavigate } from "react-router";
+import logo from "@/assets/banner-900x300.png";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import {
-  User,
-  Settings,
-  Server,
-  Check,
-  ArrowLeft,
-  Loader2,
-  ArrowRight,
+    ArrowLeft,
+    ArrowRight,
+    Check,
+    Loader2,
+    Server,
+    Settings,
+    User,
 } from "lucide-react";
-import type { OnboardingAdminFormData } from "../components/onboarding/admin-form";
-import logo from "@/assets/banner-900x300.png";
-import { Progress } from "../components/ui/progress";
-import { cn } from "../lib/utils";
-import OnboardingAdminForm from "../components/onboarding/admin-form";
-import OnboardingInstanceConfiguration, {
-  type OnboardingInstanceFormData,
-} from "../components/onboarding/instance-configuration";
-import { setupApi } from "../api/setup";
+import { motion } from "motion/react";
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { authApi } from "../api/auth";
+import { setupApi } from "../api/setup";
 import { useAuthStore } from "../auth/useAuth";
+import type { OnboardingAdminFormData } from "../components/onboarding/admin-form";
+import OnboardingAdminForm from "../components/onboarding/admin-form";
 import OnboardingAgentInstructions from "../components/onboarding/deploy-agent-instructions";
-import { motion } from "motion/react";
+import OnboardingInstanceConfiguration, {
+    type OnboardingInstanceFormData,
+} from "../components/onboarding/instance-configuration";
+import { Progress } from "../components/ui/progress";
+import { cn } from "../lib/utils";
 
 const steps = [
   {

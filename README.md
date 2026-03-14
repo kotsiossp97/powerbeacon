@@ -1,7 +1,15 @@
 [![Docker Image CI/CD](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml)
 [![Documentation](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml)
 
+<p align="center">
+   <img src="https://raw.githubusercontent.com/kotsiossp97/powerbeacon/refs/heads/main/docs/docs/assets/banner-900x300.png" alt="PowerBeacon banner" width="760" />
+</p>
+
 # PowerBeacon
+[GitHub Repository](https://github.com/kotsiossp97/powerbeacon) | [Report an Issue](https://github.com/kotsiossp97/powerbeacon/issues) | [Documentation](https://kotsiossp97.github.io/powerbeacon/)
+
+**A Centralized Wake-on-LAN (WoL) Orchestration Platform**
+
 
 PowerBeacon is a self-hosted Wake-on-LAN orchestration platform built around three layers: a FastAPI backend, a React frontend, and one or more Go agents that run close to the target LAN.
 

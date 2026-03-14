@@ -2,6 +2,9 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy.orm import selectinload
+from sqlmodel import func, select
+
 from powerbeacon.core.deps import CurrentUser, SessionDep
 from powerbeacon.models.agents import Agent
 from powerbeacon.models.clusters import Cluster
@@ -15,8 +18,6 @@ from powerbeacon.models.devices import (
 from powerbeacon.models.generic import Message
 from powerbeacon.services.inventory_service import can_manage_owned_resource, serialize_device
 from powerbeacon.services.wake_service import wake_service
-from sqlalchemy.orm import selectinload
-from sqlmodel import func, select
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
@@ -81,7 +82,6 @@ def _build_wake_message(
 
 
 @router.get("")
-@router.get("/")
 async def list_devices(
     current_user: CurrentUser,
     session: SessionDep,
@@ -118,7 +118,6 @@ async def get_device(
 
 
 @router.post("", response_model=DevicePublic, status_code=status.HTTP_201_CREATED)
-@router.post("/", response_model=DevicePublic, status_code=status.HTTP_201_CREATED)
 async def create_device(
     device_in: DeviceCreate,
     current_user: CurrentUser,

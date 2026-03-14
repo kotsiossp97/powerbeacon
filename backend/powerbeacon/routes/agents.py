@@ -4,6 +4,9 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Header, HTTPException, status
+from sqlalchemy.orm import selectinload
+from sqlmodel import func, select
+
 from powerbeacon.core.deps import CurrentUser, SessionDep
 from powerbeacon.crud import agent_crud
 from powerbeacon.models.agents import (
@@ -18,8 +21,6 @@ from powerbeacon.models.agents import (
 from powerbeacon.models.clusters import Cluster
 from powerbeacon.models.generic import Message
 from powerbeacon.services.inventory_service import can_manage_owned_resource, serialize_agent
-from sqlalchemy.orm import selectinload
-from sqlmodel import func, select
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 
@@ -130,7 +131,6 @@ async def agent_heartbeat(
 
 
 @router.get("", response_model=AgentsPublic)
-@router.get("/", response_model=AgentsPublic)
 async def list_agents(
     current_user: CurrentUser,
     session: SessionDep,
@@ -231,5 +231,4 @@ async def delete_agent(
             detail="Agent not found",
         )
 
-    return Message(message="Agent deleted successfully")
     return Message(message="Agent deleted successfully")

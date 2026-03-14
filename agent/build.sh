@@ -55,7 +55,6 @@ copy_to_api_dir() {
     cp "$BUILD_DIR/$BINARY_NAME-windows-amd64.exe" "$API_BIN_DIR/"
     cp "$BUILD_DIR/$BINARY_NAME-darwin-amd64" "$API_BIN_DIR/"
     cp "$BUILD_DIR/$BINARY_NAME-darwin-arm64" "$API_BIN_DIR/"
-
     # Copy install scripts
     cp install/* "$API_DIR/install/."
 }
@@ -72,7 +71,7 @@ case "$TARGET" in
         build_darwin
         copy_to_api_dir
         echo "Build complete and copied to API directory!"
-        ;;
+    ;;
     all)
         clean_build
         ensure_build_dir
@@ -81,33 +80,33 @@ case "$TARGET" in
         build_windows
         build_darwin
         echo "Build complete!"
-        ;;
+    ;;
     linux)
         ensure_build_dir
         build_linux
-        ;;
+    ;;
     linux-arm64)
         ensure_build_dir
         build_linux_arm64
-        ;;
+    ;;
     windows)
         ensure_build_dir
         build_windows
-        ;;
+    ;;
     darwin)
         ensure_build_dir
         build_darwin
-        ;;
+    ;;
     local)
         ensure_build_dir
         build_local
-        ;;
+    ;;
     clean)
         clean_build
-        ;;
+    ;;
     *)
         echo "Unknown target: $TARGET"
         echo "Available targets: all, linux, linux-arm64, windows, darwin, local, clean"
         exit 1
-        ;;
+    ;;
 esac

@@ -10,7 +10,7 @@ tags:
 	<img src="assets/banner-900x300.png" alt="PowerBeacon banner" width="760" />
 </p>
 
-<p align="center"><strong>Wake-on-LAN orchestration for modern fleets</strong></p>
+<h3 align="center"><strong>Self-Hosted Wake-on-LAN Orchestration Platform</strong></h3>
 
 <p align="center">
 PowerBeacon helps you wake, manage, and monitor machines across distributed networks with a secure backend, a responsive frontend, and a lightweight cross-platform agent.
@@ -21,7 +21,7 @@ Clusters group devices and agents, devices can use multiple agents, and wake ope
 </p>
 
 !!! tip "New to PowerBeacon?"
-      Start with [Setup Overview](setup/initial.md), then continue with [Architecture Overview](architecture/overview.md).
+      Start with [Setup Overview](setup/initial.md) or [Docker Deployment](deployment/docker.md), then continue with [Architecture Overview](architecture/overview.md).
 
 ## Product Snapshot
 
@@ -40,14 +40,15 @@ graph LR
 
 ## Start Here
 
-| Area                      | What you will find                                                |
-| ------------------------- | ----------------------------------------------------------------- |
-| [Setup](setup/initial.md) | Local development setup, first run, and environment configuration |
-| [Architecture](architecture/overview.md) | How backend, frontend, and agent work together                    |
-| [API](api/index.md)                       | Endpoint families, request patterns, and auth expectations        |
-| [Guides](guides/index.md)                 | Practical walkthroughs for common tasks                           |
-| [Operations](operations/index.md)         | Deployment, monitoring, and production hardening notes            |
-| [About](about/team.md)                    | Team and project context                                          |
+| Area                                       | What you will find                                                |
+| ------------------------------------------ | ----------------------------------------------------------------- |
+| [Setup](setup/initial.md)                  | Local development setup, first run, and environment configuration |
+| [Deployment](deployment/overview.md)       | Production deployment patterns and best practices                 |
+| [Architecture](architecture/overview.md)   | How backend, frontend, and agent work together                    |
+| [API](api/index.md)                        | Endpoint families, request patterns, and auth expectations        |
+| [Guides](guides/index.md)                  | Practical walkthroughs for common tasks                           |
+| [Operations](operations/index.md)          | Deployment, monitoring, and production hardening notes            |
+| [About](about/team.md)                     | Team and project context                                          |
 
 ## Quick Start Paths
 
@@ -106,11 +107,12 @@ Follow the path below if you are new to the project:
 6. Trigger your first device or cluster wake operation
 
 !!! note "WOL on Docker Desktop"
-   On Windows and macOS, LAN broadcast from containers is unreliable. Use the agent-based dispatch model for production wake reliability.
+      On Windows and macOS, LAN broadcast from containers is unreliable. Use the agent-based dispatch model for production wake reliability.
 
 ## Documentation Map
 
 - **Setup**: Install and run locally, configure dependencies, and validate services.
+- **Deployment**: Production deployment patterns, security hardening, and operational best practices.
 - **Architecture**: Understand responsibilities and data flow across components.
 - **API**: Learn endpoint behavior, contracts, and auth expectations.
 - **Guides**: Task-focused walkthroughs and troubleshooting playbooks.

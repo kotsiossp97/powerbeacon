@@ -3,7 +3,8 @@
 
 param(
     [string]$BackendURL = $env:BACKEND_URL,
-    [string]$AdvertiseIP = $env:AGENT_ADVERTISE_IP
+    [string]$AdvertiseIP = $env:AGENT_ADVERTISE_IP,
+    [string]$AgentPort = $env:AGENT_PORT
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,6 +22,9 @@ Write-Host "PowerBeacon Agent Installer" -ForegroundColor Green
 Write-Host "Backend URL: $BackendURL"
 if (-not [string]::IsNullOrEmpty($AdvertiseIP)) {
     Write-Host "Advertise IP: $AdvertiseIP"
+}
+if (-not [string]::IsNullOrEmpty($AgentPort)) {
+    Write-Host "Agent Port: $AgentPort"
 }
 Write-Host ""
 
@@ -92,7 +96,9 @@ $AgentArguments = "-backend $BackendURL"
 if (-not [string]::IsNullOrEmpty($AdvertiseIP)) {
     $AgentArguments += " -advertise-ip $AdvertiseIP"
 }
-
+if (-not [string]::IsNullOrEmpty($AgentPort)) {
+    $AgentArguments += " -port $AgentPort"
+}
 # Check if NSSM is available
 $nssmPath = Get-Command nssm -ErrorAction SilentlyContinue
 

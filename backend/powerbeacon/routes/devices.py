@@ -80,6 +80,7 @@ def _build_wake_message(
     return " ".join(parts)
 
 
+@router.get("")
 @router.get("/")
 async def list_devices(
     current_user: CurrentUser,
@@ -116,6 +117,7 @@ async def get_device(
     return serialize_device(device)
 
 
+@router.post("", response_model=DevicePublic, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=DevicePublic, status_code=status.HTTP_201_CREATED)
 async def create_device(
     device_in: DeviceCreate,

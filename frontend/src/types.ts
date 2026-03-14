@@ -127,6 +127,8 @@ export interface Agent {
   status: "online" | "offline";
   last_seen: string;
   created_at: string;
+  owner_id?: string;
+  owner_name?: string;
   cluster_id?: string;
   cluster_name?: string;
   device_count: number;

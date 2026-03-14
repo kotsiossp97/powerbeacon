@@ -7,9 +7,9 @@ const getBackendUrl = () => {
 const getInstallCommand = (platform: AgentOsOptions) => {
   const backendUrl = getBackendUrl();
   if (platform === "linux") {
-    return `curl -fsSL ${backendUrl}/install-agent.sh | sudo BACKEND_URL=${backendUrl} bash`;
+    return `curl -fsSL ${backendUrl}/install-agent.sh | sudo bash -s -- --backend ${backendUrl}`;
   } else {
-    return `powershell -ExecutionPolicy Bypass -c '$env:BACKEND_URL="${backendUrl}"; irm ${backendUrl}/install-agent.ps1 | iex'`;
+    return `powershell -ExecutionPolicy Bypass -Command "& { $(irm ${backendUrl}/install-agent.ps1) } -BackendURL '${backendUrl}'"`;
   }
 };
 

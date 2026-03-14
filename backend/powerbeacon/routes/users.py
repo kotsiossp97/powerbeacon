@@ -2,27 +2,21 @@ import uuid
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import select
-
 from powerbeacon.core.deps import (
     CurrentUser,
     SessionDep,
-    get_current_active_superuser,
     UserManagementAccess,
+    get_current_active_superuser,
 )
 from powerbeacon.crud import user_crud
 from powerbeacon.models.generic import Message
-from powerbeacon.models.users import (
-    User,
-    UserCreate,
-    UserPublic,
-    UsersPublic,
-    UserUpdate,
-)
+from powerbeacon.models.users import User, UserCreate, UserPublic, UsersPublic, UserUpdate
+from sqlmodel import select
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
+@router.get("", response_model=UsersPublic)
 @router.get("/", response_model=UsersPublic)
 async def list_users(
     session: SessionDep,
@@ -59,6 +53,11 @@ async def list_users(
     return UsersPublic(data=users, count=count)
 
 
+@router.post(
+    "",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=UserPublic,
+)
 @router.post(
     "/",
     dependencies=[Depends(get_current_active_superuser)],

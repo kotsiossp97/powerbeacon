@@ -8,6 +8,7 @@ set -e
 # Configuration
 BACKEND_URL="${BACKEND_URL:-http://localhost:8000}"
 AGENT_ADVERTISE_IP="${AGENT_ADVERTISE_IP:-}"
+AGENT_PORT="${AGENT_PORT:-18080}"
 INSTALL_DIR="/usr/local/bin"
 SERVICE_FILE="/etc/systemd/system/powerbeacon-agent.service"
 BINARY_NAME="powerbeacon-agent"
@@ -17,6 +18,76 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+
+print_usage() {
+    cat << 'EOF'
+Usage: ./install-agent.sh [options]
+
+Options:
+  --backend <url>         Backend URL (default from BACKEND_URL or http://localhost:8000)
+  --advertise-ip <ip>     Agent advertise IP (default from AGENT_ADVERTISE_IP)
+  --port <port>           Agent port (default from AGENT_PORT or 18080)
+  -h, --help              Show this help message
+
+Examples:
+  sudo ./install-agent.sh --backend http://localhost:3000
+  sudo BACKEND_URL=http://localhost:3000 ./install-agent.sh --port 18081
+EOF
+}
+
+# Parse CLI arguments (flags override env var defaults)
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --backend)
+            if [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo -e "${RED}Error: --backend requires a value${NC}"
+                print_usage
+                exit 1
+            fi
+            BACKEND_URL="$2"
+            shift 2
+            ;;
+        --backend=*)
+            BACKEND_URL="${1#*=}"
+            shift
+            ;;
+        --advertise-ip)
+            if [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo -e "${RED}Error: --advertise-ip requires a value${NC}"
+                print_usage
+                exit 1
+            fi
+            AGENT_ADVERTISE_IP="$2"
+            shift 2
+            ;;
+        --advertise-ip=*)
+            AGENT_ADVERTISE_IP="${1#*=}"
+            shift
+            ;;
+        --port)
+            if [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo -e "${RED}Error: --port requires a value${NC}"
+                print_usage
+                exit 1
+            fi
+            AGENT_PORT="$2"
+            shift 2
+            ;;
+        --port=*)
+            AGENT_PORT="${1#*=}"
+            shift
+            ;;
+        -h|--help)
+            print_usage
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Error: Unknown option: $1${NC}"
+            print_usage
+            exit 1
+            ;;
+    esac
+done
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then 
@@ -29,6 +100,9 @@ echo -e "${GREEN}PowerBeacon Agent Installer${NC}"
 echo "Backend URL: $BACKEND_URL"
 if [ -n "$AGENT_ADVERTISE_IP" ]; then
     echo "Advertise IP: $AGENT_ADVERTISE_IP"
+fi
+if [ -n "$AGENT_PORT" ]; then
+    echo "Agent Port: $AGENT_PORT"
 fi
 echo ""
 
@@ -68,6 +142,9 @@ AGENT_ARGS="-backend=$BACKEND_URL"
 if [ -n "$AGENT_ADVERTISE_IP" ]; then
     AGENT_ARGS="$AGENT_ARGS -advertise-ip=$AGENT_ADVERTISE_IP"
 fi
+if [ -n "$AGENT_PORT" ]; then
+    AGENT_ARGS="$AGENT_ARGS -port=$AGENT_PORT"
+fi
 
 cat > "$SERVICE_FILE" << EOF
 [Unit]
@@ -82,6 +159,7 @@ Restart=always
 RestartSec=10
 Environment="BACKEND_URL=$BACKEND_URL"
 Environment="AGENT_ADVERTISE_IP=$AGENT_ADVERTISE_IP"
+Environment="AGENT_PORT=$AGENT_PORT"
 
 [Install]
 WantedBy=multi-user.target

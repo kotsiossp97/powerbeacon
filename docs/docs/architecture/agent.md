@@ -16,13 +16,13 @@ Containers running on Docker Desktop (Windows/macOS) cannot send UDP broadcast p
 
 ## Technology Stack
 
-| Concern | Library |
-| --- | --- |
-| Language | Go 1.26 |
-| HTTP router | gorilla/mux 1.8 |
-| WOL packet | stdlib `net` (UDP) |
-| Backend registration | stdlib `net/http` |
-| OS detection | stdlib `runtime` |
+| Concern              | Library            |
+| -------------------- | ------------------ |
+| Language             | Go 1.26            |
+| HTTP router          | gorilla/mux 1.8    |
+| WOL packet           | stdlib `net` (UDP) |
+| Backend registration | stdlib `net/http`  |
+| OS detection         | stdlib `runtime`   |
 
 ## Directory Structure
 
@@ -61,7 +61,7 @@ flowchart TD
     Routes["Register routes<br/>/wol, /health, /info"]
     Serve["Serve HTTP requests"]
     Shutdown["Wait for SIGINT/SIGTERM"]
-    
+
     Start --> Flags
     Flags --> Validate
     Validate --> Network
@@ -76,7 +76,7 @@ flowchart TD
     HTTPServer --> Routes
     Routes --> Serve
     Serve --> Shutdown
-    
+
     style Start fill:#3b82f6,stroke:#1e40af,color:#fff
     style Success fill:#10b981,stroke:#047857,color:#fff
     style Serve fill:#8b5cf6,stroke:#6d28d9,color:#fff
@@ -86,17 +86,17 @@ flowchart TD
 
 !!! note "How Configuration Works"
     The agent uses a **two-tier configuration system**:
-    
+
     1. **CLI flags** (highest priority) — passed at runtime
     2. **Environment variables** (lower priority) — set on the host or container
     3. **Defaults** (fallback) — if neither flag nor env var is provided
 
-| Flag | Environment Variable | Default | Description |
-| --- | --- | --- | --- |
-| `--backend` | `BACKEND_URL` | `http://localhost:8000` | Backend base URL |
-| `--port` | `AGENT_PORT` | `18080` | Port the agent HTTP API listens on |
-| `--bind` | `AGENT_BIND` | `0.0.0.0` | Interface to bind the HTTP server |
-| `--advertise-ip` | `AGENT_ADVERTISE_IP` | _(auto-detected)_ | IP the backend should use to reach this agent |
+| Flag             | Environment Variable | Default                 | Description                                   |
+| ---------------- | -------------------- | ----------------------- | --------------------------------------------- |
+| `--backend`      | `BACKEND_URL`        | `http://localhost:8000` | Backend base URL                              |
+| `--port`         | `AGENT_PORT`         | `18080`                 | Port the agent HTTP API listens on            |
+| `--bind`         | `AGENT_BIND`         | `0.0.0.0`               | Interface to bind the HTTP server             |
+| `--advertise-ip` | `AGENT_ADVERTISE_IP` | _(auto-detected)_       | IP the backend should use to reach this agent |
 
 !!! warning "Auto-Detection Gotchas"
     If `--advertise-ip` is not set, the agent auto-detects its local IP. This works fine on single-NIC hosts but can pick the wrong interface on multi-homed servers. **Always explicitly set `--advertise-ip` in production or containerized environments.**
@@ -168,7 +168,7 @@ Validation rules:
 Response on success:
 
 ```json
-{"success": true, "message": "WOL packet sent successfully"}
+{ "success": true, "message": "WOL packet sent successfully" }
 ```
 
 ### `GET /health`
@@ -176,7 +176,7 @@ Response on success:
 Returns HTTP 200 with:
 
 ```json
-{"status": "healthy", "version": "1.0.0"}
+{ "status": "healthy", "version": "1.0.0" }
 ```
 
 No authentication required. Used by the backend `AgentService.check_agent_health()`.
@@ -189,7 +189,7 @@ Returns agent metadata (hostname, IP, OS, version). No authentication required.
 
 !!! info "Magic Packet Standard"
     The WOL magic packet is defined by the Wake-on-LAN standard as exactly **102 bytes**:
-    
+
     - **Bytes 0–5:** six `0xFF` bytes (synchronization stream).
     - **Bytes 6–101:** the target MAC address repeated 16 times.
 
@@ -202,27 +202,17 @@ The agent's `wol.go` implementation follows these steps:
 **Supported MAC address formats:**
 
 === "Colon-separated"
-    ```
-    AA:BB:CC:DD:EE:FF
-    ```
+    `AA:BB:CC:DD:EE:FF`
 
 === "Dash-separated"
-    ```
-    AA-BB-CC-DD-EE-FF
-    ```
+    `AA-BB-CC-DD-EE-FF`
 
 === "Bare hex"
-    ```
-    AABBCCDDEEFF
-    ```
+    `AABBCCDDEEFF`
 
 ## Token Security
 
-!!! danger "Token Compromise"
-    - Each agent receives a **unique bearer token** at registration time.
-    - If a token is compromised, **only that agent** is affected; other agents remain secure.
-    - Regenerate compromised tokens by re-registering the agent (it will request a new token).
-    - The token is stored **in memory only** on the agent process; restarting clears it.
+!!! danger "Token Compromise" - Each agent receives a **unique bearer token** at registration time. - If a token is compromised, **only that agent** is affected; other agents remain secure. - Regenerate compromised tokens by re-registering the agent (it will request a new token). - The token is stored **in memory only** on the agent process; restarting clears it.
 
 The bearer token used between the backend and agent is:
 
@@ -244,14 +234,21 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
     ```bash linenums="1"
     curl -fsSL http://<backend-host>:8000/install-agent.sh | bash -s -- \
       --backend http://<backend-host>:8000 \
-      --advertise-ip 192.168.1.50
+      --advertise-ip 192.168.1.50 \
+      --port 18080
     ```
 
     The install script:
-    
+
     1. Downloads the binary for your OS and architecture
     2. Makes it executable
     3. Optionally installs as a system service
+
+=== "Windows One-Liner (PowerShell)"
+
+    ```powershell
+    powershell -ExecutionPolicy Bypass -Command "& { $(irm http://<backend-host>:8000/install-agent.ps1) } -BackendURL 'http://<backend-host>:8000' -AdvertiseIP '192.168.1.50' -AgentPort 18080"
+    ```
 
 === "Manual (Any OS)"
 
@@ -259,7 +256,7 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
     # Download binary
     curl -O http://<backend-host>:8000/agents/linux-amd64
     chmod +x powerbeacon-agent
-    
+
     # Run directly
     ./powerbeacon-agent \
       --backend http://<backend-host>:8000 \
@@ -267,6 +264,7 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
       --advertise-ip 192.168.1.50
     ```
 
+<!-- 
 === "Docker"
 
     ```bash linenums="1"
@@ -281,14 +279,15 @@ If the agent has not yet completed registration (token is empty), the `/wol` end
 
     !!! warning "Docker Networking"
         Use `--network host` so the agent can send UDP broadcasts to the LAN. Without it, Docker's default bridge network isolates the agent from the physical network.
+-->
 
 ## Supported Platforms
 
-| Platform | Architecture | Notes |
-| --- | --- | --- |
-| Linux | amd64 | Primary deployment target |
-| macOS | amd64, arm64 | Development and testing; LAN broadcast works natively |
-| Windows | — | Binary not currently shipped; build from source if needed |
+| Platform | Architecture | Notes                                                     |
+| -------- | ------------ | --------------------------------------------------------- |
+| Linux    | amd64        | Primary deployment target                                 |
+| macOS    | amd64, arm64 | Development and testing; LAN broadcast works natively     |
+| Windows  | —            | Binary not currently shipped; build from source if needed |
 
 ## Relationship to Backend
 

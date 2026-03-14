@@ -86,6 +86,8 @@ class AgentPublic(AgentBase):
     """Public agent response model"""
 
     id: uuid.UUID
+    owner_id: uuid.UUID | None = None
+    owner_name: str | None = None
     status: AgentStatus
     last_seen: datetime
     created_at: datetime

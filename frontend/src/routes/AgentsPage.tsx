@@ -1,37 +1,63 @@
 /**
  * Agents management page
  */
-import { useEffect, useMemo, useState } from "react";
-import { AlertCircleIcon, Download, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
 import { agentsApi } from "@/api/agents";
-import type { Agent } from "@/types";
-import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/auth/useAuth";
+import {
+  AgentInstallInstructions,
+  DeleteAgentDialog,
+} from "@/components/agents";
+import {
+  AgentsFilters,
+  AgentsGrid,
+  AgentsStats,
+} from "@/components/agents/page";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  AgentsFilters,
-  AgentsGrid,
-  AgentsStats,
-} from "@/components/agents/page";
-import { AgentInstallInstructions } from "@/components/agents/AgentInstallInstructions";
+import type { Agent } from "@/types";
+import { AlertCircleIcon, Download, RefreshCw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export const AgentsPage = () => {
+  const { user } = useAuthStore();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isInstallDialogOpen, setIsInstallDialogOpen] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
 
   const handleCopyIp = (ip: string) => {
     navigator.clipboard.writeText(ip);
     toast.success("IP address copied to clipboard");
+  };
+
+  const handleDeleteAgent = async () => {
+    if (!agentToDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await agentsApi.delete(agentToDelete.id);
+      toast.success("Agent deleted successfully");
+      setAgentToDelete(null);
+      await loadAgents();
+    } catch (err) {
+      const apiError = err as { response?: { data?: { detail?: string } } };
+      toast.error(apiError.response?.data?.detail || "Failed to delete agent");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const loadAgents = async () => {
@@ -123,7 +149,10 @@ export const AgentsPage = () => {
         agents={filteredAgents}
         searchQuery={searchQuery}
         statusFilter={statusFilter}
+        currentUserId={user?.id}
+        currentUserRole={user?.role}
         onCopyIp={handleCopyIp}
+        onRequestDelete={setAgentToDelete}
       />
 
       {error && (
@@ -148,6 +177,17 @@ export const AgentsPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <DeleteAgentDialog
+        agent={agentToDelete}
+        isDeleting={isDeleting}
+        onOpenChange={(open: boolean) => {
+          if (!open && !isDeleting) {
+            setAgentToDelete(null);
+          }
+        }}
+        onConfirm={handleDeleteAgent}
+      />
     </div>
   );
 };

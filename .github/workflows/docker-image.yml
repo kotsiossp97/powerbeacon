@@ -2,7 +2,7 @@ name: Docker Image CI/CD
 
 on:
   push:
-    branches: ["main"]
+    # branches: ["main"]
     tags:
       - "v*.*.*" # Trigger on version tags like v1.0, v1.2.3
     paths-ignore:
@@ -14,6 +14,9 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Needed to push to GitHub Container Registry
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

@@ -38,9 +38,7 @@ as it provides a good balance between ease of use and flexibility. It is also th
           retries: 5
 
       powerbeacon:
-        build:
-          context: .
-          dockerfile: Dockerfile
+        image: kotsiossp97/powerbeacon:latest
         container_name: powerbeacon
         environment:
           DB_URL: postgresql://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon

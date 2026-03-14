@@ -1,15 +1,15 @@
-import { Lock, Settings as SettingsIcon, Shield } from "lucide-react";
-import type { OIDCConfigPublic } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import type { OIDCConfigPublic } from "@/types";
+import { Lock, Settings as SettingsIcon, Shield } from "lucide-react";
 
 interface OIDCOverviewCardProps {
   config: OIDCConfigPublic | null;
@@ -57,14 +57,15 @@ export const OIDCOverviewCard = ({
           </Badge>
         </div>
 
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground">Server Metadata URL</p>
+          <p className="text-sm font-mono break-all text-foreground">
+            {config?.server_metadata_url || "Not set"}
+          </p>
+        </div>
+
         {config?.enabled ? (
           <div className="space-y-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Server Metadata URL</p>
-              <p className="text-sm font-mono break-all text-foreground">
-                {config.server_metadata_url || "Not set"}
-              </p>
-            </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Client ID</p>
               <p className="text-sm font-mono break-all text-foreground">

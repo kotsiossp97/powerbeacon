@@ -7,8 +7,8 @@ on:
       - "v*.*.*" # Trigger on version tags like v1.0, v1.2.3
     paths-ignore:
       - "README.md" # This will prevent the workflow from running on changes to README.md
-  pull_request:
-    branches: ["main"]
+  # pull_request:
+  #   branches: ["main"]
   workflow_dispatch: # Allows you to manually run this workflow
 
 jobs:

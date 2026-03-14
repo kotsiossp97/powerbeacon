@@ -1,25 +1,25 @@
-import type { UseFormReturn } from "react-hook-form";
-import { Loader2, TriangleAlert } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
 } from "@/components/ui/field";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
+import { Loader2, TriangleAlert } from "lucide-react";
+import type { UseFormReturn } from "react-hook-form";
 import type { OIDCFormData } from "./oidcForm";
 
 interface OIDCConfigDialogProps {
@@ -77,7 +77,6 @@ export const OIDCConfigDialog = ({
                   {...form.register("server_metadata_url")}
                   placeholder="https://provider/.well-known/openid-configuration"
                   aria-invalid={!!form.formState.errors.server_metadata_url}
-                  disabled={!isEnabled}
                 />
               </FieldContent>
               <FieldError>{form.formState.errors.server_metadata_url?.message}</FieldError>

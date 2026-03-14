@@ -15,6 +15,11 @@ build_linux() {
     GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.Version=$VERSION" -o "$BUILD_DIR/$BINARY_NAME-linux-amd64" ./cmd/agent
 }
 
+build_linux_arm64() {
+    echo "Building for Linux (arm64)..."
+    GOOS=linux GOARCH=arm64 go build -ldflags "-s -w -X main.Version=$VERSION" -o "$BUILD_DIR/$BINARY_NAME-linux-arm64" ./cmd/agent
+}
+
 build_windows() {
     echo "Building for Windows (amd64)..."
     GOOS=windows GOARCH=amd64 go build -ldflags "-s -w -X main.Version=$VERSION" -o "$BUILD_DIR/$BINARY_NAME-windows-amd64.exe" ./cmd/agent
@@ -62,6 +67,7 @@ case "$TARGET" in
         clean_build
         ensure_build_dir
         build_linux
+        build_linux_arm64
         build_windows
         build_darwin
         copy_to_api_dir
@@ -71,6 +77,7 @@ case "$TARGET" in
         clean_build
         ensure_build_dir
         build_linux
+        build_linux_arm64
         build_windows
         build_darwin
         echo "Build complete!"
@@ -78,6 +85,10 @@ case "$TARGET" in
     linux)
         ensure_build_dir
         build_linux
+        ;;
+    linux-arm64)
+        ensure_build_dir
+        build_linux_arm64
         ;;
     windows)
         ensure_build_dir
@@ -96,7 +107,7 @@ case "$TARGET" in
         ;;
     *)
         echo "Unknown target: $TARGET"
-        echo "Available targets: all, linux, windows, darwin, local, clean"
+        echo "Available targets: all, linux, linux-arm64, windows, darwin, local, clean"
         exit 1
         ;;
 esac

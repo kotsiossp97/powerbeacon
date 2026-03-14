@@ -8,9 +8,9 @@ export const oidcSchema = z
     client_secret: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if (!data.enabled) return;
+    const metadataUrl = data.server_metadata_url?.trim();
 
-    if (!data.server_metadata_url?.trim()) {
+    if (!metadataUrl && data.enabled) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["server_metadata_url"],
@@ -18,8 +18,8 @@ export const oidcSchema = z
       });
     }
 
-    if (data.server_metadata_url) {
-      const result = z.string().url().safeParse(data.server_metadata_url);
+    if (metadataUrl) {
+      const result = z.string().url().safeParse(metadataUrl);
       if (!result.success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -28,6 +28,8 @@ export const oidcSchema = z
         });
       }
     }
+
+    if (!data.enabled) return;
 
     if (!data.client_id?.trim()) {
       ctx.addIssue({

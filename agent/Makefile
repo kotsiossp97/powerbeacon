@@ -1,4 +1,4 @@
-.PHONY: all build clean linux windows darwin test
+.PHONY: all build clean linux linux-arm64 windows darwin test
 
 # Binary name
 BINARY_NAME=powerbeacon-agent
@@ -14,12 +14,17 @@ LDFLAGS=-ldflags "-s -w -X main.Version=$(VERSION)"
 
 all: clean build
 
-build: linux windows darwin
+build: linux linux-arm64 windows darwin
 
 linux:
 	@echo "Building for Linux (amd64)..."
 	@mkdir -p $(BUILD_DIR)
 	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64 ./cmd/agent
+
+linux-arm64:
+	@echo "Building for Linux (arm64)..."
+	@mkdir -p $(BUILD_DIR)
+	GOOS=linux GOARCH=arm64 go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-arm64 ./cmd/agent
 
 windows:
 	@echo "Building for Windows (amd64)..."

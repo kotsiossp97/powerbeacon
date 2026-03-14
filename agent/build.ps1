@@ -18,6 +18,14 @@ function Build-Linux {
     Remove-Item Env:\GOOS
     Remove-Item Env:\GOARCH
 }
+function Build-LinuxArm64 {
+    Write-Host "Building for Linux (arm64)..." -ForegroundColor Green
+    $env:GOOS = "linux"
+    $env:GOARCH = "arm64"
+    go build -ldflags "-s -w -X main.Version=$VERSION" -o "$BUILD_DIR/$BINARY_NAME-linux-arm64" ./cmd/agent
+    Remove-Item Env:\GOOS
+    Remove-Item Env:\GOARCH
+}
 
 function Build-Windows {
     Write-Host "Building for Windows (amd64)..." -ForegroundColor Green
@@ -66,6 +74,7 @@ switch ($Target.ToLower()) {
         Clean-Build
         Ensure-BuildDir
         Build-Linux
+        Build-LinuxArm64
         Build-Windows
         Build-Darwin
         # Copy binaries to API directory (adjust path as needed)
@@ -87,6 +96,7 @@ switch ($Target.ToLower()) {
         Clean-Build
         Ensure-BuildDir
         Build-Linux
+        Build-LinuxArm64
         Build-Windows
         Build-Darwin
         Write-Host "Build complete!" -ForegroundColor Cyan
@@ -94,6 +104,10 @@ switch ($Target.ToLower()) {
     "linux" {
         Ensure-BuildDir
         Build-Linux
+    }
+    "linux-arm64" {
+        Ensure-BuildDir
+        Build-LinuxArm64
     }
     "windows" {
         Ensure-BuildDir
@@ -112,7 +126,7 @@ switch ($Target.ToLower()) {
     }
     default {
         Write-Host "Unknown target: $Target" -ForegroundColor Red
-        Write-Host "Available targets: all, linux, windows, darwin, local, clean"
+        Write-Host "Available targets: all, linux, linux-arm64, windows, darwin, local, clean"
         exit 1
     }
 }

@@ -17,9 +17,7 @@ services:
       retries: 5
 
   powerbeacon:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: kotsiossp97/powerbeacon:latest
     container_name: powerbeacon
     environment:
       DB_URL: postgresql://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon

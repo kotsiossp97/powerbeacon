@@ -112,6 +112,14 @@ export interface SetupStatus {
   user_count: number;
 }
 
+export interface SetupInitializeRequest {
+  username: string;
+  email?: string;
+  password: string;
+  full_name?: string;
+  oidc?: OIDCConfig;
+}
+
 export interface Token {
   access_token: string;
   token_type: string;

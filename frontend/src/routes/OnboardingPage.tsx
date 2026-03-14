@@ -80,6 +80,7 @@ export default function OnboardingPage() {
     adminFormData: undefined,
     instanceFormData: {
       enableOIDC: false,
+      oidcServerMetadataUrl: "",
       oidcClientId: "",
       oidcClientSecret: "",
     },
@@ -142,6 +143,8 @@ export default function OnboardingPage() {
       setOnboardingState((prev) => {
         if (
           prev.instanceFormData.enableOIDC === data.enableOIDC &&
+          prev.instanceFormData.oidcServerMetadataUrl ===
+            data.oidcServerMetadataUrl &&
           prev.instanceFormData.oidcClientId === data.oidcClientId &&
           prev.instanceFormData.oidcClientSecret === data.oidcClientSecret
         ) {
@@ -171,8 +174,30 @@ export default function OnboardingPage() {
     }
 
     try {
+      const setupPayload = {
+        username: adminFormData.username,
+        password: adminFormData.password,
+        full_name: adminFormData.full_name?.trim() || undefined,
+        email: adminFormData.email?.trim() || undefined,
+        oidc: onboardingState.instanceFormData.enableOIDC
+          ? {
+              enabled: true,
+              server_metadata_url:
+                onboardingState.instanceFormData.oidcServerMetadataUrl.trim(),
+              client_id: onboardingState.instanceFormData.oidcClientId.trim(),
+              client_secret:
+                onboardingState.instanceFormData.oidcClientSecret.trim(),
+            }
+          : {
+              enabled: false,
+              server_metadata_url:
+                onboardingState.instanceFormData.oidcServerMetadataUrl.trim() ||
+                undefined,
+            },
+      };
+
       // Create first superuser
-      await setupApi.initialize(adminFormData);
+      await setupApi.initialize(setupPayload);
 
       // Auto login after creation
       const response = await authApi.login(
@@ -224,14 +249,23 @@ export default function OnboardingPage() {
       case 1:
         return !!onboardingState.adminFormData;
       case 2: {
-        const { enableOIDC, oidcClientId, oidcClientSecret } =
+        const {
+          enableOIDC,
+          oidcServerMetadataUrl,
+          oidcClientId,
+          oidcClientSecret,
+        } =
           onboardingState.instanceFormData;
 
         if (!enableOIDC) {
           return true;
         }
 
-        return Boolean(oidcClientId.trim() && oidcClientSecret.trim());
+        return Boolean(
+          oidcServerMetadataUrl.trim() &&
+            oidcClientId.trim() &&
+            oidcClientSecret.trim(),
+        );
       }
       case 3:
         return true; // No required fields for agent deployment

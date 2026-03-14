@@ -77,7 +77,6 @@ export const OIDCConfigDialog = ({
                   {...form.register("server_metadata_url")}
                   placeholder="https://provider/.well-known/openid-configuration"
                   aria-invalid={!!form.formState.errors.server_metadata_url}
-                  disabled={!isEnabled}
                 />
               </FieldContent>
               <FieldError>{form.formState.errors.server_metadata_url?.message}</FieldError>

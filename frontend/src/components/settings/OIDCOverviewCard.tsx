@@ -57,14 +57,15 @@ export const OIDCOverviewCard = ({
           </Badge>
         </div>
 
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground">Server Metadata URL</p>
+          <p className="text-sm font-mono break-all text-foreground">
+            {config?.server_metadata_url || "Not set"}
+          </p>
+        </div>
+
         {config?.enabled ? (
           <div className="space-y-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Server Metadata URL</p>
-              <p className="text-sm font-mono break-all text-foreground">
-                {config.server_metadata_url || "Not set"}
-              </p>
-            </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Client ID</p>
               <p className="text-sm font-mono break-all text-foreground">

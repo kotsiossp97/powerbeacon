@@ -8,6 +8,7 @@ import { ThemeToggle } from "../ui/theme-toggle";
 
 export interface OnboardingInstanceFormData {
   enableOIDC: boolean;
+  oidcServerMetadataUrl: string;
   oidcClientId: string;
   oidcClientSecret: string;
 }
@@ -50,6 +51,27 @@ const OnboardingInstanceConfiguration: React.FC<
             </>
           )}
         </Toggle>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="oidc-server-metadata-url">OIDC Server Metadata URL</Label>
+        <div className="mx-20">
+          <Input
+            id="oidc-server-metadata-url"
+            type="url"
+            placeholder="https://provider/.well-known/openid-configuration"
+            value={value.oidcServerMetadataUrl}
+            onChange={(event) =>
+              onChange({
+                ...value,
+                oidcServerMetadataUrl: event.target.value,
+              })
+            }
+            required={showOIDCFields}
+            aria-required={showOIDCFields}
+            disabled={!showOIDCFields}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">

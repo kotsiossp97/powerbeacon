@@ -9,21 +9,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { Agent } from "@/types";
-import { Copy, MoreVertical, Server } from "lucide-react";
+import { Copy, MoreVertical, Server, Trash2 } from "lucide-react";
 import { agentStatusConfig } from "./agentStatusConfig";
 
 interface AgentsGridProps {
   agents: Agent[];
   searchQuery: string;
   statusFilter: string;
+  currentUserId?: string;
+  currentUserRole?: "superuser" | "admin" | "user" | "viewer";
   onCopyIp: (ip: string) => void;
+  onRequestDelete: (agent: Agent) => void;
 }
 
 export const AgentsGrid = ({
   agents,
   searchQuery,
   statusFilter,
+  currentUserId,
+  currentUserRole,
   onCopyIp,
+  onRequestDelete,
 }: AgentsGridProps) => {
   if (agents.length === 0) {
     return (
@@ -44,6 +50,10 @@ export const AgentsGrid = ({
       {agents.map((agent) => {
         const status = agentStatusConfig[agent.status];
         const StatusIcon = status.icon;
+        const canDeleteAgent =
+          currentUserRole === "superuser" ||
+          currentUserRole === "admin" ||
+          agent.owner_id === currentUserId;
 
         return (
           <Card
@@ -74,6 +84,15 @@ export const AgentsGrid = ({
                       <Copy className="mr-2 h-4 w-4" />
                       Copy IP Address
                     </DropdownMenuItem>
+                    {canDeleteAgent && (
+                      <DropdownMenuItem
+                        onClick={() => onRequestDelete(agent)}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Agent
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -94,6 +113,12 @@ export const AgentsGrid = ({
                   <span>Cluster</span>
                   <span className="text-foreground">
                     {agent.cluster_name || "Unassigned"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span>Owner</span>
+                  <span className="text-foreground">
+                    {agent.owner_name || "Unassigned"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-4">

@@ -13,9 +13,15 @@ def can_manage_owned_resource(user: User, owner_id: uuid.UUID | None) -> bool:
 
 
 def serialize_agent(agent: Agent) -> AgentPublic:
+    owner_name = None
+    if agent.cluster and agent.cluster.owner:
+        owner_name = agent.cluster.owner.full_name
+
     return AgentPublic.model_validate(
         agent,
         update={
+            "owner_id": agent.cluster.owner_id if agent.cluster else None,
+            "owner_name": owner_name,
             "cluster_name": agent.cluster.name if agent.cluster else None,
             "device_count": len(agent.devices),
         },

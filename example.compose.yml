@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: powerbeacon-db
+    environment:
+      POSTGRES_USER: powerbeacon
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeMe}
+      POSTGRES_DB: powerbeacon
+    volumes:
+      - powerbeacon_data:/var/lib/postgresql/data
+    networks:
+      - powerbeacon_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U powerbeacon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  powerbeacon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: powerbeacon
+    environment:
+      DB_URL: postgresql://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+    ports:
+      - "8000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - powerbeacon_network
+
+volumes:
+  powerbeacon_data:
+
+networks:
+  powerbeacon_network:
+    driver: bridge

@@ -48,6 +48,11 @@ nav = [
         "setup/docker.md",
         "setup/development.md",
     ] },
+    { "Deployment" = [
+        "deployment/overview.md",
+        "deployment/docker.md",
+        # "deployment/cloud.md",
+    ] },
     { "Architecture" = [
         "architecture/overview.md",
         "architecture/backend.md",

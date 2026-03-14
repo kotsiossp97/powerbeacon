@@ -15,8 +15,9 @@ from powerbeacon.models.agents import (
     AgentsPublic,
     AgentStatus,
 )
+from powerbeacon.models.clusters import Cluster
 from powerbeacon.models.generic import Message
-from powerbeacon.services.inventory_service import serialize_agent
+from powerbeacon.services.inventory_service import can_manage_owned_resource, serialize_agent
 from sqlalchemy.orm import selectinload
 from sqlmodel import func, select
 
@@ -27,7 +28,10 @@ def _get_agent_with_relationships(session: SessionDep, agent_id: uuid.UUID) -> A
     statement = (
         select(Agent)
         .where(Agent.id == agent_id)
-        .options(selectinload(Agent.cluster), selectinload(Agent.devices))
+        .options(
+            selectinload(Agent.cluster).selectinload(Cluster.owner),
+            selectinload(Agent.devices),
+        )
     )
     return session.exec(statement).first()
 
@@ -125,6 +129,7 @@ async def agent_heartbeat(
     return None
 
 
+@router.get("", response_model=AgentsPublic)
 @router.get("/", response_model=AgentsPublic)
 async def list_agents(
     current_user: CurrentUser,
@@ -151,7 +156,10 @@ async def list_agents(
 
     statement = (
         select(Agent)
-        .options(selectinload(Agent.cluster), selectinload(Agent.devices))
+        .options(
+            selectinload(Agent.cluster).selectinload(Cluster.owner),
+            selectinload(Agent.devices),
+        )
         .offset(skip)
         .limit(limit)
     )
@@ -197,13 +205,22 @@ async def delete_agent(
     """
     Delete an agent.
 
-    Requires admin or superuser role.
+    Requires admin, superuser, or ownership of the agent's assigned cluster.
     This only removes the agent from the database, it does not uninstall it from the host.
     """
-    if current_user.role not in ["admin", "superuser"]:
+    agent = _get_agent_with_relationships(session, agent_id)
+
+    if not agent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Agent not found",
+        )
+
+    owner_id = agent.cluster.owner_id if agent.cluster else None
+    if not can_manage_owned_resource(current_user, owner_id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient permissions",
+            detail="Not authorized to delete this agent",
         )
 
     success = agent_crud.delete_agent(session=session, agent_id=agent_id)
@@ -214,4 +231,5 @@ async def delete_agent(
             detail="Agent not found",
         )
 
+    return Message(message="Agent deleted successfully")
     return Message(message="Agent deleted successfully")

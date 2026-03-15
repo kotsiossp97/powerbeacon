@@ -61,8 +61,7 @@ Backend:
 
 ```bash
 cd backend
-pip install -e .
-python main.py
+uv run fastapi run dev main.py
 ```
 
 Frontend:
@@ -96,9 +95,6 @@ The schema has been refactored directly for the current development phase. If yo
 
 When a device is woken, PowerBeacon resolves every agent associated with that device and attempts dispatch through all online agents. This improves reliability when the same machine can be reached from multiple relay hosts or overlapping network segments.
 
-## Docker Desktop reminder
-
-On Windows and macOS Docker Desktop, container-originated LAN broadcasts are unreliable. Install the PowerBeacon agent on a host with direct LAN access and let the backend dispatch through that host.
 
 ## Documentation
 

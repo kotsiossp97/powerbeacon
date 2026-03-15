@@ -1,5 +1,8 @@
 [![Docker Image CI/CD](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml)
 [![Documentation](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml)
+![Docker Pulls](https://img.shields.io/docker/pulls/kotsiossp97/powerbeacon?style=flat&logo=docker&label=Docker%20Pulls&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fkotsiossp97%2Fpowerbeacon)
+![Docker Image Size](https://img.shields.io/docker/image-size/kotsiossp97/powerbeacon?logo=docker&label=Image%20Size)
+
 
 <p align="center">
    <img src="https://raw.githubusercontent.com/kotsiossp97/powerbeacon/refs/heads/main/docs/docs/assets/banner-900x300.png" alt="PowerBeacon banner" width="760" />

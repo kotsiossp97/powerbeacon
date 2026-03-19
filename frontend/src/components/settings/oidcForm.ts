@@ -12,7 +12,7 @@ export const oidcSchema = z
 
     if (!metadataUrl && data.enabled) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["server_metadata_url"],
         message: "Server metadata URL is required when OIDC is enabled",
       });
@@ -22,7 +22,7 @@ export const oidcSchema = z
       const result = z.string().url().safeParse(metadataUrl);
       if (!result.success) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["server_metadata_url"],
           message: "Please enter a valid URL",
         });
@@ -33,7 +33,7 @@ export const oidcSchema = z
 
     if (!data.client_id?.trim()) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["client_id"],
         message: "Client ID is required when OIDC is enabled",
       });

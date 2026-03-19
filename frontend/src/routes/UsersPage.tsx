@@ -1,12 +1,8 @@
 /**
  * Users management page with role-based access control
  */
-import { useEffect, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { usersApi } from "@/api/users";
 import { useAuthStore } from "@/auth/useAuth";
-import type { User, UserRole, UserCreate, UserUpdate } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   DeleteUserDialog,
@@ -15,22 +11,14 @@ import {
   UsersStats,
   UsersTable,
 } from "@/components/users";
-
-interface UserFormData {
-  username: string;
-  email: string;
-  full_name: string;
-  password: string;
-  role: UserRole;
-}
-
-const defaultFormData: UserFormData = {
-  username: "",
-  email: "",
-  full_name: "",
-  password: "",
-  role: "user",
-};
+import {
+  mapUserFormToPayload,
+  type UserFormData,
+} from "@/components/users/userForm";
+import type { User, UserCreate, UserUpdate } from "@/types";
+import { Plus } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export const UsersPage = () => {
   const { user: currentUser } = useAuthStore();
@@ -45,13 +33,12 @@ export const UsersPage = () => {
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<UserFormData>(defaultFormData);
 
   const isSuperuser = currentUser?.role === "superuser";
   const isAdmin = currentUser?.role === "admin";
   const canManageUsers = isSuperuser;
 
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -63,11 +50,11 @@ export const UsersPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -99,62 +86,55 @@ export const UsersPage = () => {
   const handleOpenForm = (userToEdit?: User) => {
     if (userToEdit) {
       setEditingUser(userToEdit);
-      setFormData({
-        username: userToEdit.username,
-        email: userToEdit.email || "",
-        full_name: userToEdit.full_name || "",
-        password: "",
-        role: userToEdit.role,
-      });
     } else {
       setEditingUser(null);
-      setFormData(defaultFormData);
     }
     setIsFormOpen(true);
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (formData: UserFormData) => {
     setIsSubmitting(true);
 
     try {
       if (editingUser) {
+        const payload = mapUserFormToPayload(formData, true);
         const updateData: UserUpdate = {};
-        if (formData.username !== editingUser.username) {
-          updateData.username = formData.username;
+
+        if (payload.username !== editingUser.username) {
+          updateData.username = payload.username;
         }
-        if (formData.email) {
-          updateData.email = formData.email;
+        if (payload.email) {
+          updateData.email = payload.email;
         }
-        if (formData.full_name) {
-          updateData.full_name = formData.full_name;
+        if (payload.full_name) {
+          updateData.full_name = payload.full_name;
         }
-        if (formData.password) {
-          updateData.password = formData.password;
+        if (payload.password) {
+          updateData.password = payload.password;
         }
-        if (formData.role !== editingUser.role) {
-          updateData.role = formData.role;
+        if (payload.role !== editingUser.role) {
+          updateData.role = payload.role;
         }
 
         await usersApi.update(editingUser.id, updateData);
         toast.success("User updated successfully");
       } else {
-        const payload: UserCreate = {
-          username: formData.username,
-          password: formData.password,
-          email: formData.email || undefined,
-          full_name: formData.full_name || undefined,
-          role: formData.role,
+        const payload = mapUserFormToPayload(formData, false);
+        const createData: UserCreate = {
+          username: payload.username,
+          password: payload.password || "",
+          email: payload.email,
+          full_name: payload.full_name,
+          role: payload.role,
           is_active: true,
         };
-        await usersApi.create(payload);
+        await usersApi.create(createData);
         toast.success("User created successfully");
       }
 
       setIsFormOpen(false);
       setEditingUser(null);
-      setFormData(defaultFormData);
-      loadUsers();
+      await loadUsers();
     } catch (err) {
       const apiError = err as { response?: { data?: { detail?: string } } };
       toast.error(apiError.response?.data?.detail || "Failed to save user");
@@ -239,17 +219,14 @@ export const UsersPage = () => {
       <UserFormDialog
         open={isFormOpen}
         editingUser={editingUser}
-        formData={formData}
         isSubmitting={isSubmitting}
         isSuperuser={isSuperuser}
         onOpenChange={(open) => {
           setIsFormOpen(open);
           if (!open) {
             setEditingUser(null);
-            setFormData(defaultFormData);
           }
         }}
-        onFormDataChange={setFormData}
         onSubmit={handleSubmit}
       />
 

@@ -1,30 +1,30 @@
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Check, Copy, EyeIcon, EyeOffIcon } from "lucide-react";
-import {
-  useState,
-  createContext,
-  useContext,
-  type ComponentProps,
-  type ReactNode,
-  type ChangeEvent,
-  useEffect,
-  useDeferredValue,
-  useMemo,
-} from "react";
-import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { motion, AnimatePresence } from "motion/react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
+import { Check, Copy, EyeIcon, EyeOffIcon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  createContext,
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type ComponentProps,
+  type ReactNode,
+} from "react";
 
 const PasswordInputContext = createContext<{ password: string } | null>(null);
 
@@ -33,11 +33,13 @@ export function PasswordInput({
   onChange,
   value,
   defaultValue,
+  showPreviewButton = true,
   showCopyButton = false,
   ...props
 }: Omit<ComponentProps<typeof Input>, "type"> & {
   children?: ReactNode;
   showCopyButton?: boolean;
+  showPreviewButton?: boolean;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState(defaultValue ?? "");
@@ -72,7 +74,7 @@ export function PasswordInput({
           <InputGroupAddon align="inline-end">
             <AnimatePresence>
               {showCopyButton && showPassword && (
-                <motion.div exit={{opacity: 0}}>
+                <motion.div exit={{ opacity: 0 }}>
                   <InputGroupButton size="sm" onClick={handleCopy}>
                     <span className="relative size-3.5">
                       <motion.div
@@ -105,15 +107,17 @@ export function PasswordInput({
                 </motion.div>
               )}
             </AnimatePresence>
-            <InputGroupButton
-              size="icon-xs"
-              onClick={() => setShowPassword((p) => !p)}
-            >
-              <Icon className="size-4.5" />
-              <span className="sr-only">
-                {showPassword ? "Hide password" : "Show password"}
-              </span>
-            </InputGroupButton>
+            {showPreviewButton && (
+              <InputGroupButton
+                size="icon-xs"
+                onClick={() => setShowPassword((p) => !p)}
+              >
+                <Icon className="size-4.5" />
+                <span className="sr-only">
+                  {showPassword ? "Hide password" : "Show password"}
+                </span>
+              </InputGroupButton>
+            )}
           </InputGroupAddon>
         </InputGroup>
         {children}

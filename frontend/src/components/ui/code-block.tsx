@@ -1,6 +1,6 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Check, Copy } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -199,9 +199,9 @@ export function CodeBlock({
               "dark:scrollbar-thumb-white/20 dark:hover:scrollbar-thumb-white/25",
             hasOverflow && "[&::-webkit-scrollbar]:h-2",
             hasOverflow && "[&::-webkit-scrollbar-thumb]:rounded-full",
-            hasOverflow && "[&::-webkit-scrollbar-thumb]:bg-black/15",
-            hasOverflow && "[&::-webkit-scrollbar-thumb]:dark:bg-white/20",
-            hasOverflow && "[&::-webkit-scrollbar-thumb:hover]:bg-black/20",
+            hasOverflow && "[&::-webkit-scrollbar-thumb]:bg-border",
+            // hasOverflow && "[&::-webkit-scrollbar-thumb]:dark:bg-white/20",
+            // hasOverflow && "[&::-webkit-scrollbar-thumb:hover]:bg-border",
             hasOverflow &&
               "[&::-webkit-scrollbar-thumb:hover]:dark:bg-white/25",
             hasOverflow && "[&::-webkit-scrollbar-track]:bg-transparent"

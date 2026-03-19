@@ -4,6 +4,7 @@
 import logoBadge from "@/assets/badge-512.png";
 import { useLocalAuth } from "@/auth/localAuth";
 import { useAuthStore } from "@/auth/useAuth";
+import MobileNavigation from "@/components/layout/MobileNavigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,55 +17,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
+import { useVisibleNavigationLinks } from "@/routes/navlinks";
 import {
   BookOpen,
   BookOpenText,
-  Boxes,
   ChevronDown,
-  LayoutDashboard,
   LogOut,
   Menu,
-  Server,
-  Settings,
-  Users,
-  X,
+  X
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { getUserInitials } from "../users";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  {
-    name: "Clusters",
-    href: "/clusters",
-    icon: Boxes,
-    permission: "view_devices" as const,
-  },
-  {
-    name: "Users",
-    href: "/users",
-    icon: Users,
-    permission: "view_users" as const,
-  },
-  {
-    name: "Agents",
-    href: "/agents",
-    icon: Server,
-    permission: "view_agents" as const,
-  },
-  {
-    name: "Settings",
-    href: "/settings",
-    icon: Settings,
-    // permission: "manage_settings" as const,
-  },
-];
-
 export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, hasPermission } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const { logout } = useLocalAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -76,22 +45,12 @@ export const Header = () => {
     await logout();
   };
 
-  const visibleNavItems = navigation.filter(
-    (item) => !item.permission || hasPermission(item.permission),
-  );
+  const visibleNavItems = useVisibleNavigationLinks();
 
   return (
     <header className="border-b bg-primary backdrop-blur sticky top-0 z-50 shadow-lg dark:bg-primary/80">
       <div className="flex h-14 items-center px-4 lg:px-6">
         <Link to="/" className="mr-3">
-          {/* <div className="h-14 hidden sm:flex items-center">
-            <img
-              src={logo}
-              alt="PowerBeacon"
-              className="object-contain h-full"
-              loading="lazy"
-            />
-          </div> */}
           <div className="h-14">
             <img
               src={logoBadge}
@@ -131,7 +90,7 @@ export const Header = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden ml-auto mr-2"
+          className="md:hidden ml-auto mr-2 text-white"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
@@ -167,7 +126,7 @@ export const Header = () => {
                     <span className="text-xs text-muted-foreground font-normal">
                       {user?.email}
                     </span>
-                    <span className="text-xs text-primary font-medium mt-1 capitalize">
+                    <span className="text-xs bg-primary/20 w-fit px-2 py-0.5 rounded-lg border border-primary text-primary font-semibold mt-1 capitalize">
                       {user?.role}
                     </span>
                   </div>
@@ -178,8 +137,7 @@ export const Header = () => {
                     <ThemeToggle />
                   </div>
                 </DropdownMenuItem>
-                {/* <DropdownMenuSeparator className="my-2" /> */}
-                <DropdownMenuItem className="mt-1" asChild>
+                <DropdownMenuItem className="mt-1 mb-2" asChild>
                   <Button
                     variant={"destructive"}
                     className="w-full"
@@ -203,7 +161,7 @@ export const Header = () => {
                     </a>
                   </Button>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="mt-1" asChild>
+                <DropdownMenuItem className="mt-2" asChild>
                   <Button variant="outline" className="w-full" asChild>
                     <a
                       className="gap-2"
@@ -223,58 +181,7 @@ export const Header = () => {
       </div>
 
       {/* Mobile Navigation */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border">
-          <nav className="flex flex-col p-4 space-y-1">
-            {visibleNavItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                    isActive
-                      ? "bg-secondary"
-                      : "text-muted hover:text-foreground hover:bg-secondary/50",
-                  )}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.name}
-                </Link>
-              );
-            })}
-            {user && (
-              <div className="pt-4 mt-4 border-t border-border">
-                <div className="flex items-center gap-3 px-3 py-2">
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback className="bg-accent-foreground text-accent text-xs">
-                      {getUserInitials(user)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-foreground font-bold">
-                      {user?.full_name}
-                    </span>
-                    <span className="text-xs text-muted">{user?.email}</span>
-                  </div>
-                </div>
-                <ThemeToggle />
-
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-destructive hover:text-destructive mt-2"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
-                </Button>
-              </div>
-            )}
-          </nav>
-        </div>
-      )}
+      <MobileNavigation mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
     </header>
   );
 };

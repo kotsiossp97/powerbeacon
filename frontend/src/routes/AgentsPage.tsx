@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -117,14 +119,6 @@ export const AgentsPage = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsInstallDialogOpen(true)}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Install Agent
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
             onClick={loadAgents}
             disabled={isRefreshing}
           >
@@ -132,6 +126,10 @@ export const AgentsPage = () => {
               className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
             Refresh
+          </Button>
+          <Button size="sm" onClick={() => setIsInstallDialogOpen(true)}>
+            <Download className="mr-2 h-4 w-4" />
+            Install Agent
           </Button>
         </div>
       </div>
@@ -166,14 +164,29 @@ export const AgentsPage = () => {
       )}
 
       <Dialog open={isInstallDialogOpen} onOpenChange={setIsInstallDialogOpen}>
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent
+          className="sm:max-w-4xl pb-0"
+          aria-describedby="Agent installation instructions dialog"
+        >
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               Install PowerBeacon Agent
             </DialogTitle>
+            <DialogDescription className="hidden">
+              Install the PowerBeacon agent on a machine in your local network
+              to enable Wake-on-LAN functionality.
+            </DialogDescription>
           </DialogHeader>
-          <div className="-mx-4 no-scrollbar max-h-[90svh] overflow-y-auto px-4">
+          <div className="-mx-4 no-scrollbar max-h-[80svh] overflow-y-auto px-4">
             <AgentInstallInstructions />
+            <DialogFooter className="mb-0 mt-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsInstallDialogOpen(false)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
           </div>
         </DialogContent>
       </Dialog>

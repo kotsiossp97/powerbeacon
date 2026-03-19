@@ -1,21 +1,22 @@
 /**
  * Login page
  */
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router";
 import * as z from "zod";
 
 import { API_BASE_URL } from "@/api/client";
+import logo from "@/assets/banner-900x300.png";
 import { useLocalAuth } from "@/auth/localAuth";
 import { useAuthStore } from "@/auth/useAuth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardHeader,
   CardContent,
   CardFooter,
+  CardHeader,
 } from "@/components/ui/card";
 import {
   Field,
@@ -25,7 +26,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import logo from "@/assets/banner-900x300.png";
+import { PasswordInput } from "@/components/ui/password-input";
 const loginFormSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
@@ -111,13 +112,12 @@ export const LoginPage = () => {
               <Field data-invalid={!!errors.password}>
                 <FieldLabel htmlFor="password">Password</FieldLabel>
                 <FieldContent>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="password"
                     placeholder="Enter your password"
                     autoComplete="current-password"
-                    disabled={loading}
                     aria-invalid={!!errors.password}
+                    disabled={loading}
                     {...register("password")}
                   />
                   <FieldError errors={[errors.password]} />

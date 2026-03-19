@@ -4,20 +4,20 @@
 import logo from "@/assets/banner-900x300.png";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-    ArrowLeft,
-    ArrowRight,
-    Check,
-    Loader2,
-    Server,
-    Settings,
-    User,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Loader2,
+  Server,
+  Settings,
+  User,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useState } from "react";
@@ -30,7 +30,7 @@ import type { OnboardingAdminFormData } from "../components/onboarding/admin-for
 import OnboardingAdminForm from "../components/onboarding/admin-form";
 import OnboardingAgentInstructions from "../components/onboarding/deploy-agent-instructions";
 import OnboardingInstanceConfiguration, {
-    type OnboardingInstanceFormData,
+  type OnboardingInstanceFormData,
 } from "../components/onboarding/instance-configuration";
 import { Progress } from "../components/ui/progress";
 import { cn } from "../lib/utils";
@@ -254,8 +254,7 @@ export default function OnboardingPage() {
           oidcServerMetadataUrl,
           oidcClientId,
           oidcClientSecret,
-        } =
-          onboardingState.instanceFormData;
+        } = onboardingState.instanceFormData;
 
         if (!enableOIDC) {
           return true;
@@ -263,8 +262,8 @@ export default function OnboardingPage() {
 
         return Boolean(
           oidcServerMetadataUrl.trim() &&
-            oidcClientId.trim() &&
-            oidcClientSecret.trim(),
+          oidcClientId.trim() &&
+          oidcClientSecret.trim(),
         );
       }
       case 3:
@@ -291,13 +290,13 @@ export default function OnboardingPage() {
             duration: 0.5,
             type: "keyframes",
           }}
-          className="flex items-center justify-center gap-3 mb-8 from-primary/20 to-primary/90 bg-radial from-50% border border-primary shadow-xl rounded-lg w-lg mx-auto backdrop-blur-3xl"
+          className="flex items-center justify-center gap-3 mb-8 from-primary/20 to-primary/90 bg-radial from-50% border border-primary shadow-xl rounded-lg md:w-lg mx-auto backdrop-blur-3xl"
         >
-          <img
-            src={logo}
-            alt="PowerBeacon Logo"
-            className="h-36 object-contain"
-          />
+            <img
+              src={logo}
+              alt="PowerBeacon Logo"
+              className="h-24 sm:h-36 object-contain"
+            />
         </motion.div>
 
         {/* Progress */}

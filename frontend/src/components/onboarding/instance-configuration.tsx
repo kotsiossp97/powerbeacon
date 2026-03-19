@@ -55,7 +55,7 @@ const OnboardingInstanceConfiguration: React.FC<
 
       <div className="space-y-2">
         <Label htmlFor="oidc-server-metadata-url">OIDC Server Metadata URL</Label>
-        <div className="mx-20">
+        <div className="md:mx-20">
           <Input
             id="oidc-server-metadata-url"
             type="url"
@@ -76,7 +76,7 @@ const OnboardingInstanceConfiguration: React.FC<
 
       <div className="space-y-2">
         <Label htmlFor="oidc-client-id">OIDC Client ID</Label>
-        <div className="mx-20">
+        <div className="md:mx-20">
           <Input
             id="oidc-client-id"
             type="text"
@@ -97,7 +97,7 @@ const OnboardingInstanceConfiguration: React.FC<
 
       <div className="space-y-2">
         <Label htmlFor="oidc-client-secret">OIDC Client Secret</Label>
-        <div className="mx-20">
+        <div className="md:mx-20">
           <PasswordInput
             id="oidc-client-secret"
             placeholder="Enter your OIDC Client Secret"
@@ -118,7 +118,7 @@ const OnboardingInstanceConfiguration: React.FC<
       </div>
       <div className="space-y-2">
         <Label>Theme</Label>
-        <div className="mx-20">
+        <div className="sm:mx-20">
           <ThemeToggle className="w-full" />
         </div>
       </div>

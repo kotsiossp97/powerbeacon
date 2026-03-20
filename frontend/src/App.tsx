@@ -4,6 +4,7 @@
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { useAuthStore } from "@/auth/useAuth";
 import "@/index.css";
+import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import { AgentsPage } from "@/routes/AgentsPage";
 import ClusterDetailPage from "@/routes/ClusterDetailPage";
 import ClustersPage from "@/routes/ClustersPage";
@@ -11,7 +12,6 @@ import { LoginPage } from "@/routes/LoginPage";
 import OnboardingPage from "@/routes/OnboardingPage";
 import { SettingsPage } from "@/routes/SettingsPage";
 import { UsersPage } from "@/routes/UsersPage";
-import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "./components/layout/Layout";

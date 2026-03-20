@@ -29,7 +29,7 @@ import {
   LogOut,
   Menu,
   Settings,
-  X
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -143,22 +143,32 @@ export const Header = () => {
                 <DropdownMenuGroup>
                   {updateAvailable && (
                     <DropdownMenuItem asChild>
-                      <Link to="/settings" className="flex items-center justify-between gap-3">
+                      <Link
+                        to="/settings"
+                        className="flex items-center justify-between gap-3"
+                      >
                         <span className="flex items-center gap-2">
                           <Download className="h-4 w-4 text-primary" />
                           Update available
                         </span>
-                        <Badge variant="default">v{metadata?.latest_version?.replace(/^v/, "")}</Badge>
+                        <Badge variant="default">
+                          v{metadata?.latest_version?.replace(/^v/, "")}
+                        </Badge>
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem asChild>
-                    <Link to="/settings" className="flex items-center justify-between gap-3">
+                    <Link
+                      to="/settings"
+                      className="flex items-center justify-between gap-3"
+                    >
                       <span className="flex items-center gap-2">
                         <Settings className="h-4 w-4" />
                         Settings
                       </span>
-                      {updateAvailable ? <Badge variant="secondary">Review</Badge> : null}
+                      {updateAvailable ? (
+                        <Badge variant="secondary">Review</Badge>
+                      ) : null}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -213,7 +223,10 @@ export const Header = () => {
       </div>
 
       {/* Mobile Navigation */}
-      <MobileNavigation mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+      <MobileNavigation
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
     </header>
   );
 };

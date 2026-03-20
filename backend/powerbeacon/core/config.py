@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Version
-    app_version: str = "1.0.1"
+    app_version: str = "1.0.2"
 
     # Database
     db_url: str = "postgresql+psycopg2://powerbeacon:changeMe@db:5432/powerbeacon"

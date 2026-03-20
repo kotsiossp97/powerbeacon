@@ -12,9 +12,6 @@ class Settings(BaseSettings):
     jwt_secret: str = "your-secret-key-change-in-production"
     jwt_expiration_hours: int = 24
 
-    # Frontend
-    frontend_url: str = "http://localhost:5173"
-
     # CORS
     cors_origins: list[str] = [
         "http://localhost:3000",

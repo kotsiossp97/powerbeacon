@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from powerbeacon.core import settings
 from powerbeacon.models.generic import ErrorResponse
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 # Import routers
 from powerbeacon.routes import agents, clusters, config, devices, login, setup, users
@@ -35,6 +36,10 @@ app = FastAPI(
     # root_path="/api",
     openapi_url="/api/openapi.json",
 )
+
+# Trust reverse proxy headers (X-Forwarded-Proto, X-Forwarded-For) so that
+# request.url_for() returns the correct scheme (https) when behind a TLS proxy.
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key=settings.jwt_secret)

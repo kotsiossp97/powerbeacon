@@ -9,11 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from powerbeacon.core import settings
 from powerbeacon.models.generic import ErrorResponse
-from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 # Import routers
 from powerbeacon.routes import agents, clusters, config, devices, login, setup, users
 from starlette.middleware.sessions import SessionMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 
 @asynccontextmanager

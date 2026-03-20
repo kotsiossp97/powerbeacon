@@ -11,6 +11,7 @@ import { LoginPage } from "@/routes/LoginPage";
 import OnboardingPage from "@/routes/OnboardingPage";
 import { SettingsPage } from "@/routes/SettingsPage";
 import { UsersPage } from "@/routes/UsersPage";
+import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "./components/layout/Layout";
@@ -26,6 +27,8 @@ function App() {
     loadCurrentUser,
     loadAuthConfig,
   } = useAuthStore();
+  const loadAppMetadata = useAppMetadataStore((state) => state.loadMetadata);
+  const resetAppMetadata = useAppMetadataStore((state) => state.reset);
 
   useEffect(() => {
     const initialize = async () => {
@@ -35,6 +38,15 @@ function App() {
     };
     initialize();
   }, [checkSetup, loadCurrentUser, loadAuthConfig]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      resetAppMetadata();
+      return;
+    }
+
+    void loadAppMetadata();
+  }, [isAuthenticated, loadAppMetadata, resetAppMetadata]);
 
   if (loading || isSetupComplete === null) {
     return (

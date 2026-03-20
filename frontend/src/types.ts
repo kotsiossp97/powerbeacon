@@ -107,6 +107,23 @@ export interface OIDCConfigPublic {
   client_id?: string;
 }
 
+export interface Contributor {
+  login?: string;
+  avatar_url?: string;
+  html_url?: string;
+  contributions: number;
+}
+
+export interface AppMetadata {
+  current_version: string;
+  latest_version?: string;
+  update_available: boolean;
+  release_url: string;
+  repo_url: string;
+  checked_at: string;
+  contributors: Contributor[];
+}
+
 export interface SetupStatus {
   is_setup_complete: boolean;
   user_count: number;

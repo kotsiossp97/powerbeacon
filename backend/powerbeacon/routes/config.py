@@ -2,17 +2,17 @@
 Configuration API routes for OIDC and other settings.
 """
 
-from pydantic import BaseModel
+from dataclasses import asdict
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
-from powerbeacon.core.deps import get_current_active_superuser, SessionDep
-from powerbeacon.crud.config_crud import (
-    create_or_update_oidc_settings,
-    get_oidc_settings,
-)
-from powerbeacon.services.oidc import configure_oauth_client
+from powerbeacon.core.deps import CurrentUser, SessionDep, get_current_active_superuser
+from powerbeacon.crud.config_crud import create_or_update_oidc_settings, get_oidc_settings
 from powerbeacon.models.config import OIDCSettingsCreate
+from powerbeacon.services.app_metadata import get_app_metadata
+from powerbeacon.services.oidc import configure_oauth_client
 
 router = APIRouter(prefix="/config", tags=["Configuration"])
 
@@ -32,6 +32,23 @@ class OIDCConfigPublic(BaseModel):
     enabled: bool
     server_metadata_url: str | None = None
     client_id: str | None = None
+
+
+class ContributorPublic(BaseModel):
+    login: str | None = None
+    avatar_url: str | None = None
+    html_url: str | None = None
+    contributions: int = 0
+
+
+class AppMetadataPublic(BaseModel):
+    current_version: str
+    latest_version: str | None = None
+    update_available: bool
+    release_url: str
+    repo_url: str
+    checked_at: datetime
+    contributors: list[ContributorPublic]
 
 
 @router.get("/oidc")
@@ -83,3 +100,10 @@ async def update_oidc_config(config: OIDCConfig, session: SessionDep) -> dict:
         "message": "OIDC configuration updated successfully",
         "enabled": updated_settings.enabled,
     }
+
+
+@router.get("/about")
+async def get_about_config(current_user: CurrentUser) -> AppMetadataPublic:
+    """Get application metadata for authenticated users."""
+    _ = current_user
+    return AppMetadataPublic.model_validate(asdict(get_app_metadata()))

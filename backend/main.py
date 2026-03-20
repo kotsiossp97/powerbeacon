@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="PowerBeacon API",
     description="Wake-on-LAN and device management API",
-    version="1.0.0",
+    version="1.0.1",
     lifespan=lifespan,
     docs_url="/api/docs",
     # root_path="/api",

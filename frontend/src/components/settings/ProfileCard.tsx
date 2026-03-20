@@ -1,5 +1,3 @@
-import { User as UserIcon } from "lucide-react";
-import type { User } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -8,6 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { User } from "@/types";
+import { User as UserIcon } from "lucide-react";
 
 interface ProfileCardProps {
   user?: User | null;

@@ -7,20 +7,22 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
 from powerbeacon.core import settings
 from powerbeacon.models.generic import ErrorResponse
 
 # Import routers
 from powerbeacon.routes import agents, clusters, config, devices, login, setup, users
-from starlette.middleware.sessions import SessionMiddleware
-from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Perform any startup tasks here (e.g., initialize database, load models)
-    from powerbeacon.core.db import engine, init_db
     from sqlmodel import Session
+
+    from powerbeacon.core.db import engine, init_db
 
     with Session(engine) as session:
         init_db(session)
@@ -30,7 +32,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="PowerBeacon API",
     description="Wake-on-LAN and device management API",
-    version="1.0.1",
+    version=settings.app_version,
     lifespan=lifespan,
     docs_url="/api/docs",
     # root_path="/api",

@@ -1,12 +1,11 @@
 import datetime as dt
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-
 from powerbeacon.core import security, settings
-from powerbeacon.core.deps import SessionDep, CurrentUser
+from powerbeacon.core.deps import CurrentUser, SessionDep
 from powerbeacon.crud import user_crud
 from powerbeacon.models.generic import Token
 from powerbeacon.models.users import UserCreate, UserPublic
@@ -84,5 +83,5 @@ async def oauth_callback(request: Request, db: SessionDep):
     jwt_token = security.create_access_token(user.id, expires_delta=access_token_expires)
 
     # Redirect back to frontend with token
-    frontend_url = settings.frontend_url or "http://localhost:5173"
+    frontend_url = f"{request.url.scheme}://{request.url.netloc}"
     return RedirectResponse(url=f"{frontend_url}/login?token={jwt_token}")

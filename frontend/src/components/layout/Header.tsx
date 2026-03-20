@@ -5,26 +5,31 @@ import logoBadge from "@/assets/badge-512.png";
 import { useLocalAuth } from "@/auth/localAuth";
 import { useAuthStore } from "@/auth/useAuth";
 import MobileNavigation from "@/components/layout/MobileNavigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import { cn } from "@/lib/utils";
 import { useVisibleNavigationLinks } from "@/routes/navlinks";
 import {
   BookOpen,
   BookOpenText,
   ChevronDown,
+  Download,
   LogOut,
   Menu,
-  X
+  Settings,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -34,8 +39,10 @@ export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user } = useAuthStore();
+  const metadata = useAppMetadataStore((state) => state.metadata);
   const { logout } = useLocalAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const updateAvailable = metadata?.update_available;
 
   if (!isAuthenticated) {
     navigate("/login");
@@ -113,6 +120,7 @@ export const Header = () => {
                     <AvatarFallback className="bg-accent-foreground text-accent text-xs">
                       {getUserInitials(user)}
                     </AvatarFallback>
+                    {updateAvailable && <AvatarBadge />}
                   </Avatar>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -132,48 +140,82 @@ export const Header = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="my-2" />
-                <DropdownMenuItem asChild>
-                  <div className="flex items-center justify-center">
-                    <ThemeToggle />
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="mt-1 mb-2" asChild>
-                  <Button
-                    variant={"destructive"}
-                    className="w-full"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
-                  </Button>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  {updateAvailable && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/settings"
+                        className="flex items-center justify-between gap-3"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Download className="h-4 w-4 text-primary" />
+                          Update available
+                        </span>
+                        <Badge variant="default">
+                          v{metadata?.latest_version?.replace(/^v/, "")}
+                        </Badge>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to="/settings"
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </span>
+                      {updateAvailable ? (
+                        <Badge variant="secondary">Review</Badge>
+                      ) : null}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <div className="flex items-center justify-center">
+                      <ThemeToggle />
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="mt-1 mb-2" asChild>
+                    <Button
+                      variant={"destructive"}
+                      className="w-full"
+                      onClick={handleLogout}
+                    >
+                      <LogOut data-icon="inline-start" />
+                      Sign out
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator className="my-3" />
-                <DropdownMenuItem asChild>
-                  <Button variant="outline" className="w-full" asChild>
-                    <a
-                      className="gap-2"
-                      href="https://kotsiossp97.github.io/powerbeacon"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <BookOpen className="h-4 w-4" />
-                      PowerBeacon Docs
-                    </a>
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="mt-2" asChild>
-                  <Button variant="outline" className="w-full" asChild>
-                    <a
-                      className="gap-2"
-                      href="/api/docs"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <BookOpenText className="h-4 w-4" />
-                      API Documentation
-                    </a>
-                  </Button>
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Button variant="outline" className="w-full" asChild>
+                      <a
+                        className="gap-2"
+                        href="https://kotsiossp97.github.io/powerbeacon"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <BookOpen data-icon="inline-start" />
+                        PowerBeacon Docs
+                      </a>
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="mt-2" asChild>
+                    <Button variant="outline" className="w-full" asChild>
+                      <a
+                        className="gap-2"
+                        href="/api/docs"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <BookOpenText data-icon="inline-start" />
+                        API Documentation
+                      </a>
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -181,7 +223,10 @@ export const Header = () => {
       </div>
 
       {/* Mobile Navigation */}
-      <MobileNavigation mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+      <MobileNavigation
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
     </header>
   );
 };

@@ -4,6 +4,7 @@
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { useAuthStore } from "@/auth/useAuth";
 import "@/index.css";
+import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import { AgentsPage } from "@/routes/AgentsPage";
 import ClusterDetailPage from "@/routes/ClusterDetailPage";
 import ClustersPage from "@/routes/ClustersPage";
@@ -26,6 +27,8 @@ function App() {
     loadCurrentUser,
     loadAuthConfig,
   } = useAuthStore();
+  const loadAppMetadata = useAppMetadataStore((state) => state.loadMetadata);
+  const resetAppMetadata = useAppMetadataStore((state) => state.reset);
 
   useEffect(() => {
     const initialize = async () => {
@@ -35,6 +38,15 @@ function App() {
     };
     initialize();
   }, [checkSetup, loadCurrentUser, loadAuthConfig]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      resetAppMetadata();
+      return;
+    }
+
+    void loadAppMetadata();
+  }, [isAuthenticated, loadAppMetadata, resetAppMetadata]);
 
   if (loading || isSetupComplete === null) {
     return (

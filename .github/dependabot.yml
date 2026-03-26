@@ -1,0 +1,31 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+multi-ecosystem-groups:
+  dependencies:
+    schedule:
+      interval: "weekly"
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend" # Location of package manifests
+    multi-ecosystem-group: "dependencies"
+    patterns: ["*"]
+    ignore:
+      - dependency-name: "npm"
+        update-types: [ "version-update:semver-major" ]
+        
+  - package-ecosystem: "uv"
+    directories: 
+      - "/backend"
+      - "/docs"
+    multi-ecosystem-group: "dependencies"
+    patterns: ["*"]
+    ignore:
+      # Ignore major updates as most major updates will need manual intervention
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]

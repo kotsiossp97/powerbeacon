@@ -12,12 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { AppMetadata } from "@/types";
+import { SiGithub } from '@icons-pack/react-simple-icons';
 import {
   AlertCircle,
   Bug,
   Download,
   GitBranch,
-  Github,
   Globe,
   RefreshCw,
   Users,
@@ -134,7 +134,7 @@ export const AboutPowerBeaconCard = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Github className="mb-2 text-primary" />
+              <SiGithub className="mb-2 text-primary" />
               <p className="text-sm text-muted-foreground">Repository</p>
             </a>
             <a

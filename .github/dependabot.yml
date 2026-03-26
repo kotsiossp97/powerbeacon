@@ -16,7 +16,7 @@ updates:
     multi-ecosystem-group: "dependencies"
     patterns: ["*"]
     ignore:
-      - dependency-name: "npm"
+      - dependency-name: "*"
         update-types: [ "version-update:semver-major" ]
         
   - package-ecosystem: "uv"

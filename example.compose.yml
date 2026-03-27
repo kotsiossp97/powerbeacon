@@ -30,6 +30,30 @@ services:
     networks:
       - powerbeacon_network
 
+  # ────────────────────────────────────────────────────────────────────────────
+  # Agent (optional — only when user wants to run the agent in Docker -- ONLY FOR LINUX)
+  #
+  # IMPORTANT: network_mode: host is REQUIRED. The agent sends UDP broadcast
+  # packets to wake devices. Docker's bridge network cannot broadcast to the
+  # physical LAN, so the container must share the host's network namespace.
+  #
+  # CONSEQUENCE of network_mode: host:
+  #   - The agent is reachable at the host's own IP on port 18080
+  #   - This works on Linux only. Not supported on Docker Desktop (Windows/macOS).
+  #
+  # Set AGENT_ADVERTISE_IP if the host has multiple interfaces (e.g., eth0 + a
+  # VPN adapter) so the backend registers the correct LAN IP for dispatch.
+  # ────────────────────────────────────────────────────────────────────────────
+  # powerbeacon-agent:
+  #   image: kotsiossp97/powerbeacon-agent:latest
+  #   container_name: powerbeacon-agent
+  #   environment:
+  #     BACKEND_URL: http://localhost:8000
+  #     AGENT_ADVERTISE_IP: ${AGENT_ADVERTISE_IP:-} # Optional: set if host has multiple interfaces to ensure correct IP is registered in backend
+  #   network_mode: host # Required
+  #   depends_on:
+  #     - powerbeacon
+
 volumes:
   powerbeacon_data:
 

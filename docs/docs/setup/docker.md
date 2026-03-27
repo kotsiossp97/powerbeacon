@@ -130,6 +130,8 @@ Expected services:
 
 On Docker Desktop (Windows/macOS), direct UDP broadcast from containers is unreliable for LAN wake. PowerBeacon solves this with agents: install the lightweight `powerbeacon-agent` on a Linux machine in the target LAN, register it in the UI, and assign it to your devices. The backend dispatches WOL packets through the agent over HTTP instead of broadcasting directly.
 
+On Linux hosts, an optional containerized agent deployment is supported when `network_mode: host` is used for the agent container.
+
 !!! note "Recommended production pattern"
     Keep backend/frontend/db containerized, and deploy one or more agents close to the target subnets.
 

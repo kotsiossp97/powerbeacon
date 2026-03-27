@@ -66,6 +66,7 @@ make run
 chmod +x build.sh
 ./build.sh all          # Build all platforms
 ./build.sh local        # Build for current platform
+./build.sh docker-cross # Build using TARGETOS/TARGETARCH from env (Buildx use)
 ./build.sh clean        # Clean build artifacts
 ```
 
@@ -92,6 +93,15 @@ GOOS=windows GOARCH=amd64 go build -o build/powerbeacon-agent-windows-amd64.exe 
 GOOS=darwin GOARCH=amd64 go build -o build/powerbeacon-agent-darwin-amd64 ./cmd/agent
 GOOS=darwin GOARCH=arm64 go build -o build/powerbeacon-agent-darwin-arm64 ./cmd/agent
 ```
+
+### Docker Buildx-oriented build script usage
+
+```bash
+TARGETOS=linux TARGETARCH=amd64 ./build.sh docker-cross
+TARGETOS=linux TARGETARCH=arm64 ./build.sh docker-cross
+```
+
+This target is primarily used by the Dockerfile during `docker buildx build` so each platform receives a correctly compiled static agent binary.
 
 ## Running
 

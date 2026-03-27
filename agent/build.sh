@@ -15,6 +15,18 @@ build_linux() {
     GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.Version=$VERSION" -o "$BUILD_DIR/$BINARY_NAME-linux-amd64" ./cmd/agent
 }
 
+build_docker_cross() {
+    # Called from Docker buildx for cross-platform builds
+    # TARGETOS and TARGETARCH are passed as environment variables
+    local TARGET_OS="${TARGETOS:?TARGETOS is not set}"
+    local TARGET_ARCH="${TARGETARCH:?TARGETARCH is not set}"
+    echo "Building for Docker Cross-Platform (${TARGET_OS}/${TARGET_ARCH})..."
+    CGO_ENABLED=0 GOOS="${TARGET_OS}" GOARCH="${TARGET_ARCH}" go build \
+        -ldflags "-s -w -X main.Version=$VERSION" \
+        -o "$BUILD_DIR/powerbeacon-agent" \
+        ./cmd/agent
+}
+
 build_linux_arm64() {
     echo "Building for Linux (arm64)..."
     GOOS=linux GOARCH=arm64 go build -ldflags "-s -w -X main.Version=$VERSION" -o "$BUILD_DIR/$BINARY_NAME-linux-arm64" ./cmd/agent
@@ -84,6 +96,10 @@ case "$TARGET" in
     linux)
         ensure_build_dir
         build_linux
+    ;;
+    docker-cross)
+        ensure_build_dir
+        build_docker_cross
     ;;
     linux-arm64)
         ensure_build_dir

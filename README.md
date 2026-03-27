@@ -1,4 +1,5 @@
 [![Docker Image CI/CD](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docker-image.yml)
+[![Agent Docker Image CI/CD](https://github.com/kotsiossp97/powerbeacon/actions/workflows/agent-image.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/agent-image.yml)
 [![Documentation](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml/badge.svg)](https://github.com/kotsiossp97/powerbeacon/actions/workflows/docs.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/kotsiossp97/powerbeacon?style=flat&logo=docker&label=Docker%20Pulls&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fkotsiossp97%2Fpowerbeacon)
 ![Docker Image Size](https://img.shields.io/docker/image-size/kotsiossp97/powerbeacon?logo=docker&label=Image%20Size)
@@ -83,6 +84,13 @@ make run
 ## Development note
 
 The schema has been refactored directly for the current development phase. If you still have a database from the older single-agent device model, reset it before starting this version of the app.
+
+## Agent container image
+
+- Dedicated image: `kotsiossp97/powerbeacon-agent`
+- Multi-architecture support: `linux/amd64` and `linux/arm64`
+- Built and published by the dedicated GitHub Actions workflow in `.github/workflows/agent-image.yml`
+- On tag pushes, the workflow builds the agent image only when there are changes under `agent/`
 
 ## Key API routes
 

@@ -75,3 +75,30 @@ as it provides a good balance between ease of use and flexibility. It is also th
       -e JWT_SECRET=your-secret-key-change-in-production \
       powerbeacon:latest
     ```
+
+## Optional Agent Container (Linux only)
+
+If you want to run the agent in Docker, use a Linux host and `network_mode: host`.
+
+Why this is required:
+
+- Wake-on-LAN uses UDP broadcast to the physical LAN.
+- Docker bridge networking cannot broadcast to the host LAN segment.
+- Docker Desktop (Windows/macOS) is not suitable for this containerized WOL path.
+
+Example service:
+
+```yaml
+services:
+  powerbeacon-agent:
+    image: kotsiossp97/powerbeacon-agent:latest
+    container_name: powerbeacon-agent
+    environment:
+      BACKEND_URL: http://localhost:8000
+      AGENT_ADVERTISE_IP: ${AGENT_ADVERTISE_IP:-}
+    network_mode: host
+    depends_on:
+      - powerbeacon
+```
+
+If the host has multiple interfaces (for example Ethernet and VPN), set `AGENT_ADVERTISE_IP` so the backend stores the correct reachable LAN IP for dispatch.

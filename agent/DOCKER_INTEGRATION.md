@@ -4,12 +4,15 @@ This directory contains an example of how to run the PowerBeacon agent alongside
 
 ## Important Note
 
-**The agent MUST run on the host machine, NOT in a Docker container.**
+The recommended production setup is to run the agent directly on the host machine.
 
-This is because:
+Containerized agent deployment is supported on Linux hosts only when `network_mode: host` is used.
+
+Reasoning:
 - Wake-on-LAN requires Layer 2 broadcast packets
-- Docker's networking stack on Windows/macOS cannot send broadcast packets to the host network
-- The agent needs direct access to physical network interfaces
+- Docker bridge networking cannot broadcast to the physical LAN
+- Docker Desktop on Windows/macOS cannot provide reliable host-LAN broadcast for this use case
+- The agent needs direct access to physical network interfaces or host network namespace
 
 ## Development Setup
 
@@ -44,6 +47,22 @@ go build -o powerbeacon-agent ./cmd/agent
 # Windows
 .\powerbeacon-agent.exe -backend http://localhost:8000
 ```
+
+### Optional: Run the Agent in Docker (Linux only)
+
+```yaml
+powerbeacon-agent:
+  image: kotsiossp97/powerbeacon-agent:latest
+  container_name: powerbeacon-agent
+  environment:
+    BACKEND_URL: http://localhost:8000
+    AGENT_ADVERTISE_IP: ${AGENT_ADVERTISE_IP:-}
+  network_mode: host
+  depends_on:
+    - powerbeacon
+```
+
+Use `AGENT_ADVERTISE_IP` when the Linux host has multiple interfaces so the backend stores a reachable LAN IP.
 
 The agent will:
 1. Detect network interfaces

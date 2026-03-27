@@ -50,6 +50,32 @@ GOOS=darwin GOARCH=amd64 go build -o build/powerbeacon-agent-darwin-amd64 ./cmd/
 GOOS=darwin GOARCH=arm64 go build -o build/powerbeacon-agent-darwin-arm64 ./cmd/agent
 ```
 
+### Build script targets
+
+```bash
+./build.sh linux
+./build.sh linux-arm64
+./build.sh windows
+./build.sh darwin
+./build.sh docker-cross
+```
+
+The `docker-cross` target is intended for Docker Buildx flows. It reads `TARGETOS` and `TARGETARCH` from the environment and compiles a static binary to `build/powerbeacon-agent`.
+
+### Docker image (multi-arch)
+
+Build and push a multi-platform image:
+
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t kotsiossp97/powerbeacon-agent:latest \
+  --push \
+  .
+```
+
+The Dockerfile passes Buildx target platform values into the build script (`TARGETOS`/`TARGETARCH`), and the script builds the matching architecture binary for each platform.
+
 ## Installation
 
 The agent should be installed as a system service. Installation scripts are provided by the PowerBeacon backend.

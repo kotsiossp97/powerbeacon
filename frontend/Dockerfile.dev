@@ -1,13 +1,10 @@
-FROM node:20-alpine
+FROM node:lts
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
-
-# Install additional dev tools
-RUN npm install -D
+RUN npm install
 
 COPY . .
 

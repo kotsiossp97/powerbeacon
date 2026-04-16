@@ -14,7 +14,8 @@ from powerbeacon.core import settings
 GITHUB_REPO = "kotsiossp97/powerbeacon"
 GITHUB_API_BASE = "https://api.github.com"
 REPO_URL = f"https://github.com/{GITHUB_REPO}"
-CACHE_TTL = timedelta(minutes=15)
+METADATA_CACHE_TTL = timedelta(hours=6)
+CONTRIBUTORS_CACHE_TTL = timedelta(hours=24)
 
 
 @dataclass(slots=True)
@@ -32,6 +33,8 @@ class AppMetadata:
 class _CacheState:
     value: AppMetadata | None = None
     expires_at: datetime | None = None
+    contributors: list[dict[str, str | int | None]] | None = None
+    contributors_expires_at: datetime | None = None
 
 
 _cache = _CacheState()
@@ -119,20 +122,35 @@ def _fetch_contributors() -> list[dict[str, str | int | None]]:
 
 def get_app_metadata() -> AppMetadata:
     now = datetime.now(UTC)
+    stale_cache: AppMetadata | None = None
+    cached_contributors: list[dict[str, str | int | None]] | None = None
+    refresh_contributors = True
 
     with _cache_lock:
+        stale_cache = _cache.value
         if _cache.value and _cache.expires_at and now < _cache.expires_at:
             return _cache.value
+        cached_contributors = _cache.contributors
+        refresh_contributors = not (
+            _cache.contributors is not None
+            and _cache.contributors_expires_at
+            and now < _cache.contributors_expires_at
+        )
 
     latest_version: str | None = None
     release_url = REPO_URL
-    contributors: list[dict[str, str | int | None]] = []
+    contributors: list[dict[str, str | int | None]] = cached_contributors or []
 
     try:
         latest_version, release_url = _fetch_latest_release()
-        contributors = _fetch_contributors()
+        if refresh_contributors:
+            contributors = _fetch_contributors()
     except (HTTPError, URLError, TimeoutError, ValueError, json.JSONDecodeError):
-        pass
+        if stale_cache:
+            # Keep serving stale data when GitHub API is unavailable or rate-limited.
+            with _cache_lock:
+                _cache.expires_at = now + METADATA_CACHE_TTL
+            return stale_cache
 
     metadata = AppMetadata(
         current_version=settings.app_version,
@@ -146,6 +164,8 @@ def get_app_metadata() -> AppMetadata:
 
     with _cache_lock:
         _cache.value = metadata
-        _cache.expires_at = now + CACHE_TTL
+        _cache.expires_at = now + METADATA_CACHE_TTL
+        _cache.contributors = contributors
+        _cache.contributors_expires_at = now + CONTRIBUTORS_CACHE_TTL
 
     return metadata

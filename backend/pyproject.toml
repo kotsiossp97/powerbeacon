@@ -12,14 +12,14 @@ dependencies = [
     "pwdlib[argon2,bcrypt]>=0.3.0",
     "pydantic>=2.13.4",
     "pydantic-settings>=2.14.1",
-    "pyjwt>=2.11.0",
+    "pyjwt>=2.13.0",
     "sqlalchemy>=2.0.48",
     "sqlmodel>=0.0.37",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.13",
+    "ruff>=0.15.14",
 ]
 
 [tool.ruff]

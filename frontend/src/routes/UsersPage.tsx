@@ -53,6 +53,7 @@ export const UsersPage = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadUsers();
   }, [loadUsers]);
 
@@ -152,7 +153,9 @@ export const UsersPage = () => {
       loadUsers();
     } catch (err) {
       const apiError = err as { response?: { data?: { detail?: string } } };
-      toast.error(apiError.response?.data?.detail || "Failed to update user status");
+      toast.error(
+        apiError.response?.data?.detail || "Failed to update user status",
+      );
     }
   };
 
@@ -172,10 +175,14 @@ export const UsersPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">User Management</h1>
-          <p className="text-muted-foreground">Manage user accounts and permissions</p>
+          <h1 className="text-foreground text-2xl font-semibold">
+            User Management
+          </h1>
+          <p className="text-muted-foreground">
+            Manage user accounts and permissions
+          </p>
         </div>
         {canManageUsers && (
           <Button size="sm" onClick={() => handleOpenForm()}>
@@ -186,12 +193,16 @@ export const UsersPage = () => {
       </div>
 
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-lg p-4">
+        <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-lg border p-4">
           {error}
         </div>
       )}
 
-      <UsersStats total={stats.total} active={stats.active} admins={stats.admins} />
+      <UsersStats
+        total={stats.total}
+        active={stats.active}
+        admins={stats.admins}
+      />
 
       <UsersFilters
         searchQuery={searchQuery}

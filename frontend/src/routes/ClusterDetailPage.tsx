@@ -79,7 +79,7 @@ const ClusterDetailPage = () => {
     };
 
     void loadCluster();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canManageCluster, clusterId, reloadToken]);
 
   const manageableDevices = useMemo(() => {
@@ -160,7 +160,7 @@ const ClusterDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12 text-muted-foreground">
+      <div className="text-muted-foreground flex items-center justify-center py-12">
         Loading cluster...
       </div>
     );
@@ -171,12 +171,12 @@ const ClusterDetailPage = () => {
       <div className="space-y-4">
         <Link
           to="/clusters"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+          className="text-primary inline-flex items-center gap-2 text-sm hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to clusters
         </Link>
-        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
+        <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border p-4">
           {error || "Cluster not found"}
         </div>
       </div>
@@ -189,16 +189,16 @@ const ClusterDetailPage = () => {
         <div className="space-y-3">
           <Link
             to="/clusters"
-            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+            className="text-primary inline-flex items-center gap-2 text-sm hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to clusters
           </Link>
           <div>
-            <h1 className="text-3xl font-semibold text-foreground">
+            <h1 className="text-foreground text-3xl font-semibold">
               {cluster.name}
             </h1>
-            <p className="mt-2 max-w-3xl text-muted-foreground">
+            <p className="text-muted-foreground mt-2 max-w-3xl">
               {cluster.description ||
                 "No description provided for this cluster."}
             </p>
@@ -241,7 +241,7 @@ const ClusterDetailPage = () => {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
+        <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border p-4">
           {error}
         </div>
       )}
@@ -262,7 +262,7 @@ const ClusterDetailPage = () => {
           </CardHeader>
           <CardContent>
             {cluster.devices.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
+              <div className="border-border text-muted-foreground rounded-lg border border-dashed p-6 text-center">
                 This cluster has no devices yet.
               </div>
             ) : (
@@ -284,21 +284,21 @@ const ClusterDetailPage = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             {cluster.agents.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
+              <div className="border-border text-muted-foreground rounded-lg border border-dashed p-6 text-center">
                 This cluster has no agents yet.
               </div>
             ) : (
               cluster.agents.map((agent) => (
                 <div
                   key={agent.id}
-                  className="rounded-lg border border-border bg-background/60 p-4"
+                  className="border-border bg-background/60 rounded-lg border p-4"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="font-medium text-foreground">
+                      <div className="text-foreground font-medium">
                         {agent.hostname}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-muted-foreground text-sm">
                         {agent.ip}
                       </div>
                     </div>
@@ -310,7 +310,7 @@ const ClusterDetailPage = () => {
                       {agent.status}
                     </Badge>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="text-muted-foreground mt-3 flex items-center justify-between text-sm">
                     <span>Assigned devices</span>
                     <span className="text-foreground">
                       {agent.device_count}

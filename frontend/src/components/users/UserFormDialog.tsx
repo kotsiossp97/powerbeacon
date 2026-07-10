@@ -79,7 +79,7 @@ export const UserFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg pb-0">
+      <DialogContent className="pb-0 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{editingUser ? "Edit User" : "Create User"}</DialogTitle>
           <DialogDescription>
@@ -90,7 +90,7 @@ export const UserFormDialog = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <div className="-mx-4 no-scrollbar max-h-[80svh] overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 max-h-[80svh] overflow-y-auto px-4">
             <FieldGroup>
               <Field data-invalid={!!errors.username}>
                 <FieldLabel htmlFor="username">Username</FieldLabel>
@@ -199,7 +199,7 @@ export const UserFormDialog = ({
               </Field>
             </FieldGroup>
 
-            <DialogFooter className="mb-0 mt-2">
+            <DialogFooter className="mt-2 mb-0">
               <Button
                 type="button"
                 variant="outline"

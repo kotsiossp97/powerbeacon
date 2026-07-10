@@ -1,5 +1,11 @@
+from pathlib import Path
+
+from alembic.config import Config
 from sqlmodel import Session, create_engine
+
+from alembic import command
 from powerbeacon.core import settings
+from powerbeacon.core.seed import seed_database
 
 engine = create_engine(
     settings.db_url,
@@ -8,15 +14,17 @@ engine = create_engine(
 )
 
 
-def init_db(session: Session) -> None:
-    # Tables should be created with Alembic migrations
-    # But if you don't want to use migrations, create
-    # the tables un-commenting the next lines
-    from sqlmodel import SQLModel
-
+def init_db() -> None:
     # Import all models to register them with SQLModel
     import powerbeacon.models  # noqa: F401
 
-    print("Creating database tables...")
-    # This works because the models are already imported and registered from app.models
-    SQLModel.metadata.create_all(engine)
+    alembic_ini = Path(__file__).resolve().parents[2] / "alembic.ini"
+    if not alembic_ini.exists():
+        raise RuntimeError(f"Alembic configuration not found: {alembic_ini}")
+
+    print("Applying database migrations...")
+    alembic_cfg = Config(str(alembic_ini))
+    command.upgrade(alembic_cfg, "head")
+
+    with Session(engine) as session:
+        seed_database(session)

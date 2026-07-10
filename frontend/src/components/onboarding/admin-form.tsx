@@ -10,7 +10,10 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { PasswordInput, PasswordInputStrengthChecker } from "@/components/ui/password-input";
+import {
+  PasswordInput,
+  PasswordInputStrengthChecker,
+} from "@/components/ui/password-input";
 
 const formSchema = z
   .object({

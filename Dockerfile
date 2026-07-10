@@ -58,6 +58,8 @@ RUN --mount=type=bind,source=./backend/uv.lock,target=uv.lock \
   uv sync --locked
 
 COPY ./backend/powerbeacon ./powerbeacon
+COPY ./backend/alembic ./alembic
+COPY ./backend/alembic.ini .
 COPY ./backend/main.py .
 
 # Place executables in the environment at the front of the path

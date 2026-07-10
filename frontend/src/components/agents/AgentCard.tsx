@@ -23,7 +23,8 @@ export const AgentCard = ({ agent, onRefresh }: AgentCardProps) => {
     } catch (err: unknown) {
       console.error("Delete error:", err);
       const message =
-        err instanceof AxiosError && typeof err.response?.data?.detail === "string"
+        err instanceof AxiosError &&
+        typeof err.response?.data?.detail === "string"
           ? err.response.data.detail
           : "Failed to delete agent";
       alert(message);
@@ -77,15 +78,15 @@ export const AgentCard = ({ agent, onRefresh }: AgentCardProps) => {
 
   return (
     <div className="card">
-      <div className="flex justify-between items-start mb-4">
+      <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <span className="text-2xl">{getOSIcon(agent.os)}</span>
             <h3 className="text-lg font-bold text-gray-900">
               {agent.hostname}
             </h3>
             <span
-              className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(agent.status)}`}
+              className={`rounded px-2 py-1 text-xs font-medium ${getStatusColor(agent.status)}`}
             >
               {agent.status}
             </span>
@@ -100,15 +101,15 @@ export const AgentCard = ({ agent, onRefresh }: AgentCardProps) => {
         <button
           onClick={() => setShowDeleteConfirm(true)}
           disabled={loading}
-          className="btn btn-secondary text-sm px-3 py-1"
+          className="btn btn-secondary px-3 py-1 text-sm"
         >
           Remove
         </button>
       </div>
 
       {showDeleteConfirm && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-          <p className="text-sm text-gray-700 mb-3">
+        <div className="mt-4 rounded border border-yellow-200 bg-yellow-50 p-3">
+          <p className="mb-3 text-sm text-gray-700">
             Are you sure you want to remove this agent? This will not uninstall
             the agent from the host.
           </p>
@@ -116,14 +117,14 @@ export const AgentCard = ({ agent, onRefresh }: AgentCardProps) => {
             <button
               onClick={handleDelete}
               disabled={loading}
-              className="btn btn-danger text-sm px-3 py-1"
+              className="btn btn-danger px-3 py-1 text-sm"
             >
               {loading ? "Removing..." : "Confirm Remove"}
             </button>
             <button
               onClick={() => setShowDeleteConfirm(false)}
               disabled={loading}
-              className="btn btn-secondary text-sm px-3 py-1"
+              className="btn btn-secondary px-3 py-1 text-sm"
             >
               Cancel
             </button>
@@ -131,7 +132,7 @@ export const AgentCard = ({ agent, onRefresh }: AgentCardProps) => {
         </div>
       )}
 
-      <div className="mt-4 pt-4 border-t border-gray-200">
+      <div className="mt-4 border-t border-gray-200 pt-4">
         <p className="text-xs text-gray-500">
           ID: {agent.id.substring(0, 8)}...
         </p>

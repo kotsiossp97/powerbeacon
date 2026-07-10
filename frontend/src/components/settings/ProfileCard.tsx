@@ -15,36 +15,40 @@ interface ProfileCardProps {
 
 export const ProfileCard = ({ user }: ProfileCardProps) => {
   return (
-    <Card className="lg:col-span-1">
-      <CardHeader>
+    <Card>
+      <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
-          <UserIcon className="h-5 w-5 text-primary" />
+          <UserIcon className="text-primary h-5 w-5" />
           User Profile
         </CardTitle>
-        <CardDescription>Your account information and access role</CardDescription>
+        <CardDescription>
+          Your account information and access role
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Username</p>
-          <p className="font-medium text-foreground">{user?.username}</p>
+          <p className="text-muted-foreground text-sm">Username</p>
+          <p className="text-foreground font-medium">{user?.username}</p>
         </div>
 
         {user?.email && (
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Email</p>
-            <p className="font-medium text-foreground break-all">{user.email}</p>
+            <p className="text-muted-foreground text-sm">Email</p>
+            <p className="text-foreground font-medium break-all">
+              {user.email}
+            </p>
           </div>
         )}
 
         {user?.full_name && (
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Full Name</p>
-            <p className="font-medium text-foreground">{user.full_name}</p>
+            <p className="text-muted-foreground text-sm">Full Name</p>
+            <p className="text-foreground font-medium">{user.full_name}</p>
           </div>
         )}
 
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Role</p>
+          <p className="text-muted-foreground text-sm">Role</p>
           <Badge className="bg-primary/20 text-primary border-primary/30 capitalize">
             {user?.role || "unknown"}
           </Badge>

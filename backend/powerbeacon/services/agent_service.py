@@ -81,6 +81,56 @@ class AgentService:
                 exc_info=True,
             )
             return False
+
+    def probe_device(
+        self,
+        agent: Agent,
+        mac_address: str,
+        ip_address: str | None = None,
+    ) -> dict:
+        """Ask an agent to probe whether a device is reachable."""
+        try:
+            payload: dict[str, str] = {"mac": mac_address}
+            if ip_address:
+                payload["ip"] = ip_address
+
+            agent_url = self.get_agent_url(agent)
+            probe_endpoint = f"{agent_url}/reachability"
+
+            logger.info(
+                "Probing device reachability through agent %s (%s:%s): mac=%s ip=%s",
+                agent.hostname,
+                agent.ip,
+                agent.port,
+                mac_address,
+                ip_address or "<unknown>",
+            )
+
+            headers = {
+                "Authorization": f"Bearer {agent.token}",
+                "Content-Type": "application/json",
+            }
+
+            with httpx.Client(timeout=self.timeout_sec) as client:
+                response = client.post(probe_endpoint, json=payload, headers=headers)
+                response.raise_for_status()
+                return response.json()
+
+        except httpx.HTTPError as e:
+            logger.error(
+                "HTTP error probing device through agent %s: %s",
+                agent.hostname,
+                str(e),
+                exc_info=True,
+            )
+            return {"online": False, "message": str(e)}
+        except Exception as e:
+            logger.error(
+                "Failed to probe device reachability: %s",
+                str(e),
+                exc_info=True,
+            )
+            return {"online": False, "message": str(e)}
         except Exception as e:
             logger.error(
                 "Failed to dispatch WOL command: %s",

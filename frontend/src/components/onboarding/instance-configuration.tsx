@@ -37,9 +37,7 @@ const OnboardingInstanceConfiguration: React.FC<
             })
           }
           variant={"outline"}
-          className="items-center data-[state=on]:bg-success/50 data-[state=on]:border-success bg-destructive/50 border-destructive
-          hover:bg-destructive/70 data-[state=on]:hover:bg-success/70
-          "
+          className="data-[state=on]:bg-success/50 data-[state=on]:border-success bg-destructive/50 border-destructive hover:bg-destructive/70 data-[state=on]:hover:bg-success/70 items-center"
         >
           {value.enableOIDC ? (
             <>
@@ -54,7 +52,9 @@ const OnboardingInstanceConfiguration: React.FC<
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="oidc-server-metadata-url">OIDC Server Metadata URL</Label>
+        <Label htmlFor="oidc-server-metadata-url">
+          OIDC Server Metadata URL
+        </Label>
         <div className="md:mx-20">
           <Input
             id="oidc-server-metadata-url"

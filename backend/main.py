@@ -15,18 +15,22 @@ from powerbeacon.models.generic import ErrorResponse
 
 # Import routers
 from powerbeacon.routes import agents, clusters, config, devices, login, setup, users
+from powerbeacon.services.device_reachability_service import device_reachability_service
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Perform any startup tasks here (e.g., initialize database, load models)
-    from sqlmodel import Session
+    from powerbeacon.core.db import init_db
 
-    from powerbeacon.core.db import engine, init_db
-
-    with Session(engine) as session:
-        init_db(session)
+    init_db()
+    device_reachability_service.fetch_config()
+    if not device_reachability_service.enabled:
+        device_reachability_service.clear_online_status()
+    device_reachability_service.start()
     yield  # This is where the application runs
+
+    await device_reachability_service.stop()
 
 
 app = FastAPI(

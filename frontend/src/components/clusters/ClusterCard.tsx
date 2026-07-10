@@ -32,17 +32,17 @@ export const ClusterCard = ({
   onDelete,
 }: ClusterCardProps) => {
   return (
-    <Card className="border border-card hover:border-primary/40 transition-colors shadow-lg">
+    <Card className="border-card hover:border-primary/40 border shadow-lg transition-colors">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
             <Link
               to={`/clusters/${cluster.id}`}
-              className="text-lg font-semibold text-foreground hover:text-primary"
+              className="text-foreground hover:text-primary text-lg font-semibold"
             >
               {cluster.name}
             </Link>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {cluster.description || "No description provided."}
             </p>
           </div>
@@ -82,26 +82,26 @@ export const ClusterCard = ({
           )}
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-lg border border-border bg-background/60 p-3">
+          <div className="border-border bg-background/60 rounded-lg border p-3">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center h-8 w-8 rounded bg-secondary">
-                <Monitor className="w-4 h-4 text-foreground" />
+              <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded">
+                <Monitor className="text-foreground h-4 w-4" />
               </div>
               <div>
-                <p className="text-xl font-semibold text-foreground">
+                <p className="text-foreground text-xl font-semibold">
                   {cluster.device_count}
                 </p>
                 <p className="text-muted-foreground">Devices</p>
               </div>
             </div>
           </div>
-          <div className="rounded-lg border border-border bg-background/60 p-3">
+          <div className="border-border bg-background/60 rounded-lg border p-3">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center h-8 w-8 rounded bg-secondary">
-                <Server className="w-4 h-4 text-foreground" />
+              <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded">
+                <Server className="text-foreground h-4 w-4" />
               </div>
               <div>
-                <p className="text-xl font-semibold text-foreground">
+                <p className="text-foreground text-xl font-semibold">
                   {cluster.agent_count}
                 </p>
                 <p className="text-muted-foreground">Agents</p>
@@ -109,7 +109,7 @@ export const ClusterCard = ({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-2 text-sm">
           <Network className="h-4 w-4" />
           <span>Owner: {cluster.owner_name || "Unknown"}</span>
         </div>

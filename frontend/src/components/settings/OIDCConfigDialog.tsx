@@ -42,7 +42,7 @@ export const OIDCConfigDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl pb-0">
+      <DialogContent className="pb-0 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Configure OIDC</DialogTitle>
           <DialogDescription>
@@ -51,7 +51,7 @@ export const OIDCConfigDialog = ({
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <div className="-mx-4 no-scrollbar max-h-[80svh] overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 max-h-[80svh] overflow-y-auto px-4">
             <FieldGroup>
               <Field>
                 <FieldLabel>OIDC Status</FieldLabel>
@@ -67,7 +67,7 @@ export const OIDCConfigDialog = ({
                     >
                       {isEnabled ? "Enabled" : "Disabled"}
                     </Toggle>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       Toggle to enable or disable OIDC login
                     </span>
                   </div>
@@ -141,7 +141,7 @@ export const OIDCConfigDialog = ({
               </AlertDescription>
             </Alert>
 
-            <DialogFooter className="mb-0 mt-2">
+            <DialogFooter className="mt-2 mb-0">
               <Button
                 type="button"
                 variant="outline"

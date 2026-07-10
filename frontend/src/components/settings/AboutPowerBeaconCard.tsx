@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { AppMetadata } from "@/types";
-import { SiGithub } from '@icons-pack/react-simple-icons';
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import {
   AlertCircle,
   Bug,
@@ -57,8 +57,8 @@ export const AboutPowerBeaconCard = ({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
+      <CardHeader className="border-b">
+        <CardTitle className="flex items-center gap-2">
           <GitBranch className="text-primary" />
           Version Information
         </CardTitle>
@@ -71,14 +71,10 @@ export const AboutPowerBeaconCard = ({
           <Button
             type="button"
             variant="outline"
-            size="sm"
             onClick={() => void onRefresh()}
             disabled={loading}
           >
-            <RefreshCw
-              data-icon="inline-start"
-              className={loading ? "animate-spin" : undefined}
-            />
+            <RefreshCw className={loading ? "animate-spin" : undefined} />
             Refresh
           </Button>
         </CardAction>
@@ -93,22 +89,22 @@ export const AboutPowerBeaconCard = ({
         )}
 
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
-            <p className="text-sm text-muted-foreground">Current version</p>
-            <p className="mt-1 text-lg font-semibold text-foreground">
+          <div className="border-border bg-muted/30 rounded-lg border px-4 py-3">
+            <p className="text-muted-foreground text-sm">Current version</p>
+            <p className="text-foreground mt-1 text-lg font-semibold">
               v{metadata?.current_version || "unknown"}
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
-            <p className="text-sm text-muted-foreground">Latest release</p>
-            <p className="mt-1 text-lg font-semibold text-foreground">
+          <div className="border-border bg-muted/30 rounded-lg border px-4 py-3">
+            <p className="text-muted-foreground text-sm">Latest release</p>
+            <p className="text-foreground mt-1 text-lg font-semibold">
               {metadata?.latest_version
                 ? `v${metadata.latest_version.replace(/^v/, "")}`
                 : "Unavailable"}
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
-            <p className="text-sm text-muted-foreground">Status</p>
+          <div className="border-border bg-muted/30 rounded-lg border px-4 py-3">
+            <p className="text-muted-foreground text-sm">Status</p>
             <div className="mt-2 flex items-center gap-2">
               <Badge
                 variant={metadata?.update_available ? "default" : "secondary"}
@@ -126,7 +122,7 @@ export const AboutPowerBeaconCard = ({
           </CardTitle>
           <div className="grid gap-4 md:grid-cols-3">
             <a
-              className="flex flex-col items-center border rounded p-3 transition-colors hover:bg-muted/50 hover:border-primary"
+              className="hover:bg-muted/50 hover:border-primary flex flex-col items-center rounded border p-3 transition-colors"
               href={
                 metadata?.repo_url ||
                 "https://github.com/kotsiossp97/powerbeacon"
@@ -134,11 +130,11 @@ export const AboutPowerBeaconCard = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <SiGithub className="mb-2 text-primary" />
-              <p className="text-sm text-muted-foreground">Repository</p>
+              <SiGithub className="text-primary mb-2" />
+              <p className="text-muted-foreground text-sm">Repository</p>
             </a>
             <a
-              className="flex flex-col items-center border rounded p-3 transition-colors hover:bg-muted/50 hover:border-primary"
+              className="hover:bg-muted/50 hover:border-primary flex flex-col items-center rounded border p-3 transition-colors"
               href={
                 metadata?.repo_url
                   ? `${metadata?.repo_url}/issues`
@@ -147,11 +143,11 @@ export const AboutPowerBeaconCard = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Bug className="mb-2 text-primary" />
-              <p className="text-sm text-muted-foreground">Report Issue</p>
+              <Bug className="text-primary mb-2" />
+              <p className="text-muted-foreground text-sm">Report Issue</p>
             </a>
             <a
-              className="flex flex-col items-center border rounded p-3 transition-colors hover:bg-muted/50 hover:border-primary"
+              className="hover:bg-muted/50 hover:border-primary flex flex-col items-center rounded border p-3 transition-colors"
               href={
                 metadata?.release_url ||
                 `${metadata?.repo_url}/releases` ||
@@ -160,8 +156,8 @@ export const AboutPowerBeaconCard = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Download className="mb-2 text-primary" />
-              <p className="text-sm text-muted-foreground">Latest release</p>
+              <Download className="text-primary mb-2" />
+              <p className="text-muted-foreground text-sm">Latest release</p>
             </a>
           </div>
         </div>
@@ -172,14 +168,14 @@ export const AboutPowerBeaconCard = ({
             Contributors
           </CardTitle>
           {metadata?.contributors.length ? (
-            <div className="grid gap-3 grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
               {metadata.contributors.map((contributor) => (
                 <a
                   key={contributor.login}
                   href={contributor.html_url || metadata.repo_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-3 transition-colors hover:bg-muted/50"
+                  className="border-border bg-background hover:bg-muted/50 flex items-center gap-3 rounded-lg border px-3 py-3 transition-colors"
                 >
                   <Avatar>
                     <AvatarImage
@@ -191,10 +187,10 @@ export const AboutPowerBeaconCard = ({
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-foreground">
+                    <p className="text-foreground truncate font-medium">
                       @{contributor.login || "unknown"}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {contributor.contributions} contribution
                       {contributor.contributions === 1 ? "" : "s"}
                     </p>
@@ -214,7 +210,7 @@ export const AboutPowerBeaconCard = ({
         </div>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Release information is fetched from the public GitHub repository and
           cached by the backend.
         </p>

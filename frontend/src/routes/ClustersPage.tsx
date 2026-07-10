@@ -178,7 +178,7 @@ const ClustersPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Clusters</h1>
+          <h1 className="text-foreground text-2xl font-semibold">Clusters</h1>
           <p className="text-muted-foreground">
             Organize devices and agents into reusable wake orchestration groups.
           </p>
@@ -213,7 +213,7 @@ const ClustersPage = () => {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
+        <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border p-4">
           {error}
         </div>
       )}
@@ -230,7 +230,7 @@ const ClustersPage = () => {
         )}
       />
 
-      <div className="rounded-xl border border-border bg-card p-4">
+      <div className="border-border bg-card rounded-xl border p-4">
         <InputGroup>
           <InputGroupInput
             value={searchQuery}
@@ -244,15 +244,15 @@ const ClustersPage = () => {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-12 text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-center py-12">
           <Spinner className="size-10" />
         </div>
       ) : filteredClusters.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card/50 p-10 text-center">
-          <h2 className="text-lg font-medium text-foreground">
+        <div className="border-border bg-card/50 rounded-xl border border-dashed p-10 text-center">
+          <h2 className="text-foreground text-lg font-medium">
             No clusters found
           </h2>
-          <p className="mt-2 text-muted-foreground">
+          <p className="text-muted-foreground mt-2">
             {searchQuery
               ? "Try a different search query."
               : "Create a cluster to organize devices and agents."}
@@ -261,7 +261,7 @@ const ClustersPage = () => {
             <div className="mt-4">
               <Link
                 to="/dashboard"
-                className="text-sm font-medium text-primary hover:underline"
+                className="text-primary text-sm font-medium hover:underline"
               >
                 Manage individual devices on the dashboard
               </Link>

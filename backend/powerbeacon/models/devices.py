@@ -3,9 +3,10 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
-from powerbeacon.models.links import DeviceAgentLink
 from sqlalchemy import JSON, Column, DateTime
 from sqlmodel import Field, Relationship, SQLModel
+
+from powerbeacon.models.links import DeviceAgentLink
 
 if TYPE_CHECKING:
     from powerbeacon.models.agents import Agent
@@ -29,6 +30,15 @@ class DeviceBase(SQLModel):
     ip_address: str | None = Field(default=None, max_length=45, index=True)
     os_type: OSType
     is_active: bool = True
+    is_online: bool = False
+    last_reachability_check_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),
+    )
+    last_online_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),
+    )
     description: str | None = None
     tags: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     cluster_id: uuid.UUID | None = Field(default=None, foreign_key="clusters.id", index=True)

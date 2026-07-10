@@ -274,7 +274,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-primary to-background flex items-center justify-center p-4">
+    <main className="from-primary to-background flex min-h-screen items-center justify-center bg-linear-to-b p-4">
       <div className="w-full max-w-4xl">
         {/* Logo */}
         <motion.div
@@ -290,18 +290,18 @@ export default function OnboardingPage() {
             duration: 0.5,
             type: "keyframes",
           }}
-          className="flex items-center justify-center gap-3 mb-8 from-primary/20 to-primary/90 bg-radial from-50% border border-primary shadow-xl rounded-lg md:w-lg mx-auto backdrop-blur-3xl"
+          className="from-primary/20 to-primary/90 border-primary mx-auto mb-8 flex items-center justify-center gap-3 rounded-lg border bg-radial from-50% shadow-xl backdrop-blur-3xl md:w-lg"
         >
-            <img
-              src={logo}
-              alt="PowerBeacon Logo"
-              className="h-24 sm:h-36 object-contain"
-            />
+          <img
+            src={logo}
+            alt="PowerBeacon Logo"
+            className="h-24 object-contain sm:h-36"
+          />
         </motion.div>
 
         {/* Progress */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             {steps.map((step, index) => {
               const isCompleted = onboardingState.currentStep > step.id;
               const isCurrent = onboardingState.currentStep === step.id;
@@ -317,7 +317,7 @@ export default function OnboardingPage() {
                   <div className="flex flex-col items-center">
                     <motion.div
                       className={cn(
-                        "flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors",
+                        "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors",
                         isCompleted
                           ? "bg-primary border-primary text-primary-foreground"
                           : isCurrent
@@ -329,14 +329,14 @@ export default function OnboardingPage() {
                       }}
                     >
                       {isCompleted ? (
-                        <Check className="w-5 h-5" />
+                        <Check className="h-5 w-5" />
                       ) : (
-                        <StepIcon className="w-5 h-5" />
+                        <StepIcon className="h-5 w-5" />
                       )}
                     </motion.div>
                     <span
                       className={cn(
-                        "text-xs mt-2 font-medium hidden sm:block",
+                        "mt-2 hidden text-xs font-medium sm:block",
                         isCurrent ? "text-foreground" : "text-muted-foreground",
                       )}
                     >
@@ -346,7 +346,7 @@ export default function OnboardingPage() {
                   {index < steps.length - 1 && (
                     <div
                       className={cn(
-                        "flex-1 h-0.5 mx-4",
+                        "mx-4 h-0.5 flex-1",
                         isCompleted ? "bg-primary" : "bg-border",
                       )}
                     />
@@ -361,7 +361,7 @@ export default function OnboardingPage() {
         {/* Step Content */}
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl text-card-foreground">
+            <CardTitle className="text-card-foreground text-xl">
               {steps[onboardingState.currentStep - 1].title}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -425,11 +425,11 @@ export default function OnboardingPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
+        <p className="text-muted-foreground mt-6 text-center text-sm">
           Already have an account?{" "}
           <Button
             variant="link"
-            className="px-0 h-auto text-primary hover:text-primary/80"
+            className="text-primary hover:text-primary/80 h-auto px-0"
             onClick={() => navigate("/login", { replace: true })}
           >
             Sign in

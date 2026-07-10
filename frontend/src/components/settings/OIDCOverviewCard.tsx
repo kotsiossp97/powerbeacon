@@ -2,11 +2,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import type { OIDCConfigPublic } from "@/types";
 import { Lock, Settings as SettingsIcon, Shield } from "lucide-react";
@@ -23,29 +24,27 @@ export const OIDCOverviewCard = ({
   onConfigure,
 }: OIDCOverviewCardProps) => {
   return (
-    <Card className="lg:col-span-2">
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              OIDC Authentication
-            </CardTitle>
-            <CardDescription>
-              Configure single sign-on with an external identity provider
-            </CardDescription>
-          </div>
-          {isSuperuser && (
-            <Button onClick={onConfigure} size="sm">
-              <SettingsIcon className="mr-2 h-4 w-4" />
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle className="flex items-center gap-2">
+          <Shield className="text-primary" />
+          OIDC Authentication
+        </CardTitle>
+        <CardDescription>
+          Configure single sign-on with an external identity provider
+        </CardDescription>
+        {isSuperuser && (
+          <CardAction>
+            <Button onClick={onConfigure}>
+              <SettingsIcon />
               Configure
             </Button>
-          )}
-        </div>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between border border-border rounded-lg px-4 py-3 bg-muted/30">
-          <span className="text-sm text-muted-foreground">Status</span>
+        <div className="border-border bg-muted/30 flex items-center justify-between rounded-lg border px-4 py-3">
+          <span className="text-muted-foreground text-sm">Status</span>
           <Badge
             className={
               config?.enabled
@@ -58,8 +57,8 @@ export const OIDCOverviewCard = ({
         </div>
 
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Server Metadata URL</p>
-          <p className="text-sm font-mono break-all text-foreground">
+          <p className="text-muted-foreground text-sm">Server Metadata URL</p>
+          <p className="text-foreground font-mono text-sm break-all">
             {config?.server_metadata_url || "Not set"}
           </p>
         </div>
@@ -67,8 +66,8 @@ export const OIDCOverviewCard = ({
         {config?.enabled ? (
           <div className="space-y-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Client ID</p>
-              <p className="text-sm font-mono break-all text-foreground">
+              <p className="text-muted-foreground text-sm">Client ID</p>
+              <p className="text-foreground font-mono text-sm break-all">
                 {config.client_id || "Not set"}
               </p>
             </div>
@@ -78,13 +77,14 @@ export const OIDCOverviewCard = ({
             <Lock className="h-4 w-4" />
             <AlertTitle>OIDC is currently disabled</AlertTitle>
             <AlertDescription>
-              Enable OIDC to allow users to sign in through your identity provider.
+              Enable OIDC to allow users to sign in through your identity
+              provider.
             </AlertDescription>
           </Alert>
         )}
 
         {!isSuperuser && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Only superusers can modify authentication settings.
           </p>
         )}

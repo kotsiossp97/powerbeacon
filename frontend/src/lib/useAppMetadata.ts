@@ -35,7 +35,9 @@ export const useAppMetadataStore = create<AppMetadataState>((set, get) => ({
       const apiError = err as { response?: { data?: { detail?: string } } };
       set({
         loading: false,
-        error: apiError.response?.data?.detail || "Failed to load application metadata",
+        error:
+          apiError.response?.data?.detail ||
+          "Failed to load application metadata",
       });
     }
   },

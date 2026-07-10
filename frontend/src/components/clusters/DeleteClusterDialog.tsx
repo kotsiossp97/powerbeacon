@@ -1,12 +1,12 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { Cluster } from "@/types";
 
@@ -27,7 +27,9 @@ export const DeleteClusterDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Cluster</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete &quot;{cluster?.name}&quot;? Devices and agents will stay in the system, but they will be detached from this cluster.
+            Are you sure you want to delete &quot;{cluster?.name}&quot;? Devices
+            and agents will stay in the system, but they will be detached from
+            this cluster.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

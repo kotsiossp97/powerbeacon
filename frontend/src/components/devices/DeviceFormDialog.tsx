@@ -143,7 +143,7 @@ export const DeviceFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl pb-0">
+      <DialogContent className="pb-0 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{device ? "Edit Device" : "Add Device"}</DialogTitle>
           <DialogDescription>
@@ -153,7 +153,7 @@ export const DeviceFormDialog = ({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <div className="-mx-4 no-scrollbar max-h-[80svh] overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 max-h-[80svh] overflow-y-auto px-4">
             <FieldGroup>
               <Field data-invalid={!!form.formState.errors.name || undefined}>
                 <FieldLabel>Name</FieldLabel>
@@ -348,7 +348,7 @@ export const DeviceFormDialog = ({
                               />
                               {agent.hostname}
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               {agent.ip}
                             </span>
                           </span>
@@ -364,7 +364,7 @@ export const DeviceFormDialog = ({
               </Field>
             </FieldGroup>
 
-            <DialogFooter className="mb-0 mt-2">
+            <DialogFooter className="mt-2 mb-0">
               <Button
                 type="button"
                 variant="outline"

@@ -8,7 +8,7 @@ import { getInstallCommand, getManualInstructions } from "./instructions";
 export const AgentInstallInstructions = () => {
   return (
     <div className="space-y-6">
-      <p className="text-base ">
+      <p className="text-base">
         The PowerBeacon agent runs on your local network and sends Wake-on-LAN
         packets to your devices. Install the agent on a machine that is always
         on and connected to the same network as your devices.
@@ -34,7 +34,7 @@ export const AgentInstallInstructions = () => {
             },
           ]}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           This will download, install, and start the agent as a system service.
         </p>
       </div>
@@ -60,8 +60,8 @@ export const AgentInstallInstructions = () => {
 
       <Alert>
         <AlertDescription>
-          <h4 className="font-semibold mb-2">📝 Important Notes:</h4>
-          <ul className="text-sm space-y-1 list-disc list-inside">
+          <h4 className="mb-2 font-semibold">📝 Important Notes:</h4>
+          <ul className="list-inside list-disc space-y-1 text-sm">
             <li>
               The agent must run on the same network as your target devices
             </li>
@@ -78,9 +78,9 @@ export const AgentInstallInstructions = () => {
         </AlertDescription>
       </Alert>
 
-      <div className="p-4 bg-muted border rounded-md space-y-3">
+      <div className="bg-muted space-y-3 rounded-md border p-4">
         <h4 className="font-semibold">🔍 Verify Installation:</h4>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           After installation, check if the agent is running:
         </p>
         <CodeBlock
@@ -97,15 +97,15 @@ export const AgentInstallInstructions = () => {
             },
           ]}
         />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           The agent should appear on this page within 30 seconds of starting.
         </p>
       </div>
 
       <Alert variant="default">
         <AlertDescription>
-          <h4 className="font-semibold mb-2">⚠️ Troubleshooting:</h4>
-          <ul className="text-sm space-y-1 list-disc list-inside">
+          <h4 className="mb-2 font-semibold">⚠️ Troubleshooting:</h4>
+          <ul className="list-inside list-disc space-y-1 text-sm">
             <li>If the agent doesn't appear, check firewall rules</li>
             <li>Ensure the backend URL is accessible from the agent machine</li>
             <li>Check agent logs for connection errors</li>

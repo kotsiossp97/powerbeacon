@@ -11,14 +11,10 @@ import {
   ProfileCard,
   type OIDCFormData,
 } from "@/components/settings";
+import { ServicesConfigCard } from "@/components/settings/ServicesConfigCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import type { OIDCConfig, OIDCConfigPublic } from "@/types";
@@ -27,6 +23,7 @@ import {
   CheckCircle2,
   Info,
   Loader2,
+  ServerCog,
   Shield,
   TriangleAlert,
   UserRound,
@@ -37,16 +34,22 @@ import { toast } from "sonner";
 
 const settingsSections = [
   {
-    id: "profile",
-    title: "Profile",
-    description: "Account identity and access role.",
-    icon: UserRound,
+    id: "service_config",
+    title: "Services",
+    description: "Manage service configurations.",
+    icon: ServerCog,
   },
   {
     id: "authentication",
     title: "Authentication",
     description: "Single sign-on and OIDC behavior.",
     icon: Shield,
+  },
+  {
+    id: "profile",
+    title: "Profile",
+    description: "Account identity and access role.",
+    icon: UserRound,
   },
   {
     id: "about",
@@ -106,6 +109,7 @@ export const SettingsPage = () => {
   }, [form]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadConfig();
   }, [loadConfig]);
 
@@ -159,7 +163,7 @@ export const SettingsPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
+        <h1 className="text-foreground text-2xl font-semibold">Settings</h1>
         <p className="text-muted-foreground">
           Configure your PowerBeacon instance
         </p>
@@ -175,7 +179,7 @@ export const SettingsPage = () => {
 
       {success && (
         <Alert>
-          <CheckCircle2 className="h-4 w-4 text-success" />
+          <CheckCircle2 className="text-success h-4 w-4" />
           <AlertTitle>Configuration saved</AlertTitle>
           <AlertDescription>{success}</AlertDescription>
         </Alert>
@@ -183,8 +187,8 @@ export const SettingsPage = () => {
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">
+          <Loader2 className="text-primary h-6 w-6 animate-spin" />
+          <span className="text-muted-foreground ml-3">
             Loading settings...
           </span>
         </div>
@@ -195,8 +199,8 @@ export const SettingsPage = () => {
           orientation="vertical"
           className="flex flex-col gap-6 lg:flex-row"
         >
-          <Card className="overflow-hidden lg:w-[290px] h-fit p-0">
-            <CardHeader className="border-b p-4 bg-muted/50">
+          <Card className="h-fit overflow-hidden p-0 lg:w-72.5">
+            <CardHeader className="bg-muted/50 border-b p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-1">
                   <CardTitle>Workspace Settings</CardTitle>
@@ -209,7 +213,7 @@ export const SettingsPage = () => {
             <CardContent className="flex flex-col gap-4 p-3">
               <TabsList
                 variant="line"
-                className="w-full items-stretch  gap-1 bg-transparent p-0"
+                className="w-full items-stretch gap-1 bg-transparent p-0"
               >
                 {settingsSections.map((section) => (
                   <TabsTrigger
@@ -218,7 +222,7 @@ export const SettingsPage = () => {
                     className="min-h-20 flex-col items-start gap-1.5 rounded-xl px-3 py-3 text-left whitespace-normal"
                   >
                     <div className="flex w-full items-center justify-between gap-2">
-                      <span className="flex items-center gap-2 text-foreground">
+                      <span className="text-foreground flex items-center gap-2">
                         <section.icon data-icon="inline-start" />
                         <span>{section.title}</span>
                       </span>
@@ -226,7 +230,7 @@ export const SettingsPage = () => {
                         <Badge variant="secondary">New</Badge>
                       ) : null}
                     </div>
-                    <span className="text-left text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-left text-xs">
                       {section.description}
                     </span>
                   </TabsTrigger>
@@ -238,7 +242,7 @@ export const SettingsPage = () => {
           <div className="min-w-0 flex-1">
             <TabsContent value="profile" className="mt-0 flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-foreground text-lg font-semibold">
                   Profile
                 </h2>
               </div>
@@ -246,11 +250,26 @@ export const SettingsPage = () => {
             </TabsContent>
 
             <TabsContent
+              value="service_config"
+              className="mt-0 flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-1">
+                <h2 className="text-foreground text-lg font-semibold">
+                  Service Configuration
+                </h2>
+              </div>
+              <ServicesConfigCard
+                // config={oidcConfig}
+                isSuperuser={isSuperuser}
+              />
+            </TabsContent>
+
+            <TabsContent
               value="authentication"
               className="mt-0 flex flex-col gap-4"
             >
               <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-foreground text-lg font-semibold">
                   Authentication
                 </h2>
               </div>
@@ -264,7 +283,7 @@ export const SettingsPage = () => {
             <TabsContent value="about" className="mt-0 flex flex-col gap-4">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-semibold text-foreground">
+                  <h2 className="text-foreground text-lg font-semibold">
                     About
                   </h2>
                   {metadata?.update_available ? (

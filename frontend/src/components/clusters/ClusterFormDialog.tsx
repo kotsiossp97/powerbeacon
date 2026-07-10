@@ -131,7 +131,10 @@ export const ClusterFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl pb-0" aria-describedby="Cluster form dialog">
+      <DialogContent
+        className="pb-0 sm:max-w-2xl"
+        aria-describedby="Cluster form dialog"
+      >
         <DialogHeader>
           <DialogTitle>
             {cluster ? "Edit Cluster" : "Create Cluster"}
@@ -142,7 +145,7 @@ export const ClusterFormDialog = ({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <div className="-mx-4 no-scrollbar max-h-[80svh] overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 max-h-[80svh] overflow-y-auto px-4">
             <FieldGroup>
               <Field data-invalid={!!form.formState.errors.name || undefined}>
                 <FieldLabel>Name</FieldLabel>
@@ -212,7 +215,7 @@ export const ClusterFormDialog = ({
                         >
                           <span className="flex w-full items-center justify-between gap-3">
                             <span>{device.name}</span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               {device.ip_address || device.mac_address}
                             </span>
                           </span>
@@ -260,7 +263,7 @@ export const ClusterFormDialog = ({
                         >
                           <span className="flex w-full items-center justify-between gap-3">
                             <span>{agent.hostname}</span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               {agent.ip}
                             </span>
                           </span>
@@ -276,7 +279,7 @@ export const ClusterFormDialog = ({
               </Field>
             </FieldGroup>
 
-            <DialogFooter className="mb-0 mt-2">
+            <DialogFooter className="mt-2 mb-0">
               <Button
                 type="button"
                 variant="outline"

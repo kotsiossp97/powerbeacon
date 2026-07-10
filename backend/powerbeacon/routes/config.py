@@ -9,9 +9,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from powerbeacon.core.deps import CurrentUser, SessionDep, get_current_active_superuser
-from powerbeacon.crud.config_crud import create_or_update_oidc_settings, get_oidc_settings
+from powerbeacon.crud.config_crud import (
+    create_or_update_oidc_settings,
+    create_or_update_service_settings,
+    get_oidc_settings,
+    get_service_settings,
+)
 from powerbeacon.models.config import OIDCSettingsCreate
+from powerbeacon.models.service_config import ServiceConfigCreate, ServiceSettings
 from powerbeacon.services.app_metadata import get_app_metadata
+from powerbeacon.services.device_reachability_service import device_reachability_service
 from powerbeacon.services.oidc import configure_oauth_client
 
 router = APIRouter(prefix="/config", tags=["Configuration"])
@@ -107,3 +114,45 @@ async def get_about_config(current_user: CurrentUser) -> AppMetadataPublic:
     """Get application metadata for authenticated users."""
     _ = current_user
     return AppMetadataPublic.model_validate(asdict(get_app_metadata()))
+
+
+@router.get("/services")
+async def get_all_services_config(
+    session: SessionDep, current_user: CurrentUser
+) -> list[ServiceSettings]:
+    """Get all service configurations for authenticated users."""
+    _ = current_user
+    all_services = get_service_settings(session)
+
+    return [ServiceSettings.model_validate(service.model_dump()) for service in all_services]
+
+
+@router.get("/services/{service_name}")
+async def get_service_config(
+    service_name: str, session: SessionDep, current_user: CurrentUser
+) -> ServiceSettings:
+    """Get specific service configuration for authenticated users."""
+    _ = current_user
+    service = get_service_settings(session, service_name)
+
+    if not service:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Service '{service_name}' configuration not found",
+        )
+
+    return ServiceSettings.model_validate(service.model_dump())
+
+
+@router.put("/services", dependencies=[Depends(get_current_active_superuser)])
+async def update_service_config(
+    config: ServiceConfigCreate, session: SessionDep
+) -> ServiceSettings:
+    """Update specific service configuration (superuser only)."""
+    updated_service = create_or_update_service_settings(session, config)
+
+    match updated_service.service_name:
+        case "device_reachability":
+            await device_reachability_service.reload_runtime_config(session)
+
+    return ServiceSettings.model_validate(updated_service.model_dump())

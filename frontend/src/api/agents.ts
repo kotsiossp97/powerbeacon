@@ -70,8 +70,10 @@ export const agentsApi = {
       }
       return await response.json();
     } catch (error) {
-      console.log("🚀 ~ agentApi.checkHealth:", error)
-      throw new Error("Agent not detected. Please install the agent.");
+      console.log("🚀 ~ agentApi.checkHealth:", error);
+      throw new Error("Agent not detected. Please install the agent.", {
+        cause: error,
+      });
     }
   },
 

@@ -1,9 +1,4 @@
-import {
-  MoreVertical,
-  Edit,
-  Trash2,
-  UserCheck,
-} from "lucide-react";
+import { MoreVertical, Edit, Trash2, UserCheck } from "lucide-react";
 import type { User } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -55,14 +50,14 @@ export const UsersTable = ({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4" />
+        <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-b-2" />
         <p className="text-muted-foreground">Loading users...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
+    <div className="bg-card border-border overflow-hidden rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
@@ -76,7 +71,7 @@ export const UsersTable = ({
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center py-12">
+              <TableCell colSpan={5} className="py-12 text-center">
                 <p className="text-muted-foreground">
                   {searchQuery || roleFilter !== "all" || statusFilter !== "all"
                     ? "No users found matching your filters"
@@ -88,7 +83,8 @@ export const UsersTable = ({
             users.map((user) => {
               const roleInfo = roleConfig[user.role];
               const RoleIcon = roleInfo.icon;
-              const statusInfo = statusConfig[user.is_active ? "active" : "inactive"];
+              const statusInfo =
+                statusConfig[user.is_active ? "active" : "inactive"];
 
               return (
                 <TableRow key={user.id}>
@@ -100,10 +96,10 @@ export const UsersTable = ({
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium text-foreground">
+                        <div className="text-foreground font-medium">
                           {user.full_name || user.username}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                           {user.email || user.username}
                         </div>
                       </div>
@@ -111,7 +107,7 @@ export const UsersTable = ({
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={roleInfo.className}>
-                      <RoleIcon className="w-3 h-3 mr-1" />
+                      <RoleIcon className="mr-1 h-3 w-3" />
                       {roleInfo.label}
                     </Badge>
                   </TableCell>
@@ -126,10 +122,15 @@ export const UsersTable = ({
                       : "-"}
                   </TableCell>
                   <TableCell>
-                    {(canManageUsers || (isAdmin && user.role !== "superuser")) && (
+                    {(canManageUsers ||
+                      (isAdmin && user.role !== "superuser")) && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -138,7 +139,9 @@ export const UsersTable = ({
                             <Edit className="mr-2 h-4 w-4" />
                             Edit User
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onToggleUserStatus(user)}>
+                          <DropdownMenuItem
+                            onClick={() => onToggleUserStatus(user)}
+                          >
                             <UserCheck className="mr-2 h-4 w-4" />
                             {user.is_active ? "Deactivate" : "Activate"}
                           </DropdownMenuItem>

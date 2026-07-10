@@ -27,8 +27,8 @@ export const DeleteDeviceDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Device</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete &quot;{device?.name}&quot;? This action
-            cannot be undone.
+            Are you sure you want to delete &quot;{device?.name}&quot;? This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

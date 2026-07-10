@@ -6,10 +6,10 @@ const OnboardingAgentInstructions: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="bg-secondary rounded-lg p-4">
-        <h4 className="font-medium text-foreground text-sm mb-3">
+        <h4 className="text-foreground mb-3 text-sm font-medium">
           Install the Agent
         </h4>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-muted-foreground mb-4 text-sm">
           Run this command on any machine in your network to deploy a
           Wake-on-LAN agent:
         </p>
@@ -28,9 +28,9 @@ const OnboardingAgentInstructions: React.FC = () => {
           ]}
         />
       </div>
-      <div className="bg-chart-2/10 border border-chart-2/20 rounded-lg p-4">
-        <h4 className="font-medium text-chart-2 text-sm mb-2">Skip for now?</h4>
-        <p className="text-sm text-muted-foreground">
+      <div className="bg-chart-2/10 border-chart-2/20 rounded-lg border p-4">
+        <h4 className="text-chart-2 mb-2 text-sm font-medium">Skip for now?</h4>
+        <p className="text-muted-foreground text-sm">
           You can always add agents later from the Agents page. Click
           &quot;Complete Setup&quot; to finish onboarding.
         </p>

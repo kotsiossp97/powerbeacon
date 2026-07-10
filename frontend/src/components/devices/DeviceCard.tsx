@@ -3,6 +3,7 @@
  */
 import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
+import { OnlinePill } from "@/components/devices/OnlinePill";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -75,13 +76,13 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
   };
 
   return (
-    <Card className="border border-card hover:border-primary/40 transition-colors shadow-lg">
+    <Card className="border-card hover:border-primary/40 border shadow-lg transition-colors">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <Tooltip>
               <TooltipTrigger>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary text-foreground">
+                <div className="bg-secondary text-foreground flex h-10 w-10 items-center justify-center rounded-lg">
                   {osIcons[device.os_type] || osIcons.other}
                 </div>
                 <TooltipContent className="capitalize">
@@ -90,10 +91,10 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
               </TooltipTrigger>
             </Tooltip>
             <div>
-              <h3 className="font-medium text-foreground leading-tight">
+              <h3 className="text-foreground leading-tight font-medium">
                 {device.name}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {device.ip_address || "IP not available"}
               </p>
             </div>
@@ -134,7 +135,8 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap items-center gap-2">
+          <OnlinePill device={device} />
           <Badge
             variant="outline"
             className={
@@ -144,7 +146,7 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
             }
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full mr-1.5 ${device.is_active ? "bg-success" : "bg-muted-foreground"}`}
+              className={`mr-1.5 h-1.5 w-1.5 rounded-full ${device.is_active ? "bg-success" : "bg-muted-foreground"}`}
             />
             {device.is_active ? "Active" : "Inactive"}
           </Badge>
@@ -162,7 +164,7 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         <div className="space-y-2 text-sm">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">MAC Address</span>
-            <span className="font-mono text-foreground">
+            <span className="text-foreground font-mono">
               {device.mac_address}
             </span>
           </div>
@@ -184,7 +186,7 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Created</span>
               <span className="text-foreground flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+                <Clock className="h-3 w-3" />
                 {new Date(device.created_at).toLocaleDateString()}
               </span>
             </div>
@@ -192,7 +194,7 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <Server className="h-4 w-4" />
             <span>
               {device.agents.length > 0
@@ -217,7 +219,7 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
             </div>
           )}
           {device.cluster_name && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Network className="h-4 w-4" />
               <span>{device.cluster_name}</span>
             </div>

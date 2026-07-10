@@ -1,12 +1,12 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { Agent } from "@/types";
 
@@ -29,8 +29,9 @@ export const DeleteAgentDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Agent</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete &quot;{agent?.hostname}&quot;? This only removes
-            the agent from PowerBeacon and does not uninstall it from the host.
+            Are you sure you want to delete &quot;{agent?.hostname}&quot;? This
+            only removes the agent from PowerBeacon and does not uninstall it
+            from the host.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -26,7 +26,7 @@ export const DashboardFilters = ({
   onOsFilterChange,
 }: DashboardFiltersProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 rounded-xl border border-border bg-card p-4">
+    <div className="border-border bg-card flex flex-col gap-4 rounded-xl border p-4 sm:flex-row">
       <InputGroup>
         <InputGroupInput
           placeholder="Search devices by name, IP, MAC, or tags..."

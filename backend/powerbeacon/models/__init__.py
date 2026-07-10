@@ -40,6 +40,12 @@ from powerbeacon.models.generic import (
     TokenPayload,
 )
 from powerbeacon.models.links import DeviceAgentLink  # noqa: F401
+from powerbeacon.models.service_config import (
+    ServiceConfig,
+    ServiceConfigBase,
+    ServiceConfigCreate,
+    ServiceConfigPublic,
+)
 from powerbeacon.models.users import (
     NewPassword,  # noqa: F401
     UpdatePassword,

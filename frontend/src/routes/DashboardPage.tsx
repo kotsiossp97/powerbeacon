@@ -3,10 +3,10 @@ import { clustersApi } from "@/api/clusters";
 import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
 import {
-    DashboardFilters,
-    DashboardStats,
-    DeleteDeviceDialog,
-    DeviceGridSection,
+  DashboardFilters,
+  DashboardStats,
+  DeleteDeviceDialog,
+  DeviceGridSection,
 } from "@/components/dashboard";
 import { DeviceFormDialog } from "@/components/devices/DeviceFormDialog";
 import { Button } from "@/components/ui/button";
@@ -66,6 +66,7 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDevices();
     fetchAgents();
     fetchClusters();

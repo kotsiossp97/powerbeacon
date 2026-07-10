@@ -3,6 +3,7 @@
  */
 import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
+import { OnlinePill } from "@/components/devices/OnlinePill";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -135,6 +136,7 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2 flex-wrap">
+          <OnlinePill device={device} />
           <Badge
             variant="outline"
             className={

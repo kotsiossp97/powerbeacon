@@ -9,6 +9,9 @@ export interface Device {
   ip_address?: string;
   os_type: "linux" | "macos" | "windows";
   is_active: boolean;
+  is_online: boolean;
+  last_reachability_check_at?: string;
+  last_online_at?: string;
   description?: string;
   tags: string[];
   cluster_id?: string;
@@ -212,4 +215,9 @@ export interface ClusterUpdate {
 export interface ClustersPublic {
   clusters: Cluster[];
   count: number;
+}
+
+export interface ServiceConfig {
+  service_name: string;
+  config_data?: Record<string, string | number | boolean | null>;
 }

@@ -11,14 +11,10 @@ import {
   ProfileCard,
   type OIDCFormData,
 } from "@/components/settings";
+import { ServicesConfigCard } from "@/components/settings/ServicesConfigCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppMetadataStore } from "@/lib/useAppMetadata";
 import type { OIDCConfig, OIDCConfigPublic } from "@/types";
@@ -27,6 +23,7 @@ import {
   CheckCircle2,
   Info,
   Loader2,
+  ServerCog,
   Shield,
   TriangleAlert,
   UserRound,
@@ -37,16 +34,22 @@ import { toast } from "sonner";
 
 const settingsSections = [
   {
-    id: "profile",
-    title: "Profile",
-    description: "Account identity and access role.",
-    icon: UserRound,
+    id: "service_config",
+    title: "Services",
+    description: "Manage service configurations.",
+    icon: ServerCog,
   },
   {
     id: "authentication",
     title: "Authentication",
     description: "Single sign-on and OIDC behavior.",
     icon: Shield,
+  },
+  {
+    id: "profile",
+    title: "Profile",
+    description: "Account identity and access role.",
+    icon: UserRound,
   },
   {
     id: "about",
@@ -106,6 +109,7 @@ export const SettingsPage = () => {
   }, [form]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadConfig();
   }, [loadConfig]);
 
@@ -243,6 +247,21 @@ export const SettingsPage = () => {
                 </h2>
               </div>
               <ProfileCard user={user} />
+            </TabsContent>
+
+            <TabsContent
+              value="service_config"
+              className="mt-0 flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-1">
+                <h2 className="text-lg font-semibold text-foreground">
+                  Service Configuration
+                </h2>
+              </div>
+              <ServicesConfigCard
+                // config={oidcConfig}
+                isSuperuser={isSuperuser}
+              />
             </TabsContent>
 
             <TabsContent

@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { AppMetadata } from "@/types";
-import { SiGithub } from '@icons-pack/react-simple-icons';
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import {
   AlertCircle,
   Bug,
@@ -57,8 +57,8 @@ export const AboutPowerBeaconCard = ({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
+      <CardHeader className="border-b">
+        <CardTitle className="flex items-center gap-2">
           <GitBranch className="text-primary" />
           Version Information
         </CardTitle>
@@ -71,14 +71,10 @@ export const AboutPowerBeaconCard = ({
           <Button
             type="button"
             variant="outline"
-            size="sm"
             onClick={() => void onRefresh()}
             disabled={loading}
           >
-            <RefreshCw
-              data-icon="inline-start"
-              className={loading ? "animate-spin" : undefined}
-            />
+            <RefreshCw className={loading ? "animate-spin" : undefined} />
             Refresh
           </Button>
         </CardAction>

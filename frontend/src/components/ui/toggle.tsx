@@ -12,7 +12,7 @@ const toggleVariants = cva(
         default: "bg-transparent",
         outline: "border border-input bg-transparent hover:bg-muted",
         powerbeacon:
-          "border border-input data-[state=on]:bg-primary/40 hover:bg-primary/10 data-[state=on]:text-primary-foreground",
+          "border border-input data-[state=on]:bg-primary data-[state=on]:hover:bg-primary/80 hover:bg-primary/10 data-[state=on]:text-primary-foreground",
       },
       size: {
         default:

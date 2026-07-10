@@ -15,13 +15,15 @@ interface ProfileCardProps {
 
 export const ProfileCard = ({ user }: ProfileCardProps) => {
   return (
-    <Card className="lg:col-span-1">
-      <CardHeader>
+    <Card>
+      <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
           <UserIcon className="h-5 w-5 text-primary" />
           User Profile
         </CardTitle>
-        <CardDescription>Your account information and access role</CardDescription>
+        <CardDescription>
+          Your account information and access role
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-1">
@@ -32,7 +34,9 @@ export const ProfileCard = ({ user }: ProfileCardProps) => {
         {user?.email && (
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Email</p>
-            <p className="font-medium text-foreground break-all">{user.email}</p>
+            <p className="font-medium text-foreground break-all">
+              {user.email}
+            </p>
           </div>
         )}
 

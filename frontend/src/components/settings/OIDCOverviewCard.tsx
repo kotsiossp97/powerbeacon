@@ -2,11 +2,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import type { OIDCConfigPublic } from "@/types";
 import { Lock, Settings as SettingsIcon, Shield } from "lucide-react";
@@ -23,25 +24,23 @@ export const OIDCOverviewCard = ({
   onConfigure,
 }: OIDCOverviewCardProps) => {
   return (
-    <Card className="lg:col-span-2">
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              OIDC Authentication
-            </CardTitle>
-            <CardDescription>
-              Configure single sign-on with an external identity provider
-            </CardDescription>
-          </div>
-          {isSuperuser && (
-            <Button onClick={onConfigure} size="sm">
-              <SettingsIcon className="mr-2 h-4 w-4" />
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle className="flex items-center gap-2">
+          <Shield className="text-primary" />
+          OIDC Authentication
+        </CardTitle>
+        <CardDescription>
+          Configure single sign-on with an external identity provider
+        </CardDescription>
+        {isSuperuser && (
+          <CardAction>
+            <Button onClick={onConfigure}>
+              <SettingsIcon />
               Configure
             </Button>
-          )}
-        </div>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between border border-border rounded-lg px-4 py-3 bg-muted/30">
@@ -78,7 +77,8 @@ export const OIDCOverviewCard = ({
             <Lock className="h-4 w-4" />
             <AlertTitle>OIDC is currently disabled</AlertTitle>
             <AlertDescription>
-              Enable OIDC to allow users to sign in through your identity provider.
+              Enable OIDC to allow users to sign in through your identity
+              provider.
             </AlertDescription>
           </Alert>
         )}

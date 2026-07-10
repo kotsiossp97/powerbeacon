@@ -94,20 +94,16 @@ export const ServicesConfigCard = ({
   return (
     <div className="space-y-2">
       {deviceReachConfig && (
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  Device Reachability Service
-                </CardTitle>
-                <CardDescription>
-                  Configure the service responsible for checking device
-                  reachability and online status
-                </CardDescription>
-              </div>
-            </div>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="text-primary" />
+              Device Reachability Service
+            </CardTitle>
+            <CardDescription>
+              Configure the service responsible for checking device reachability
+              and online status
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

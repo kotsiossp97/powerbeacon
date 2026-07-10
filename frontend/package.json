@@ -7,7 +7,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check": "tsc -b --noEmit --pretty"
+    "check": "tsc -b --noEmit --pretty",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
+    "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.2.10",
@@ -49,6 +51,7 @@
     "eslint-plugin-react-hooks": "^7.1.0-canary-3cb2c420-20260324",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "prettier": "^3.9.5",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.2",
     "vite": "^8.0.3"

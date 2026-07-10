@@ -1,0 +1,17 @@
+cd frontend
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR \
+    | grep -E '\.(ts|tsx|js|jsx|mdx)$' \
+| sed 's|^frontend/||')
+
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+echo "Formatting staged files with Prettier..."
+
+# Format only staged files
+npx prettier --write $STAGED_FILES
+
+# Re‑stage formatted files
+echo "$STAGED_FILES" | xargs git add

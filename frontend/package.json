@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "check": "tsc -b --noEmit --pretty",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
-    "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache"
+    "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.2.10",
@@ -51,6 +52,7 @@
     "eslint-plugin-react-hooks": "^7.1.0-canary-3cb2c420-20260324",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "^5.9.3",

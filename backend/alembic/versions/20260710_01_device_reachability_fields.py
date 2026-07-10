@@ -20,13 +20,20 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
+BOOTSTRAP_TABLE_EXCLUDES = {"serviceconfig"}
+
 
 def upgrade() -> None:
     bind = op.get_bind()
     inspector = inspect(bind)
     existing_tables = set(inspector.get_table_names())
 
-    SQLModel.metadata.create_all(bind)
+    bootstrap_tables = [
+        table
+        for table in SQLModel.metadata.sorted_tables
+        if table.name not in BOOTSTRAP_TABLE_EXCLUDES
+    ]
+    SQLModel.metadata.create_all(bind, tables=bootstrap_tables)
 
     if "devices" not in existing_tables:
         return

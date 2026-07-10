@@ -110,8 +110,8 @@ export const ServicesConfigCard = ({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="border border-border rounded-lg px-4 py-3 bg-muted/30">
-              <div className="max-w-md mx-auto space-y-6 md:space-y-12">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Card className="p-4">
                 <Field>
                   <FieldLabel>Status</FieldLabel>
                   <FieldDescription>
@@ -121,7 +121,7 @@ export const ServicesConfigCard = ({
                   </FieldDescription>
                   <Toggle
                     variant={"powerbeacon"}
-                    pressed={deviceReachConfig?.config_data?.enabled}
+                    pressed={deviceReachConfig?.config_data?.enabled as boolean}
                     disabled={!isSuperuser}
                     onPressedChange={() => {
                       handleUpdateServiceConfig({
@@ -140,7 +140,9 @@ export const ServicesConfigCard = ({
                       : "Disabled"}
                   </Toggle>
                 </Field>
+              </Card>
 
+              <Card className="p-4">
                 <Field>
                   <FieldLabel>Update Resolved IP Addresses</FieldLabel>
                   <FieldDescription>
@@ -150,7 +152,10 @@ export const ServicesConfigCard = ({
                   </FieldDescription>
                   <Toggle
                     variant={"powerbeacon"}
-                    pressed={deviceReachConfig?.config_data?.update_resolved_ip}
+                    pressed={
+                      deviceReachConfig?.config_data
+                        ?.update_resolved_ip as boolean
+                    }
                     disabled={!isSuperuser}
                     onPressedChange={() => {
                       handleUpdateServiceConfig({
@@ -170,7 +175,9 @@ export const ServicesConfigCard = ({
                       : "Disabled"}
                   </Toggle>
                 </Field>
+              </Card>
 
+              <Card className="p-4">
                 <Field>
                   <FieldLabel>Check Interval</FieldLabel>
                   <FieldDescription>
@@ -180,7 +187,8 @@ export const ServicesConfigCard = ({
                   </FieldDescription>
                   <NumberInputGroup
                     value={
-                      deviceReachConfig?.config_data?.interval_seconds || 60
+                      (deviceReachConfig?.config_data
+                        ?.interval_seconds as number) ?? 60
                     }
                     inputGroupAddons={"seconds"}
                     disabled={!isSuperuser}
@@ -196,7 +204,7 @@ export const ServicesConfigCard = ({
                     max={3600}
                   />
                 </Field>
-              </div>
+              </Card>
             </div>
           </CardContent>
         </Card>

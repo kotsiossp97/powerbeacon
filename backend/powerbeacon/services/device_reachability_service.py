@@ -95,6 +95,27 @@ class DeviceReachabilityService:
 
             session.commit()
 
+    def clear_online_status(self, session: Session | None = None) -> None:
+        now = datetime.now(timezone.utc)
+
+        if session is None:
+            with Session(engine) as local_session:
+                self.clear_online_status(local_session)
+            return
+
+        statement = select(Device).where(Device.is_online.is_(True))
+        devices = list(session.exec(statement).all())
+        if not devices:
+            return
+
+        for device in devices:
+            device.is_online = False
+            device.last_reachability_check_at = now
+            device.updated_at = now
+            session.add(device)
+
+        session.commit()
+
     async def _run(self) -> None:
         if self.stop_event is None:
             self.stop_event = asyncio.Event()
@@ -139,6 +160,7 @@ class DeviceReachabilityService:
             return
 
         await self.stop()
+        self.clear_online_status(session)
 
 
 device_reachability_service = DeviceReachabilityService()

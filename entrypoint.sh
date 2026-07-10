@@ -12,9 +12,12 @@
 
 set -e
 
-# Start nginx in the background
-nginx -g "daemon off;" &
-
 # Start FastAPI server
 cd /app
 uv run fastapi run main.py --host 0.0.0.0 --port 8000
+
+sleep 4  # Give FastAPI a moment to start
+
+# Start nginx in the background
+nginx -g "daemon off;" &
+

@@ -199,7 +199,7 @@ export const SettingsPage = () => {
           orientation="vertical"
           className="flex flex-col gap-6 lg:flex-row"
         >
-          <Card className="overflow-hidden lg:w-[290px] h-fit p-0">
+          <Card className="overflow-hidden lg:w-72.5 h-fit p-0">
             <CardHeader className="border-b p-4 bg-muted/50">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-1">

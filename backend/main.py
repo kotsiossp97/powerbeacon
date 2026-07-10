@@ -25,6 +25,8 @@ async def lifespan(app: FastAPI):
 
     init_db()
     device_reachability_service.fetch_config()
+    if not device_reachability_service.enabled:
+        device_reachability_service.clear_online_status()
     device_reachability_service.start()
     yield  # This is where the application runs
 

@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "tsc -b --noEmit --pretty"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.2.10",

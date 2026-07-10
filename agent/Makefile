@@ -7,7 +7,7 @@ BINARY_NAME=powerbeacon-agent
 BUILD_DIR=build
 
 # Version
-VERSION=1.0.0
+VERSION=1.0.4
 
 # Build flags
 LDFLAGS=-ldflags "-s -w -X main.Version=$(VERSION)"

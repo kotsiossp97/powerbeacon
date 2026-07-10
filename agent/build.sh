@@ -8,7 +8,7 @@ set -e
 
 BINARY_NAME="powerbeacon-agent"
 BUILD_DIR="build"
-VERSION="1.0.0"
+VERSION="1.0.4"
 
 build_linux() {
     echo "Building for Linux (amd64)..."

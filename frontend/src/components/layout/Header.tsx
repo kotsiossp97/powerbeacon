@@ -55,21 +55,21 @@ export const Header = () => {
   const visibleNavItems = useVisibleNavigationLinks();
 
   return (
-    <header className="border-b bg-primary backdrop-blur sticky top-0 z-50 shadow-lg dark:bg-primary/80">
+    <header className="bg-primary dark:bg-primary/80 sticky top-0 z-50 border-b shadow-lg backdrop-blur">
       <div className="flex h-14 items-center px-4 lg:px-6">
         <Link to="/" className="mr-3">
           <div className="h-14">
             <img
               src={logoBadge}
               alt="PowerBeacon"
-              className="object-contain h-full"
+              className="h-full object-contain"
               loading="lazy"
             />
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden items-center gap-1 md:flex">
           {visibleNavItems?.map((item) => {
             const isActive =
               location.pathname === item.href ||
@@ -80,13 +80,13 @@ export const Header = () => {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-card"
                     : "text-muted dark:text-muted-foreground hover:text-foreground hover:bg-card/50",
                 )}
               >
-                <item.icon className="w-4 h-4" />
+                <item.icon className="h-4 w-4" />
                 {item.name}
               </Link>
             );
@@ -97,7 +97,7 @@ export const Header = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden ml-auto mr-2 text-white"
+          className="mr-2 ml-auto text-white md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
@@ -131,10 +131,10 @@ export const Header = () => {
                     <span className="text-foreground text-lg">
                       {user?.full_name}
                     </span>
-                    <span className="text-xs text-muted-foreground font-normal">
+                    <span className="text-muted-foreground text-xs font-normal">
                       {user?.email}
                     </span>
-                    <span className="text-xs bg-primary/20 w-fit px-2 py-0.5 rounded-lg border border-primary text-primary font-semibold mt-1 capitalize">
+                    <span className="bg-primary/20 border-primary text-primary mt-1 w-fit rounded-lg border px-2 py-0.5 text-xs font-semibold capitalize">
                       {user?.role}
                     </span>
                   </div>
@@ -148,7 +148,7 @@ export const Header = () => {
                         className="flex items-center justify-between gap-3"
                       >
                         <span className="flex items-center gap-2">
-                          <Download className="h-4 w-4 text-primary" />
+                          <Download className="text-primary h-4 w-4" />
                           Update available
                         </span>
                         <Badge variant="default">

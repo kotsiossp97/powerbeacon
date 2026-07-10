@@ -1,25 +1,27 @@
 import * as z from "zod";
 import type { User, UserRole } from "@/types";
 
-export const userFormSchema = z
-  .object({
-    username: z.string().min(1, "Username is required").max(50, "Username too long"),
-    email: z
-      .string()
-      .trim()
-      .optional()
-      .refine(
-        (value) => !value || z.email().safeParse(value).success,
-        "Invalid email address",
-      ),
-    full_name: z.string().optional(),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .optional()
-      .or(z.literal("")),
-    role: z.enum(["superuser", "admin", "user", "viewer"]),
-  });
+export const userFormSchema = z.object({
+  username: z
+    .string()
+    .min(1, "Username is required")
+    .max(50, "Username too long"),
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .refine(
+      (value) => !value || z.email().safeParse(value).success,
+      "Invalid email address",
+    ),
+  full_name: z.string().optional(),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .optional()
+    .or(z.literal("")),
+  role: z.enum(["superuser", "admin", "user", "viewer"]),
+});
 
 export type UserFormData = z.infer<typeof userFormSchema>;
 

@@ -50,8 +50,8 @@ function App() {
 
   if (loading || isSetupComplete === null) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl text-muted-foreground">Initializing...</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground text-xl">Initializing...</div>
       </div>
     );
   }

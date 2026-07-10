@@ -34,8 +34,8 @@ export const AgentsGrid = ({
   if (agents.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Server className="h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium text-foreground">No agents found</h3>
+        <Server className="text-muted-foreground mb-4 h-12 w-12" />
+        <h3 className="text-foreground text-lg font-medium">No agents found</h3>
         <p className="text-muted-foreground">
           {searchQuery || statusFilter !== "all"
             ? "Try adjusting your filters"
@@ -46,7 +46,7 @@ export const AgentsGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {agents.map((agent) => {
         const status = agentStatusConfig[agent.status];
         const StatusIcon = status.icon;
@@ -63,14 +63,14 @@ export const AgentsGrid = ({
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary text-foreground">
-                    <Server className="w-5 h-5" />
+                  <div className="bg-secondary text-foreground flex h-10 w-10 items-center justify-center rounded-lg">
+                    <Server className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-foreground leading-tight">
+                    <h3 className="text-foreground leading-tight font-medium">
                       {agent.hostname}
                     </h3>
-                    <p className="text-sm text-muted-foreground">{agent.ip}</p>
+                    <p className="text-muted-foreground text-sm">{agent.ip}</p>
                   </div>
                 </div>
                 <DropdownMenu>
@@ -99,16 +99,22 @@ export const AgentsGrid = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={cn("gap-1.5", status.className)}>
+                <Badge
+                  variant="outline"
+                  className={cn("gap-1.5", status.className)}
+                >
                   <StatusIcon className="h-3 w-3" />
                   {status.label}
                 </Badge>
-                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                <Badge
+                  variant="secondary"
+                  className="bg-secondary text-secondary-foreground"
+                >
                   v{agent.version}
                 </Badge>
               </div>
 
-              <div className="space-y-1 text-sm text-muted-foreground">
+              <div className="text-muted-foreground space-y-1 text-sm">
                 <div className="flex items-center justify-between gap-4">
                   <span>Cluster</span>
                   <span className="text-foreground">
@@ -129,13 +135,13 @@ export const AgentsGrid = ({
 
               {agent.status === "online" && (
                 <div className="flex items-center gap-2 pt-2">
-                  <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div className="bg-secondary h-1.5 flex-1 overflow-hidden rounded-full">
                     <div
-                      className="h-full bg-success rounded-full animate-pulse"
+                      className="bg-success h-full animate-pulse rounded-full"
                       style={{ width: "100%" }}
                     />
                   </div>
-                  <span className="text-xs text-success">Connected</span>
+                  <span className="text-success text-xs">Connected</span>
                 </div>
               )}
             </CardContent>

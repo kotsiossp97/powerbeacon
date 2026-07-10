@@ -19,8 +19,8 @@ export const ProtectedRoute = ({
 
   if (loading || isSetupComplete === null) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl text-muted-foreground">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground text-xl">Loading...</div>
       </div>
     );
   }

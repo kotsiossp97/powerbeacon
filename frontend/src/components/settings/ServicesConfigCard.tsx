@@ -56,8 +56,8 @@ export const ServicesConfigCard = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        <span className="ml-3 text-muted-foreground">Loading settings...</span>
+        <Loader2 className="text-primary h-6 w-6 animate-spin" />
+        <span className="text-muted-foreground ml-3">Loading settings...</span>
       </div>
     );
   }
@@ -129,8 +129,8 @@ export const ServicesConfigCard = ({
                       });
                     }}
                   >
-                    <CircleCheck className="group-data-[state=on]/toggle:inline hidden" />
-                    <CircleX className="group-data-[state=off]/toggle:inline hidden" />
+                    <CircleCheck className="hidden group-data-[state=on]/toggle:inline" />
+                    <CircleX className="hidden group-data-[state=off]/toggle:inline" />
                     {deviceReachConfig?.config_data?.enabled
                       ? "Enabled"
                       : "Disabled"}
@@ -164,8 +164,8 @@ export const ServicesConfigCard = ({
                       });
                     }}
                   >
-                    <CircleCheck className="group-data-[state=on]/toggle:inline hidden" />
-                    <CircleX className="group-data-[state=off]/toggle:inline hidden" />
+                    <CircleCheck className="hidden group-data-[state=on]/toggle:inline" />
+                    <CircleX className="hidden group-data-[state=off]/toggle:inline" />
                     {deviceReachConfig?.config_data?.update_resolved_ip
                       ? "Enabled"
                       : "Disabled"}

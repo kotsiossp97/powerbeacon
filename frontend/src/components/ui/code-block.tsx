@@ -1,20 +1,20 @@
-import { Check, Copy } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
-import { useLayoutEffect, useMemo, useRef, useState } from "react"
+import { Check, Copy } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface CodeTab {
-  label: string
-  code: string
-  language?: string
+  label: string;
+  code: string;
+  language?: string;
 }
 
 interface CodeBlockProps {
-  tabs?: CodeTab[]
-  code?: string
-  language?: string
-  className?: string
+  tabs?: CodeTab[];
+  code?: string;
+  language?: string;
+  className?: string;
 }
 
 export function CodeBlock({
@@ -23,23 +23,23 @@ export function CodeBlock({
   language = "bash",
   className,
 }: CodeBlockProps) {
-  const [activeTab, setActiveTab] = useState(0)
-  const [copied, setCopied] = useState(false)
-  const [direction, setDirection] = useState(0)
-  const preRef = useRef<HTMLPreElement>(null)
-  const [hasOverflow, setHasOverflow] = useState(false)
+  const [activeTab, setActiveTab] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const [direction, setDirection] = useState(0);
+  const preRef = useRef<HTMLPreElement>(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   const codeContent = useMemo(() => {
     if (tabs && tabs.length > 0) {
-      return tabs
+      return tabs;
     }
     if (code) {
-      return [{ label: language, code, language }]
+      return [{ label: language, code, language }];
     }
-    return []
-  }, [tabs, code, language])
+    return [];
+  }, [tabs, code, language]);
 
-  const currentCode = codeContent[activeTab]?.code || ""
+  const currentCode = codeContent[activeTab]?.code || "";
 
   // Check overflow when tab changes or content updates
   // biome-ignore lint/correctness/useExhaustiveDependencies: activeTab is needed to recheck overflow when content changes
@@ -47,34 +47,34 @@ export function CodeBlock({
     const checkOverflow = () => {
       if (preRef.current) {
         const hasHorizontalOverflow =
-          preRef.current.scrollWidth > preRef.current.clientWidth
-        setHasOverflow(hasHorizontalOverflow)
+          preRef.current.scrollWidth > preRef.current.clientWidth;
+        setHasOverflow(hasHorizontalOverflow);
       }
-    }
+    };
 
-    checkOverflow()
-    const resizeObserver = new ResizeObserver(checkOverflow)
+    checkOverflow();
+    const resizeObserver = new ResizeObserver(checkOverflow);
     if (preRef.current) {
-      resizeObserver.observe(preRef.current)
+      resizeObserver.observe(preRef.current);
     }
 
     return () => {
-      resizeObserver.disconnect()
-    }
-  }, [activeTab])
+      resizeObserver.disconnect();
+    };
+  }, [activeTab]);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(currentCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    await navigator.clipboard.writeText(currentCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleTabChange = (index: number) => {
-    setDirection(index > activeTab ? 1 : -1)
-    setActiveTab(index)
-  }
+    setDirection(index > activeTab ? 1 : -1);
+    setActiveTab(index);
+  };
 
-  if (codeContent.length === 0) return null
+  if (codeContent.length === 0) return null;
 
   return (
     <div
@@ -83,20 +83,20 @@ export function CodeBlock({
         "border-zinc-950/10 dark:border-white/10",
         "bg-zinc-50 dark:bg-white/5",
         "text-zinc-950 dark:text-zinc-50",
-        className
+        className,
       )}
     >
       {/* Tab Bar */}
       {codeContent.length > 1 && (
-        <div className="flex items-center relative pr-2.5">
+        <div className="relative flex items-center pr-2.5">
           <div
             role="tablist"
             className={cn(
-              "flex-1 min-w-0 text-xs leading-6 rounded-tl-xl gap-1 flex",
+              "flex min-w-0 flex-1 gap-1 rounded-tl-xl text-xs leading-6",
               "overflow-x-auto overflow-y-hidden",
-              "scrollbar-thin scrollbar-thumb-rounded",
+              "scrollbar-thumb-rounded scrollbar-thin",
               "scrollbar-thumb-black/15 hover:scrollbar-thumb-black/20",
-              "dark:scrollbar-thumb-white/20 dark:hover:scrollbar-thumb-white/25"
+              "dark:scrollbar-thumb-white/20 dark:hover:scrollbar-thumb-white/25",
             )}
           >
             <div className="relative flex gap-1">
@@ -108,21 +108,21 @@ export function CodeBlock({
                   aria-selected={activeTab === index}
                   onClick={() => handleTabChange(index)}
                   className={cn(
-                    "flex items-center relative gap-1.5 my-1 mb-1.5 outline-0",
-                    "whitespace-nowrap font-medium transition-colors duration-150",
-                    "px-1.5 rounded-lg",
+                    "relative my-1 mb-1.5 flex items-center gap-1.5 outline-0",
+                    "font-medium whitespace-nowrap transition-colors duration-150",
+                    "rounded-lg px-1.5",
                     "first:ml-2.5",
                     "hover:bg-zinc-200/50 dark:hover:bg-zinc-700/70",
                     activeTab === index
                       ? "text-chart-2"
-                      : "text-zinc-500 dark:text-zinc-400"
+                      : "text-zinc-500 dark:text-zinc-400",
                   )}
                 >
                   {tab.label}
                   {activeTab === index && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                      className="bg-primary absolute right-0 bottom-0 left-0 h-0.5 rounded-full"
                       transition={{
                         type: "spring",
                         stiffness: 500,
@@ -145,15 +145,15 @@ export function CodeBlock({
           whileTap={{ scale: 0.95 }}
           className={cn(
             "absolute top-2 right-2 z-10",
-            "flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg",
+            "flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium",
             "text-zinc-500 dark:text-zinc-400",
-            "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm",
+            "bg-white/80 backdrop-blur-sm dark:bg-zinc-950/80",
             "border border-zinc-200/50 dark:border-zinc-800/50",
             "opacity-70 group-hover:opacity-100",
             "hover:bg-zinc-200/50 dark:hover:bg-zinc-700/70",
             "hover:text-zinc-950 dark:hover:text-zinc-50",
             "transition-all duration-150",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            "focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:outline-none",
           )}
           aria-label="Copy code"
         >
@@ -188,11 +188,11 @@ export function CodeBlock({
         <pre
           ref={preRef}
           className={cn(
-            "p-4 text-sm leading-relaxed m-0",
+            "m-0 p-4 text-sm leading-relaxed",
             "bg-white dark:bg-zinc-950/50",
             codeContent.length > 1 ? "rounded-b-2xl" : "rounded-2xl",
             hasOverflow ? "overflow-x-auto" : "overflow-x-hidden",
-            hasOverflow && "scrollbar-thin scrollbar-thumb-rounded",
+            hasOverflow && "scrollbar-thumb-rounded scrollbar-thin",
             hasOverflow &&
               "scrollbar-thumb-black/15 hover:scrollbar-thumb-black/20",
             hasOverflow &&
@@ -204,7 +204,7 @@ export function CodeBlock({
             // hasOverflow && "[&::-webkit-scrollbar-thumb:hover]:bg-border",
             hasOverflow &&
               "[&::-webkit-scrollbar-thumb:hover]:dark:bg-white/25",
-            hasOverflow && "[&::-webkit-scrollbar-track]:bg-transparent"
+            hasOverflow && "[&::-webkit-scrollbar-track]:bg-transparent",
           )}
         >
           <AnimatePresence mode="wait" initial={false} custom={direction}>
@@ -230,7 +230,7 @@ export function CodeBlock({
                 duration: 0.15,
                 ease: "easeOut",
               }}
-              className="font-mono text-zinc-950 dark:text-zinc-50 block whitespace-pre"
+              className="block font-mono whitespace-pre text-zinc-950 dark:text-zinc-50"
             >
               {currentCode}
             </motion.code>
@@ -238,5 +238,5 @@ export function CodeBlock({
         </pre>
       </div>
     </div>
-  )
+  );
 }

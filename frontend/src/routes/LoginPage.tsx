@@ -78,13 +78,13 @@ export const LoginPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-primary to-primary-dark flex items-center justify-center p-4">
+    <main className="from-primary to-primary-dark flex min-h-screen items-center justify-center bg-linear-to-b p-4">
       <Card className="w-full max-w-xl gap-0 shadow-xl">
         <CardHeader className="flex flex-col items-center gap-1 text-center">
           <img
             src={logo}
             alt="PowerBeacon Logo"
-            className="sm:h-48 object-contain"
+            className="object-contain sm:h-48"
           />
         </CardHeader>
         <CardContent>
@@ -126,7 +126,7 @@ export const LoginPage = () => {
 
               {error && (
                 <Field data-invalid>
-                  <FieldError className="font-semibold bg-destructive/10 rounded p-2 border-destructive border-2">
+                  <FieldError className="bg-destructive/10 border-destructive rounded border-2 p-2 font-semibold">
                     {error}
                   </FieldError>
                 </Field>
@@ -145,11 +145,11 @@ export const LoginPage = () => {
         </CardContent>
 
         {oidcEnabled && (
-          <CardFooter className="flex flex-col gap-4 border-0 bg-card mt-2">
-            <div className="flex w-full items-center gap-3  text-muted-foreground">
-              <div className="h-px flex-1 bg-border" />
+          <CardFooter className="bg-card mt-2 flex flex-col gap-4 border-0">
+            <div className="text-muted-foreground flex w-full items-center gap-3">
+              <div className="bg-border h-px flex-1" />
               <span>Or continue with</span>
-              <div className="h-px flex-1 bg-border" />
+              <div className="bg-border h-px flex-1" />
             </div>
             <Button
               type="button"
@@ -163,11 +163,11 @@ export const LoginPage = () => {
           </CardFooter>
         )}
         {!isSetupComplete && (
-          <p className="text-center text-sm text-muted-foreground mt-6">
+          <p className="text-muted-foreground mt-6 text-center text-sm">
             First time here?{" "}
             <Button
               variant="link"
-              className="px-0 h-auto text-primary hover:text-primary/80"
+              className="text-primary hover:text-primary/80 h-auto px-0"
               onClick={() => navigate("/onboarding", { replace: true })}
             >
               Set up PowerBeacon

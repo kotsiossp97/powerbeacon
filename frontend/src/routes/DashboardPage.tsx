@@ -10,7 +10,13 @@ import {
 } from "@/components/dashboard";
 import { DeviceFormDialog } from "@/components/devices/DeviceFormDialog";
 import { Button } from "@/components/ui/button";
-import type { Agent, Cluster, Device, DeviceCreate, DeviceUpdate } from "@/types";
+import type {
+  Agent,
+  Cluster,
+  Device,
+  DeviceCreate,
+  DeviceUpdate,
+} from "@/types";
 import { Plus, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -143,9 +149,9 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+          <h1 className="text-foreground text-2xl font-semibold">Dashboard</h1>
           <p className="text-muted-foreground">
             Manage and monitor your network devices
           </p>
@@ -172,7 +178,7 @@ const DashboardPage = () => {
       </div>
 
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-lg p-4">
+        <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-lg border p-4">
           {error}
         </div>
       )}

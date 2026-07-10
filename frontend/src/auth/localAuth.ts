@@ -35,7 +35,8 @@ export const useLocalAuth = () => {
         return true;
       } catch (err: unknown) {
         const message =
-          err instanceof AxiosError && typeof err.response?.data?.detail === "string"
+          err instanceof AxiosError &&
+          typeof err.response?.data?.detail === "string"
             ? err.response.data.detail
             : "Login failed";
         setError(message);

@@ -30,7 +30,7 @@ export const ThemeToggle: React.FC<
         <Moon className="h-[1.2rem] w-[1.2rem]" /> Dark
       </ToggleGroupItem>
       <ToggleGroupItem value="system" className="grow">
-        <Monitor className="h-[1.2rem] w-[1.2rem]  " /> System
+        <Monitor className="h-[1.2rem] w-[1.2rem]" /> System
       </ToggleGroupItem>
     </ToggleGroup>
   );

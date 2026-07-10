@@ -108,9 +108,9 @@ export const AgentsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Agents</h1>
+          <h1 className="text-foreground text-2xl font-semibold">Agents</h1>
           <p className="text-muted-foreground">
             Monitor connected Wake-on-LAN agents
           </p>
@@ -165,7 +165,7 @@ export const AgentsPage = () => {
 
       <Dialog open={isInstallDialogOpen} onOpenChange={setIsInstallDialogOpen}>
         <DialogContent
-          className="sm:max-w-4xl pb-0"
+          className="pb-0 sm:max-w-4xl"
           aria-describedby="Agent installation instructions dialog"
         >
           <DialogHeader>
@@ -177,9 +177,9 @@ export const AgentsPage = () => {
               to enable Wake-on-LAN functionality.
             </DialogDescription>
           </DialogHeader>
-          <div className="-mx-4 no-scrollbar max-h-[80svh] overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 max-h-[80svh] overflow-y-auto px-4">
             <AgentInstallInstructions />
-            <DialogFooter className="mb-0 mt-2">
+            <DialogFooter className="mt-2 mb-0">
               <Button
                 variant="outline"
                 onClick={() => setIsInstallDialogOpen(false)}

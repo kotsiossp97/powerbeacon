@@ -6,9 +6,9 @@ import { Outlet } from "react-router";
 
 export const Layout = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Header />
-      <main className="container py-8 mx-auto px-5">
+      <main className="container mx-auto px-5 py-8">
         <Outlet />
       </main>
     </div>

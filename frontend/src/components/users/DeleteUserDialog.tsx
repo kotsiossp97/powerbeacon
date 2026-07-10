@@ -27,8 +27,8 @@ export const DeleteUserDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete User</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete &quot;{user?.username}&quot;? This action
-            cannot be undone.
+            Are you sure you want to delete &quot;{user?.username}&quot;? This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

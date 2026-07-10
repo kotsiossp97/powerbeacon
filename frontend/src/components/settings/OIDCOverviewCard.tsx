@@ -43,8 +43,8 @@ export const OIDCOverviewCard = ({
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between border border-border rounded-lg px-4 py-3 bg-muted/30">
-          <span className="text-sm text-muted-foreground">Status</span>
+        <div className="border-border bg-muted/30 flex items-center justify-between rounded-lg border px-4 py-3">
+          <span className="text-muted-foreground text-sm">Status</span>
           <Badge
             className={
               config?.enabled
@@ -57,8 +57,8 @@ export const OIDCOverviewCard = ({
         </div>
 
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Server Metadata URL</p>
-          <p className="text-sm font-mono break-all text-foreground">
+          <p className="text-muted-foreground text-sm">Server Metadata URL</p>
+          <p className="text-foreground font-mono text-sm break-all">
             {config?.server_metadata_url || "Not set"}
           </p>
         </div>
@@ -66,8 +66,8 @@ export const OIDCOverviewCard = ({
         {config?.enabled ? (
           <div className="space-y-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Client ID</p>
-              <p className="text-sm font-mono break-all text-foreground">
+              <p className="text-muted-foreground text-sm">Client ID</p>
+              <p className="text-foreground font-mono text-sm break-all">
                 {config.client_id || "Not set"}
               </p>
             </div>
@@ -84,7 +84,7 @@ export const OIDCOverviewCard = ({
         )}
 
         {!isSuperuser && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Only superusers can modify authentication settings.
           </p>
         )}

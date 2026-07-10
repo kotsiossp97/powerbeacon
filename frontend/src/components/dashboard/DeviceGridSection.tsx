@@ -29,7 +29,7 @@ export const DeviceGridSection = ({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4" />
+        <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-b-2" />
         <p className="text-muted-foreground">Loading devices...</p>
       </div>
     );
@@ -38,25 +38,30 @@ export const DeviceGridSection = ({
   if (devices.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Monitor className="h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium text-foreground">No devices found</h3>
+        <Monitor className="text-muted-foreground mb-4 h-12 w-12" />
+        <h3 className="text-foreground text-lg font-medium">
+          No devices found
+        </h3>
         <p className="text-muted-foreground">
           {searchQuery || osFilter !== "all"
             ? "Try adjusting your filters"
             : "Add your first device to get started"}
         </p>
-        {canManageDevices && !isViewer && !searchQuery && osFilter === "all" && (
-          <Button className="mt-4" onClick={onAddDevice}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Device
-          </Button>
-        )}
+        {canManageDevices &&
+          !isViewer &&
+          !searchQuery &&
+          osFilter === "all" && (
+            <Button className="mt-4" onClick={onAddDevice}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Device
+            </Button>
+          )}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {devices.map((device) => (
         <DeviceCard
           key={device.id}

@@ -38,7 +38,7 @@ export const OnlinePill = ({ device }: OnlinePillProps) => {
           }
         >
           <span
-            className={`w-1.5 h-1.5 rounded-full mr-1.5 ${device.is_online ? "bg-green-500" : "bg-muted-foreground"}`}
+            className={`mr-1.5 h-1.5 w-1.5 rounded-full ${device.is_online ? "bg-green-500" : "bg-muted-foreground"}`}
           />
           {device.is_online ? "Online" : "Offline"}
         </Badge>

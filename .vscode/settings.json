@@ -26,6 +26,7 @@
   "[typescriptreact]": {
     "editor.codeActionsOnSave": {
       "source.organizeImports": "always"
-    }
+    },
+    "editor.rulers": [100]
   }
 }

@@ -23,11 +23,13 @@ RUN bash ./build.sh docker-cross
 # ────────────────────────────────────────────────────────────────
 # Stage 2: Runtime image
 # ────────────────────────────────────────────────────────────────
-FROM scratch
+FROM alpine:latest
 
-# Copy CA certificates from builder so the agent can make HTTPS
-# calls to the backend if it is behind TLS.
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+# Reachability probing requires ping and neighbor-table inspection tools.
+RUN apk add --no-cache \
+  ca-certificates \
+  iputils \
+  iproute2
 
 # Copy the binary
 COPY --from=builder /app/build/powerbeacon-agent /powerbeacon-agent

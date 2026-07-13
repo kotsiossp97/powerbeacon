@@ -3,6 +3,7 @@ package reachability
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"os/exec"
 	"regexp"
@@ -25,6 +26,7 @@ type ProbeResponse struct {
 var commandContext = exec.CommandContext
 
 func ProbeDevice(ctx context.Context, macAddress, ipAddress string) (ProbeResponse, error) {
+	log.Printf("Probing device with MAC: %s, IP: %s", macAddress, ipAddress)
 	macAddress = strings.TrimSpace(macAddress)
 	if macAddress == "" {
 		return ProbeResponse{}, fmt.Errorf("MAC address is required")
@@ -37,6 +39,7 @@ func ProbeDevice(ctx context.Context, macAddress, ipAddress string) (ProbeRespon
 	}
 
 	if resolvedIP, err := lookupIPByMAC(ctx, macAddress); err == nil && resolvedIP != "" {
+		log.Printf("Resolved IP for MAC %s: %s", macAddress, resolvedIP)
 		if !containsString(candidates, resolvedIP) {
 			candidates = append(candidates, resolvedIP)
 		}
@@ -50,6 +53,7 @@ func ProbeDevice(ctx context.Context, macAddress, ipAddress string) (ProbeRespon
 
 	for _, candidate := range candidates {
 		if err := pingHost(ctx, candidate); err == nil {
+			log.Printf("Device with MAC %s is online at IP %s", macAddress, candidate)
 			response.Online = true
 			response.ResolvedIP = candidate
 			response.Message = "device responded to ping"
@@ -57,6 +61,7 @@ func ProbeDevice(ctx context.Context, macAddress, ipAddress string) (ProbeRespon
 		}
 	}
 
+	log.Printf("Device with MAC %s did not respond to ping", macAddress)
 	response.Message = "device did not respond to ping"
 	return response, nil
 }
@@ -71,6 +76,7 @@ func pingHost(ctx context.Context, ipAddress string) error {
 
 	commandOutput, err := command.CombinedOutput()
 	if err != nil {
+		log.Printf("Ping to %s failed: %v", ipAddress, err)
 		return fmt.Errorf("ping failed: %w: %s", err, strings.TrimSpace(string(commandOutput)))
 	}
 

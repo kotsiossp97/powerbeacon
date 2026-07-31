@@ -51,6 +51,7 @@ nav = [
     { "Deployment" = [
         "deployment/overview.md",
         "deployment/docker.md",
+        "deployment/truenas.md",
         # "deployment/cloud.md",
     ] },
     { "Architecture" = [

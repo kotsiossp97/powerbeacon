@@ -8,7 +8,7 @@ param(
 
 $BINARY_NAME = "powerbeacon-agent"
 $BUILD_DIR = "build"
-$VERSION = "1.0.4"
+$VERSION = "1.0.5"
 
 function Build-Linux {
     Write-Host "Building for Linux (amd64)..." -ForegroundColor Green

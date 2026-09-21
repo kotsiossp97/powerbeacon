@@ -30,12 +30,18 @@ type ErrorResponse struct {
 // WOLHandler handles Wake-on-LAN requests
 type WOLHandler struct {
 	tokenProvider func() string
+	version       string
 }
 
 // NewWOLHandler creates a new WOL handler
-func NewWOLHandler(tokenProvider func() string) *WOLHandler {
+func NewWOLHandler(tokenProvider func() string, version string) *WOLHandler {
+	if version == "" {
+		version = "unknown"
+	}
+
 	return &WOLHandler{
 		tokenProvider: tokenProvider,
+		version:       version,
 	}
 }
 
@@ -110,7 +116,7 @@ func (h *WOLHandler) HandleWOL(w http.ResponseWriter, r *http.Request) {
 func (h *WOLHandler) HandleHealth(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
 		"status":  "healthy",
-		"version": "1.0.0",
+		"version": h.version,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -122,7 +128,7 @@ func (h *WOLHandler) HandleInfo(w http.ResponseWriter, r *http.Request) {
 	// This could return agent information
 	response := map[string]interface{}{
 		"name":    "PowerBeacon Agent",
-		"version": "1.0.0",
+		"version": h.version,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

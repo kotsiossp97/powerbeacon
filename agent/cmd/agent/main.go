@@ -21,7 +21,7 @@ import (
 
 const (
 	// Version is the agent version
-	Version = "1.0.4"
+	Version = "1.0.5"
 	// DefaultBackendURL is the default backend URL
 	DefaultBackendURL = "http://localhost:8000"
 	// DefaultPort is the default agent API port
@@ -90,7 +90,7 @@ func main() {
 	router := mux.NewRouter()
 
 	// Create WOL handler with live token authentication state.
-	wolHandler := api.NewWOLHandler(backendClient.GetToken)
+	wolHandler := api.NewWOLHandler(backendClient.GetToken, Version)
 	reachabilityHandler := api.NewReachabilityHandler(backendClient.GetToken)
 
 	// Register routes

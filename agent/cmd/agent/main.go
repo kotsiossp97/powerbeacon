@@ -21,7 +21,7 @@ import (
 
 const (
 	// Version is the agent version
-	Version = "1.0.5"
+	Version = "1.0.6"
 	// DefaultBackendURL is the default backend URL
 	DefaultBackendURL = "http://localhost:8000"
 	// DefaultPort is the default agent API port

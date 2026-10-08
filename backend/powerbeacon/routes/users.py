@@ -2,6 +2,8 @@ import uuid
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import select
+
 from powerbeacon.core.deps import (
     CurrentUser,
     SessionDep,
@@ -11,7 +13,6 @@ from powerbeacon.core.deps import (
 from powerbeacon.crud import user_crud
 from powerbeacon.models.generic import Message
 from powerbeacon.models.users import User, UserCreate, UserPublic, UsersPublic, UserUpdate
-from sqlmodel import select
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -130,12 +131,13 @@ async def update_user(
         )
 
     # Admins can only edit role and is_active
-    if current_user.role == "admin":
-        if user_in.username or user_in.email or user_in.full_name or user_in.password:
-            raise HTTPException(
-                status_code=403,
-                detail="Admins can only edit user role and active status",
-            )
+    if current_user.role == "admin" and (
+        user_in.username or user_in.email or user_in.full_name or user_in.password
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Admins can only edit user role and active status",
+        )
 
     # Check if changing username to one that already exists
     if user_in.username and user_in.username != db_user.username:

@@ -54,16 +54,19 @@ async def initialize_system(*, session: SessionDep, user_in: SetupInitRequest) -
             detail="System is already initialized. Cannot create another initial user.",
         )
 
-    if user_in.oidc and user_in.oidc.enabled:
-        if (
+    if (
+        user_in.oidc
+        and user_in.oidc.enabled
+        and (
             not user_in.oidc.server_metadata_url
             or not user_in.oidc.client_id
             or not user_in.oidc.client_secret
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Server metadata URL, client ID, and client secret are required when enabling OIDC",
-            )
+        )
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Server metadata URL, client ID, and client secret are required when enabling OIDC",
+        )
 
     user_create = UserCreate.model_validate(user_in.model_dump(exclude={"oidc"}))
 

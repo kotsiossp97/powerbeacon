@@ -94,7 +94,7 @@ async def get_linux_install_script():
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
 
-    with open(script_path, "r") as f:
+    with open(script_path, "r") as f:  # noqa: ASYNC230
         content = f.read()
 
     return PlainTextResponse(content=content, media_type="text/x-shellscript")
@@ -112,7 +112,7 @@ async def get_windows_install_script():
     if not os.path.exists(script_path):
         raise HTTPException(status_code=404, detail="Installation script not found")
 
-    with open(script_path, "r") as f:
+    with open(script_path, "r") as f:  # noqa: ASYNC230
         content = f.read()
 
     return PlainTextResponse(content=content, media_type="text/plain")

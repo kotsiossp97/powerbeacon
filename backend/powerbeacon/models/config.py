@@ -1,12 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime
 from sqlmodel import Field, SQLModel
 
 
 def get_datetime_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class OIDCSettingsBase(SQLModel):
@@ -20,8 +20,6 @@ class OIDCSettingsBase(SQLModel):
 
 class OIDCSettingsCreate(OIDCSettingsBase):
     """Create OIDC settings."""
-
-    pass
 
 
 class OIDCSettings(OIDCSettingsBase, table=True):

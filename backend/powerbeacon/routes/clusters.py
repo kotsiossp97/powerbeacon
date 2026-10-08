@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.orm import selectinload
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/clusters", tags=["Clusters"])
 
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _get_cluster(session: SessionDep, cluster_id: uuid.UUID) -> Cluster | None:

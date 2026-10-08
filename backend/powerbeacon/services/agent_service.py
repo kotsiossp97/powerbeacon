@@ -73,13 +73,8 @@ class AgentService:
             )
             return True
 
-        except httpx.HTTPError as e:
-            logger.error(
-                "HTTP error dispatching WOL to agent %s: %s",
-                agent.hostname,
-                str(e),
-                exc_info=True,
-            )
+        except httpx.HTTPError:
+            logger.exception("HTTP error dispatching WOL to agent %s", agent.hostname)
             return False
 
     def probe_device(
@@ -117,27 +112,11 @@ class AgentService:
                 return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(
-                "HTTP error probing device through agent %s: %s",
-                agent.hostname,
-                str(e),
-                exc_info=True,
-            )
+            logger.exception("HTTP error probing device through agent %s", agent.hostname)
             return {"online": False, "message": str(e)}
         except Exception as e:
-            logger.error(
-                "Failed to probe device reachability: %s",
-                str(e),
-                exc_info=True,
-            )
+            logger.exception("Failed to probe device reachability")
             return {"online": False, "message": str(e)}
-        except Exception as e:
-            logger.error(
-                "Failed to dispatch WOL command: %s",
-                str(e),
-                exc_info=True,
-            )
-            return False
 
     def check_agent_health(self, agent: Agent) -> dict:
         """Check health of a specific agent."""

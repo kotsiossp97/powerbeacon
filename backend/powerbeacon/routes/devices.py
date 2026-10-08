@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.orm import selectinload
@@ -169,7 +169,7 @@ async def update_device(
     _validate_agent_cluster_alignment(next_cluster_id, agents)
 
     device.sqlmodel_update(device_data)
-    device.updated_at = datetime.now(timezone.utc)
+    device.updated_at = datetime.now(UTC)
     device.agents = agents
     session.add(device)
     session.commit()

@@ -2,10 +2,11 @@
 
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
+from sqlmodel import Session, select
 
 from powerbeacon.models.agents import Agent, AgentRegistration, AgentStatus
-from sqlmodel import Session, select
 
 
 def create_agent(*, session: Session, agent_create: AgentRegistration) -> tuple[Agent, str]:
@@ -26,7 +27,7 @@ def create_agent(*, session: Session, agent_create: AgentRegistration) -> tuple[
         version=agent_create.version,
         token=token,
         status=AgentStatus.ONLINE,
-        last_seen=datetime.now(timezone.utc),
+        last_seen=datetime.now(UTC),
     )
     session.add(db_obj)
     session.commit()
@@ -54,7 +55,7 @@ def get_agents(*, session: Session, skip: int = 0, limit: int = 100) -> list[Age
 
 def update_agent_heartbeat(*, session: Session, agent: Agent) -> Agent:
     """Update agent's last_seen timestamp and set status to online."""
-    agent.last_seen = datetime.now(timezone.utc)
+    agent.last_seen = datetime.now(UTC)
     agent.status = AgentStatus.ONLINE
     session.add(agent)
     session.commit()
@@ -94,7 +95,7 @@ def check_offline_agents(*, session: Session, timeout_minutes: int = 2) -> list[
     Returns:
         List of agents that were marked as offline
     """
-    cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=timeout_minutes)
+    cutoff_time = datetime.now(UTC) - timedelta(minutes=timeout_minutes)
     statement = select(Agent).where(
         Agent.last_seen < cutoff_time, Agent.status == AgentStatus.ONLINE
     )

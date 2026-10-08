@@ -3,6 +3,7 @@ icon: lucide/computer
 tags:
   - Setup
 ---
+
 # Setup Overview
 
 Use this section to get PowerBeacon running quickly, then choose the setup path that matches your workflow.
@@ -22,9 +23,9 @@ flowchart LR
 
 ## Choose Your Setup Path
 
-| Path | Best for | Time | Main command |
-| --- | --- | --- | --- |
-| [Docker Setup](docker.md) | Most users, fastest onboarding | 5-10 min | `docker compose up --build` |
+| Path                                | Best for                             | Time      | Main command                                  |
+| ----------------------------------- | ------------------------------------ | --------- | --------------------------------------------- |
+| [Docker Setup](docker.md)           | Most users, fastest onboarding       | 5-10 min  | `docker compose up --build`                   |
 | [Local Development](development.md) | Contributing and debugging internals | 15-30 min | `uv run fastapi dev main.py ` + `npm run dev` |
 
 ## Prerequisites
@@ -54,17 +55,17 @@ cd powerbeacon
 
 ### 2. Create local environment file
 
-Linux/macOS:
+=== "Linux/macOS"
 
-```bash
-cp .env.example .env
-```
+    ```bash
+    cp .env.example .env
+    ```
 
-PowerShell:
+=== "Windows (PowerShell)"
 
-```powershell
-Copy-Item .env.example .env
-```
+    ```powershell
+    Copy-Item .env.example .env
+    ```
 
 ### 3. Start services
 
@@ -100,4 +101,3 @@ Use this checklist before moving on:
 - Port `3000`, `5173`, `5432`, or `8000` already in use.
 - Missing `.env` file.
 - Docker Desktop on Windows/macOS cannot reliably send direct LAN broadcast WOL from containers. Prefer relay mode for production LAN wake flows.
-

@@ -1,11 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
+
+from sqlalchemy import JSON, Column, DateTime
+from sqlmodel import Field, Relationship, SQLModel
 
 from powerbeacon.models.agents import AgentPublic
 from powerbeacon.models.devices import DevicePublic
-from sqlalchemy import JSON, Column, DateTime
-from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from powerbeacon.models.agents import Agent
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 
 
 def get_datetime_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class ClusterBase(SQLModel):

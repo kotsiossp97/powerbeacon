@@ -1,7 +1,7 @@
 """Agent management API routes."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Header, HTTPException, status
 from sqlalchemy.orm import selectinload
@@ -62,7 +62,7 @@ async def register_agent(
         existing_agent.os = agent_in.os
         existing_agent.version = agent_in.version
         existing_agent.status = AgentStatus.ONLINE
-        existing_agent.last_seen = datetime.now(timezone.utc)
+        existing_agent.last_seen = datetime.now(UTC)
         session.add(existing_agent)
         session.commit()
         session.refresh(existing_agent)
@@ -126,8 +126,6 @@ async def agent_heartbeat(
 
     # Update heartbeat
     agent_crud.update_agent_heartbeat(session=session, agent=agent)
-
-    return None
 
 
 @router.get("", response_model=AgentsPublic)

@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
+
 from powerbeacon.core import security, settings
 from powerbeacon.core.deps import CurrentUser, SessionDep
 from powerbeacon.crud import user_crud

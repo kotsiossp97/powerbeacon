@@ -21,17 +21,18 @@ This is the recommended setup path for running PowerBeacon with minimal host dep
 
 Create `.env` from the template at the repository root.
 
-Linux/macOS:
+=== "Linux/macOS"
 
-```bash
-cp .env.example .env
-```
+    ```bash
+    cp .env.example .env
+    ```
 
-PowerShell:
+=== "Windows (PowerShell)"
 
-```powershell
-Copy-Item .env.example .env
-```
+    ```powershell
+    Copy-Item .env.example .env
+    ```
+
 
 At minimum, set these values:
 

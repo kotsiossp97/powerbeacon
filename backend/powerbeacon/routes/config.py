@@ -81,16 +81,15 @@ async def update_oidc_config(config: OIDCConfig, session: SessionDep) -> dict:
     """Update OIDC configuration (superuser only)."""
     existing = get_oidc_settings(session)
 
-    if config.enabled:
-        if (
-            not config.server_metadata_url
-            or not config.client_id
-            or (not config.client_secret and not existing)
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Server metadata URL, client ID, and client secret are required when enabling OIDC",
-            )
+    if config.enabled and (
+        not config.server_metadata_url
+        or not config.client_id
+        or (not config.client_secret and not existing)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Server metadata URL, client ID, and client secret are required when enabling OIDC",
+        )
 
     settings_in = OIDCSettingsCreate(
         enabled=config.enabled,

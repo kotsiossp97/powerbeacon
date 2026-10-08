@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
@@ -51,7 +51,7 @@ class DeviceReachabilityService:
             self._apply_row_config(row)
 
     def poll_once(self) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         print("Polling devices for status")
         with Session(engine) as session:
             statement = (
@@ -96,7 +96,7 @@ class DeviceReachabilityService:
             session.commit()
 
     def clear_online_status(self, session: Session | None = None) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         if session is None:
             with Session(engine) as local_session:

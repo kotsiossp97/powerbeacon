@@ -1,11 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
-from powerbeacon.models.links import DeviceAgentLink
 from sqlalchemy import DateTime
 from sqlmodel import Field, Relationship, SQLModel
+
+from powerbeacon.models.links import DeviceAgentLink
 
 if TYPE_CHECKING:
     from powerbeacon.models.clusters import Cluster
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 
 def get_datetime_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class AgentOS(str, Enum):

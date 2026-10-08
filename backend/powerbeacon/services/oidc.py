@@ -1,6 +1,7 @@
 from authlib.integrations.starlette_client import OAuth
-from powerbeacon.core.db import engine
 from sqlmodel import Session
+
+from powerbeacon.core.db import engine
 from powerbeacon.crud.config_crud import (
     get_oidc_settings,
 )

@@ -18,8 +18,8 @@ backend_root = Path(__file__).resolve().parents[1]
 if str(backend_root) not in sys.path:
     sys.path.insert(0, str(backend_root))
 
-import powerbeacon.models  # noqa: E402, F401
-from powerbeacon.core import settings  # noqa: E402
+import powerbeacon.models  # noqa: F401
+from powerbeacon.core import settings
 
 target_metadata = SQLModel.metadata
 

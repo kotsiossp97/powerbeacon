@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel
 from sqlalchemy import DateTime
@@ -7,7 +7,7 @@ from sqlmodel import JSON, Column, Field, SQLModel
 
 
 def get_datetime_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class ServiceConfigBase(SQLModel):
@@ -19,8 +19,6 @@ class ServiceConfigBase(SQLModel):
 
 class ServiceConfigCreate(ServiceConfigBase):
     """Create service configuration settings."""
-
-    pass
 
 
 class ServiceConfig(ServiceConfigBase, table=True):

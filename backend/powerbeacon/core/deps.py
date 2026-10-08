@@ -5,14 +5,14 @@ from uuid import UUID
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlmodel import Session
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
+from sqlmodel import Session
+
+from powerbeacon.core import security, settings
 from powerbeacon.core.db import engine
-from powerbeacon.core import settings, security
 from powerbeacon.models.generic import TokenPayload
 from powerbeacon.models.users import User
-
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 

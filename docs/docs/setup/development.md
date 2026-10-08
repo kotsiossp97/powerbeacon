@@ -68,28 +68,6 @@ cd backend
 uv run fastapi dev main.py --host 0.0.0.0 --port 8000
 ```
 
-Alternatively, using `pip`:
-
-=== "Linux/macOS"
-
-    ```bash linenums="1"
-    cd backend
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
-    fastapi dev main.py --host 0.0.0.0 --port 8000
-    ```
-
-=== "PowerShell"
-
-    ```powershell linenums="1"
-    cd backend
-    python -m venv .venv
-    .\.venv\Scripts\Activate.ps1
-    pip install -r requirements.txt
-    fastapi dev main.py --host 0.0.0.0 --port 8000
-    ```
-
 Backend URLs:
 
 - API: `http://localhost:8000`

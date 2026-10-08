@@ -42,9 +42,9 @@ mindmap
 ---
 
 ## Contact
-:lucide-github: [kotsiossp97](https://github.com/kotsiossp97)
+:fontawesome-brands-github: [kotsiossp97](https://github.com/kotsiossp97)
 :lucide-globe: [kotsiossp97.github.io](https://kotsiossp97.github.io/)
-:lucide-linkedin: [Konstantinos Andreou](https://www.linkedin.com/in/konstantinos-andreou97/)
+:fontawesome-brands-linkedin: [Konstantinos Andreou](https://www.linkedin.com/in/konstantinos-andreou97/)
 
 !!! tip "Contributions"
     Bug reports, feedback, and pull requests are welcome.

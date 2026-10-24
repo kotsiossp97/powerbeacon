@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import func, select
 
 from powerbeacon.core.deps import CurrentUser, SessionDep
-from powerbeacon.models.agents import Agent
+from powerbeacon.models.agents import Agent, AgentStatus
 from powerbeacon.models.clusters import (
     Cluster,
     ClusterCreate,
@@ -17,6 +17,7 @@ from powerbeacon.models.clusters import (
 )
 from powerbeacon.models.devices import Device
 from powerbeacon.models.generic import Message
+from powerbeacon.services.agent_service import agent_service
 from powerbeacon.services.inventory_service import can_manage_owned_resource, serialize_cluster
 from powerbeacon.services.wake_service import wake_service
 
@@ -249,6 +250,63 @@ async def delete_cluster(
     session.delete(cluster)
     session.commit()
     return Message(message="Cluster deleted successfully")
+
+
+@router.post("/{cluster_id}/discover-network")
+async def discover_cluster_network(
+    cluster_id: uuid.UUID,
+    current_user: CurrentUser,
+    session: SessionDep,
+):
+    cluster = _get_cluster(session, cluster_id)
+    if not cluster:
+        raise HTTPException(status_code=404, detail="Cluster not found")
+    if current_user.role == "viewer":
+        raise HTTPException(status_code=403, detail="Viewers cannot discover network devices")
+    if not can_manage_owned_resource(current_user, cluster.owner_id):
+        raise HTTPException(
+            status_code=403, detail="Not authorized to discover devices for this cluster"
+        )
+
+    online_agents = [agent for agent in cluster.agents if agent.status == AgentStatus.ONLINE]
+    if not online_agents:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="This cluster has no online agents available for network discovery.",
+        )
+
+    discovered: dict[tuple[str, str], dict] = {}
+    for agent in online_agents:
+        result = agent_service.discover_network(agent)
+        for item in result.get("devices", []):
+            ip = str(item.get("ip", "")).strip()
+            mac = str(item.get("mac", "")).strip()
+            if not ip and not mac:
+                continue
+            key = (mac.lower(), ip.lower())
+            discovered.setdefault(
+                key,
+                {
+                    "ip": ip,
+                    "mac": mac,
+                    "online": bool(item.get("online", False)),
+                    "source_agent": agent.hostname,
+                },
+            )
+
+    devices = sorted(
+        discovered.values(),
+        key=lambda device: (
+            not bool(device["online"]),
+            device.get("ip") or device.get("mac") or "",
+        ),
+    )
+    return {
+        "cluster_id": cluster.id,
+        "agent_count": len(online_agents),
+        "count": len(devices),
+        "devices": devices,
+    }
 
 
 @router.post("/{cluster_id}/wake", status_code=status.HTTP_202_ACCEPTED)

@@ -5,6 +5,7 @@ import type {
   ClusterDetail,
   ClustersPublic,
   ClusterUpdate,
+  NetworkDiscoveryResult,
 } from "@/types";
 
 export const clustersApi = {
@@ -34,5 +35,11 @@ export const clustersApi = {
 
   wake(id: string) {
     return apiClient.post(`/api/clusters/${id}/wake`);
+  },
+
+  discoverNetwork(id: string) {
+    return apiClient.post<NetworkDiscoveryResult>(
+      `/api/clusters/${id}/discover-network`,
+    );
   },
 };

@@ -14,8 +14,16 @@ type ReachabilityHandler struct {
 	tokenProvider func() string
 }
 
+type NetworkDiscoveryHandler struct {
+	tokenProvider func() string
+}
+
 func NewReachabilityHandler(tokenProvider func() string) *ReachabilityHandler {
 	return &ReachabilityHandler{tokenProvider: tokenProvider}
+}
+
+func NewNetworkDiscoveryHandler(tokenProvider func() string) *NetworkDiscoveryHandler {
+	return &NetworkDiscoveryHandler{tokenProvider: tokenProvider}
 }
 
 func (h *ReachabilityHandler) HandleReachability(w http.ResponseWriter, r *http.Request) {
@@ -73,6 +81,45 @@ func (h *ReachabilityHandler) sendError(w http.ResponseWriter, message string, s
 }
 
 func (h *ReachabilityHandler) sendJSON(w http.ResponseWriter, payload interface{}, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(payload)
+}
+
+func (h *NetworkDiscoveryHandler) HandleNetworkDiscovery(w http.ResponseWriter, r *http.Request) {
+	currentToken := ""
+	if h.tokenProvider != nil {
+		currentToken = h.tokenProvider()
+	}
+
+	if currentToken == "" {
+		h.sendError(w, "agent not registered", http.StatusServiceUnavailable)
+		return
+	}
+
+	token := r.Header.Get("Authorization")
+	expectedToken := "Bearer " + currentToken
+	if token != expectedToken {
+		h.sendError(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	response, err := reachability.DiscoverNetwork(r.Context())
+	if err != nil {
+		h.sendError(w, fmt.Sprintf("failed to discover devices: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	h.sendJSON(w, response, http.StatusOK)
+}
+
+func (h *NetworkDiscoveryHandler) sendError(w http.ResponseWriter, message string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(ErrorResponse{Error: message})
+}
+
+func (h *NetworkDiscoveryHandler) sendJSON(w http.ResponseWriter, payload interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(payload)

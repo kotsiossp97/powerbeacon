@@ -23,11 +23,13 @@ async def lifespan(app: FastAPI):
     # Perform any startup tasks here (e.g., initialize database, load models)
     from powerbeacon.core.db import init_db
 
-    init_db()
+    await init_db()
+    print("Database initialized.")
     device_reachability_service.fetch_config()
     if not device_reachability_service.enabled:
         device_reachability_service.clear_online_status()
     device_reachability_service.start()
+    print("FastAPI server started")
     yield  # This is where the application runs
 
     await device_reachability_service.stop()

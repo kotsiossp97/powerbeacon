@@ -178,6 +178,21 @@ export interface AgentsPublic {
   count: number;
 }
 
+export interface DiscoveredNetworkDevice {
+  ip: string;
+  mac: string;
+  online: boolean;
+  hostname?: string;
+  source_agent?: string;
+}
+
+export interface NetworkDiscoveryResult {
+  cluster_id: string;
+  agent_count: number;
+  count: number;
+  devices: DiscoveredNetworkDevice[];
+}
+
 export interface Cluster {
   id: string;
   name: string;

@@ -16,10 +16,11 @@ import { Spinner } from "@/components/ui/spinner";
 import type { Agent, Cluster, Device } from "@/types";
 import { Plus, RefreshCw, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const ClustersPage = () => {
+  const navigate = useNavigate();
   const { user, hasPermission } = useAuthStore();
   const [clusters, setClusters] = useState<Cluster[]>([]);
   const [devices, setDevices] = useState<Device[]>([]);
@@ -277,6 +278,9 @@ const ClustersPage = () => {
               canManage={canManageClusters}
               onEdit={openEditDialog}
               onDelete={setDeletingCluster}
+              onDiscover={(selectedCluster) =>
+                navigate(`/clusters/${selectedCluster.id}`)
+              }
             />
           ))}
         </div>

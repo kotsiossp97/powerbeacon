@@ -92,10 +92,12 @@ func main() {
 	// Create WOL handler with live token authentication state.
 	wolHandler := api.NewWOLHandler(backendClient.GetToken, Version)
 	reachabilityHandler := api.NewReachabilityHandler(backendClient.GetToken)
+	networkDiscoveryHandler := api.NewNetworkDiscoveryHandler(backendClient.GetToken)
 
 	// Register routes
 	router.HandleFunc("/wol", wolHandler.HandleWOL).Methods("POST")
 	router.HandleFunc("/reachability", reachabilityHandler.HandleReachability).Methods("POST")
+	router.HandleFunc("/discover", networkDiscoveryHandler.HandleNetworkDiscovery).Methods("POST")
 	router.HandleFunc("/health", wolHandler.HandleHealth).Methods("GET")
 	router.HandleFunc("/info", wolHandler.HandleInfo).Methods("GET")
 

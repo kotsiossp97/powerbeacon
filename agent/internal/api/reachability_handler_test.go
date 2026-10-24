@@ -33,3 +33,16 @@ func TestHandleReachabilityRejectsInvalidIP(t *testing.T) {
 		t.Fatalf("HandleReachability() status = %d, want %d", resp.Code, http.StatusBadRequest)
 	}
 }
+
+func TestHandleNetworkDiscoveryRequiresRegistration(t *testing.T) {
+	handler := NewNetworkDiscoveryHandler(func() string { return "" })
+	req := httptest.NewRequest(http.MethodPost, "/discover", strings.NewReader(`{}`))
+	req.Header.Set("Content-Type", "application/json")
+	resp := httptest.NewRecorder()
+
+	handler.HandleNetworkDiscovery(resp, req)
+
+	if resp.Code != http.StatusServiceUnavailable {
+		t.Fatalf("HandleNetworkDiscovery() status = %d, want %d", resp.Code, http.StatusServiceUnavailable)
+	}
+}

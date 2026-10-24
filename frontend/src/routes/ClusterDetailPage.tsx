@@ -8,11 +8,34 @@ import { DeviceCard } from "@/components/devices/DeviceCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Agent, ClusterDetail, Device } from "@/types";
+import type {
+  Agent,
+  ClusterDetail,
+  Device,
+  NetworkDiscoveryResult,
+} from "@/types";
 import { ArrowLeft, Network, Power, RefreshCw, Server } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
+
+const getFriendlyDiscoveredDeviceName = (
+  device: NetworkDiscoveryResult["devices"][number],
+) => {
+  if (device.hostname) {
+    return device.hostname;
+  }
+
+  if (device.ip) {
+    return `Device ${device.ip}`;
+  }
+
+  if (device.mac) {
+    return `Device ${device.mac.slice(-8).replace(/:/g, "")}`;
+  }
+
+  return "Discovered device";
+};
 
 const ClusterDetailPage = () => {
   const navigate = useNavigate();
@@ -24,6 +47,9 @@ const ClusterDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDiscovering, setIsDiscovering] = useState(false);
+  const [discoveryResults, setDiscoveryResults] =
+    useState<NetworkDiscoveryResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -115,6 +141,39 @@ const ClusterDetailPage = () => {
       } else {
         toast.error(detail || "Failed to wake cluster");
       }
+    }
+  };
+
+  const handleDiscoverNetwork = async () => {
+    if (!cluster) {
+      return;
+    }
+
+    try {
+      setIsDiscovering(true);
+      const response = await clustersApi.discoverNetwork(cluster.id);
+      setDiscoveryResults(response.data);
+      toast.success(
+        response.data.count > 0
+          ? `Discovered ${response.data.count} reachable device(s)`
+          : "Network discovery completed. No reachable devices were found.",
+      );
+    } catch (err) {
+      const apiError = err as {
+        response?: { data?: { detail?: string | object[] } };
+      };
+      const detail = apiError.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        toast.error(
+          detail
+            .map((d: { msg?: string }) => d.msg || JSON.stringify(d))
+            .join("; "),
+        );
+      } else {
+        toast.error(detail || "Failed to discover network devices");
+      }
+    } finally {
+      setIsDiscovering(false);
     }
   };
 
@@ -233,6 +292,16 @@ const ClusterDetailPage = () => {
             </Button>
           )}
           {canManageCluster && (
+            <Button
+              variant="secondary"
+              onClick={handleDiscoverNetwork}
+              disabled={isDiscovering}
+            >
+              <Network className="mr-2 h-4 w-4" />
+              {isDiscovering ? "Discovering..." : "Discover Network"}
+            </Button>
+          )}
+          {canManageCluster && (
             <Button variant="secondary" onClick={() => setIsFormOpen(true)}>
               Edit Cluster
             </Button>
@@ -251,6 +320,55 @@ const ClusterDetailPage = () => {
         totalAgents={cluster.agents.length}
         ownerName={cluster.owner_name || "Unknown"}
       />
+
+      {discoveryResults && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Network className="h-5 w-5" />
+              Discovered Devices
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {discoveryResults.devices.length === 0 ? (
+              <div className="text-muted-foreground">
+                No reachable devices were discovered on the cluster’s online
+                agents.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {discoveryResults.devices.map((device) => (
+                  <div
+                    key={`${device.mac}-${device.ip}`}
+                    className="border-border bg-background/60 flex items-center justify-between gap-4 rounded-lg border p-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="text-foreground font-semibold">
+                        {getFriendlyDiscoveredDeviceName(device)}
+                      </div>
+                      <div className="mt-2 space-y-1 text-sm">
+                        <div>
+                          <span className="text-muted-foreground mr-2">
+                            MAC
+                          </span>
+                          <span className="font-mono">{device.mac}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground mr-2">IP</span>
+                          <span className="font-mono">{device.ip}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Badge variant={device.online ? "outline" : "secondary"}>
+                      {device.online ? "Online" : "Reachable"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
         <Card>

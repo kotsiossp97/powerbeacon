@@ -62,9 +62,44 @@ services:
       - powerbeacon-dev
     command: npm run dev -- --host 0.0.0.0
 
+  agent:
+    build:
+      context: ./agent
+    container_name: powerbeacon-agent-dev
+    environment:
+      BACKEND_URL: http://localhost:8000
+    network_mode: host
+    depends_on:
+      - backend
+
+  agent-ipvlan:
+    build:
+      context: ./agent
+    container_name: powerbeacon-agent-ipvlan-dev
+    profiles:
+      - ipvlan
+    environment:
+      # Use the host LAN IP so the IPvLAN-attached container can reach backend
+      # via the backend published port (8000:8000).
+      BACKEND_URL: http://${HOST_LAN_IP:-192.168.178.37}:8000
+    depends_on:
+      - backend
+    networks:
+      powerbeacon-ipvlan:
+        ipv4_address: ${AGENT_IPVLAN_IP:-192.168.178.250}
+
 volumes:
   postgres_data_dev:
 
 networks:
   powerbeacon-dev:
     driver: bridge
+  powerbeacon-ipvlan:
+    driver: ipvlan
+    driver_opts:
+      ipvlan_mode: l2
+      parent: ${IPVLAN_PARENT_IFACE:-eth0}
+    ipam:
+      config:
+        - subnet: ${IPVLAN_SUBNET:-172.25.132.0/24}
+          gateway: ${IPVLAN_GATEWAY:-172.25.132.1}

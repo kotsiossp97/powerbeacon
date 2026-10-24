@@ -23,6 +23,7 @@ interface ClusterCardProps {
   canManage: boolean;
   onEdit: (cluster: Cluster) => void;
   onDelete: (cluster: Cluster) => void;
+  onDiscover?: (cluster: Cluster) => void;
 }
 
 export const ClusterCard = ({
@@ -30,6 +31,7 @@ export const ClusterCard = ({
   canManage,
   onEdit,
   onDelete,
+  onDiscover,
 }: ClusterCardProps) => {
   return (
     <Card className="border-card hover:border-primary/40 border shadow-lg transition-colors">
@@ -58,6 +60,12 @@ export const ClusterCard = ({
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Cluster
                 </DropdownMenuItem>
+                {onDiscover && (
+                  <DropdownMenuItem onClick={() => onDiscover(cluster)}>
+                    <Network className="mr-2 h-4 w-4" />
+                    Discover Network
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"
                   onClick={() => onDelete(cluster)}

@@ -281,6 +281,7 @@ async def discover_cluster_network(
         for item in result.get("devices", []):
             ip = str(item.get("ip", "")).strip()
             mac = str(item.get("mac", "")).strip()
+            hostname = str(item.get("hostname", "")).strip()
             if not ip and not mac:
                 continue
             key = (mac.lower(), ip.lower())
@@ -291,6 +292,7 @@ async def discover_cluster_network(
                     "mac": mac,
                     "online": bool(item.get("online", False)),
                     "source_agent": agent.hostname,
+                    "hostname": hostname,
                 },
             )
 

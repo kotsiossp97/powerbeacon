@@ -186,7 +186,7 @@ func parseNetworkEntries(output string) ([]NetworkEntry, error) {
 		}
 
 		ip := extractIPFromLine(trimmed)
-		if ip == "" {
+		if ip == "" || !isUsableDiscoveryIP(ip) {
 			continue
 		}
 
@@ -213,6 +213,34 @@ func parseNetworkEntries(output string) ([]NetworkEntry, error) {
 		})
 	}
 	return entries, nil
+}
+
+func isUsableDiscoveryIP(ipAddress string) bool {
+	ip := net.ParseIP(ipAddress)
+	if ip == nil {
+		return false
+	}
+
+	if ip.To4() == nil {
+		return false
+	}
+
+	if ip.IsUnspecified() || ip.IsLoopback() || ip.IsMulticast() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsInterfaceLocalMulticast() {
+		return false
+	}
+
+	ip4 := ip.To4()
+	if ip4[0] == 0 || ip4[0] == 255 {
+		return false
+	}
+	if ip4[3] == 255 {
+		return false
+	}
+	if ip4[0] == 169 && ip4[1] == 254 {
+		return false
+	}
+
+	return true
 }
 
 func extractInterfaceFromNeighborLine(line string) string {
@@ -293,11 +321,7 @@ func DiscoverNetwork(ctx context.Context) (DiscoveryResponse, error) {
 
 func shouldSkipDiscoveryEntry(entry NetworkEntry, localIPs, resolverIPs, gatewayIPs map[string]struct{}) bool {
 	ip := net.ParseIP(entry.IP)
-	if ip == nil {
-		return true
-	}
-
-	if ip.To4() == nil {
+	if ip == nil || !isUsableDiscoveryIP(entry.IP) {
 		return true
 	}
 

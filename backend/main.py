@@ -92,9 +92,13 @@ async def get_linux_install_script():
     from fastapi.responses import PlainTextResponse
 
     script_path = os.path.join(os.path.dirname(__file__), "agents", "install", "install-agent.sh")
+    secondary_script_path = os.path.join("/", "agents", "install", "install-agent.sh")
 
     if not os.path.exists(script_path):
-        raise HTTPException(status_code=404, detail="Installation script not found")
+        if os.path.exists(secondary_script_path):
+            script_path = secondary_script_path
+        else:
+            raise HTTPException(status_code=404, detail="Installation script not found")
 
     with open(script_path, "r") as f:  # noqa: ASYNC230
         content = f.read()
@@ -138,9 +142,17 @@ async def get_agent_binary(platform: str, arch: str):
         "binaries",
         f"powerbeacon-agent-{platform}-{arch}{ext}",
     )
+    secondary_path = os.path.join(
+        "/", "agents", "binaries", f"powerbeacon-agent-{platform}-{arch}{ext}"
+    )
 
     if not os.path.exists(binary_path):
-        raise HTTPException(status_code=404, detail=f"Agent binary not found for {platform}-{arch}")
+        if os.path.exists(secondary_path):
+            binary_path = secondary_path
+        else:
+            raise HTTPException(
+                status_code=404, detail=f"Agent binary not found for {platform}-{arch}"
+            )
 
     # Set appropriate media type
     media_type = "application/octet-stream"

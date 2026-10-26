@@ -66,6 +66,26 @@ func TestDiscoverNetworkParsesNeighborTable(t *testing.T) {
 	}
 }
 
+func TestParseNetworkEntriesSkipsWindowsBroadcastAndMulticast(t *testing.T) {
+	output := `Interface: 192.168.1.48 --- 0x6
+  Internet Address      Physical Address      Type
+  192.168.1.10           00-11-22-33-44-55     dynamic
+  192.168.1.255          ff-ff-ff-ff-ff-ff     static
+  224.0.0.22             01-00-5e-00-00-16     static
+  239.255.255.250        01-00-5e-7f-ff-fa     static`
+
+	devices, err := parseNetworkEntries(output)
+	if err != nil {
+		t.Fatalf("parseNetworkEntries() unexpected error: %v", err)
+	}
+	if len(devices) != 1 {
+		t.Fatalf("parseNetworkEntries() entries = %d, want %d", len(devices), 1)
+	}
+	if devices[0].IP != "192.168.1.10" || devices[0].MAC != "00:11:22:33:44:55" {
+		t.Fatalf("parseNetworkEntries() first entry = %#v, want IP 192.168.1.10 and MAC 00:11:22:33:44:55", devices[0])
+	}
+}
+
 func TestResolveHostname(t *testing.T) {
 	originalLookupAddr := lookupAddr
 	t.Cleanup(func() {

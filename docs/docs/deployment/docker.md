@@ -76,6 +76,20 @@ as it provides a good balance between ease of use and flexibility. It is also th
       powerbeacon:latest
     ```
 
+    !!! tip "SQLite Option"
+        If you prefer to use SQLite instead of PostgreSQL, you can update the `DB_URL` environment variable to:
+
+        ```yaml
+        DB_URL: ${DB_URL:-sqlite:////db_data/powerbeacon.db}
+        ```
+        Don't forget to mount the `db_data` directory as a volume in your Docker setup to persist the SQLite database.
+        For example, in your `docker-compose.yml`:
+
+        ```yaml
+        volumes:
+          - ./db_data:/db_data
+        ```
+
 ## Optional Agent Container (Linux only)
 
 If you want to run the agent in Docker, use a Linux host and `network_mode: host`.

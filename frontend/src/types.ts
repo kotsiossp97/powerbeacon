@@ -50,6 +50,7 @@ export interface DeviceUpdate {
   tags?: string[];
   cluster_id?: string;
   agent_ids?: string[];
+  is_active?: boolean;
 }
 
 export type UserRole = "superuser" | "admin" | "user" | "viewer";

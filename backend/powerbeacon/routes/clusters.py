@@ -271,7 +271,7 @@ async def discover_cluster_network(
     online_agents = [agent for agent in cluster.agents if agent.status == AgentStatus.ONLINE]
     if not online_agents:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="This cluster has no online agents available for network discovery.",
         )
 
@@ -326,7 +326,7 @@ async def wake_cluster(
         raise HTTPException(status_code=403, detail="Not authorized to wake this cluster")
     if not cluster.devices:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Cluster has no devices to wake.",
         )
 

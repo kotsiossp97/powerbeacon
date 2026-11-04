@@ -20,7 +20,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     "view_users",
     "view_agents",
   ],
-  user: ["manage_devices", "wake_device", "view_devices", "view_agents"],
+  user: ["wake_device", "view_devices", "view_agents"],
   viewer: ["view_devices"],
 };
 

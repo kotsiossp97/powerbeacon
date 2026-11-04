@@ -55,6 +55,7 @@ interface DeviceFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   device?: Device | null;
+  initialValues?: Partial<DeviceFormData> | null;
   agents: Agent[];
   clusters: Cluster[];
   onSubmit: (data: DeviceCreate | DeviceUpdate) => void;
@@ -64,6 +65,7 @@ export const DeviceFormDialog = ({
   open,
   onOpenChange,
   device,
+  initialValues,
   agents,
   clusters,
   onSubmit,
@@ -73,13 +75,25 @@ export const DeviceFormDialog = ({
     defaultValues: getDeviceFormDefaults(),
   });
 
-  // Reset form when dialog opens or device changes
-  // When creating, default to the first available agent
+  // Reset form when dialog opens or device changes.
+  // Supports a one-off prefill from network discovery while still keeping
+  // the "Add Device" flow for newly created devices.
   useEffect(() => {
-    if (open) {
-      form.reset(getDeviceFormDefaults(device));
+    if (!open) {
+      return;
     }
-  }, [open, device, agents, form]);
+
+    const defaults = device
+      ? getDeviceFormDefaults(device)
+      : {
+          ...getDeviceFormDefaults(),
+          ...initialValues,
+          agent_ids: initialValues?.agent_ids ?? [],
+          cluster_id: initialValues?.cluster_id ?? "",
+        };
+
+    form.reset(defaults);
+  }, [open, device, initialValues, agents, form]);
 
   const selectedClusterId = useWatch({
     control: form.control,

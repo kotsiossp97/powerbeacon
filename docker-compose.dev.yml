@@ -25,6 +25,8 @@ services:
     container_name: powerbeacon-backend-dev
     environment:
       DB_URL: ${DB_URL:-postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon}
+      # SQLite Option
+      # DB_URL: ${DB_URL:-sqlite:////db_data/powerbeacon.db}
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
       PYTHONUNBUFFERED: 1
     volumes:

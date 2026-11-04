@@ -22,22 +22,31 @@ PowerBeacon is developed as a personal project by Konstantinos Andreou, a softwa
 
 ## Current Scope
 
-```mermaid
-mindmap
-  root((PowerBeacon))
-    Backend
-      FastAPI
-      Authentication
-      Device and agent APIs
-    Frontend
-      React dashboard
-      Role-based UX
-      Operational workflows
-    Agent
-      LAN-adjacent deployment
-      Wake-on-LAN delivery
-      Heartbeat monitoring
-```
+  ```mermaid
+  architecture-beta
+    group backend(logos:python)[Backend Layer]
+    group frontend(logos:react)[Frontend Layer]
+    group agent(icons:server-cog)[Agent Layer]
+
+    service fastApi(logos:fastapi-icon)[FastAPI Service] in backend
+    service auth(icons:key-round)[Authentication] in backend
+    service api(icons:server)[Device & Agent APIs] in backend
+
+    service dashboard(logos:react)[React Dashboard] in frontend
+    service ux(icons:user-key)[Role-based UX] in frontend
+    service workflows(icons:workflow)[Operational Workflows] in frontend
+
+    service deployment(icons:network)[LAN-adjacent Deployment] in agent
+    service wol(icons:wand-sparkles)[Wake-on-LAN Delivery] in agent
+    service heartbeat(icons:square-power)[Heartbeat Monitoring] in agent
+
+    %% Connections showing data and control flow
+    dashboard:R --> L:fastApi
+    fastApi:R --> L:api
+    api:B --> T:deployment
+    deployment:R --> L:heartbeat
+    wol:T --> B:deployment
+  ```
 
 ---
 

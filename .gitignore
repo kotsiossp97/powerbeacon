@@ -1,2 +1,6 @@
 .env
 .local
+
+
+### Data Folder ###
+db_data/

@@ -118,6 +118,43 @@ class AgentService:
             logger.exception("Failed to probe device reachability")
             return {"online": False, "message": str(e)}
 
+    def discover_network(self, agent: Agent) -> dict:
+        """Ask an online agent to discover devices on its local network."""
+        try:
+            agent_url = self.get_agent_url(agent)
+            discovery_endpoint = f"{agent_url}/discover"
+
+            logger.info(
+                "Requesting network discovery from agent %s (%s:%s)",
+                agent.hostname,
+                agent.ip,
+                agent.port,
+            )
+
+            headers = {
+                "Authorization": f"Bearer {agent.token}",
+                "Content-Type": "application/json",
+            }
+
+            with httpx.Client(timeout=self.timeout_sec) as client:
+                response = client.post(discovery_endpoint, headers=headers)
+                response.raise_for_status()
+                payload = response.json()
+                devices = payload.get("devices", [])
+                logger.info(
+                    "Agent %s reported %d discovered device(s)",
+                    agent.hostname,
+                    len(devices),
+                )
+                return payload
+
+        except httpx.HTTPError as e:
+            logger.exception("HTTP error discovering network through agent %s", agent.hostname)
+            return {"devices": [], "message": str(e)}
+        except Exception as e:
+            logger.exception("Failed to discover network through agent %s", agent.hostname)
+            return {"devices": [], "message": str(e)}
+
     def check_agent_health(self, agent: Agent) -> dict:
         """Check health of a specific agent."""
         try:

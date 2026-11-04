@@ -50,6 +50,7 @@ export interface DeviceUpdate {
   tags?: string[];
   cluster_id?: string;
   agent_ids?: string[];
+  is_active?: boolean;
 }
 
 export type UserRole = "superuser" | "admin" | "user" | "viewer";
@@ -176,6 +177,21 @@ export interface AgentHeartbeat {
 export interface AgentsPublic {
   agents: Agent[];
   count: number;
+}
+
+export interface DiscoveredNetworkDevice {
+  ip: string;
+  mac: string;
+  online: boolean;
+  hostname?: string;
+  source_agent?: string;
+}
+
+export interface NetworkDiscoveryResult {
+  cluster_id: string;
+  agent_count: number;
+  count: number;
+  devices: DiscoveredNetworkDevice[];
 }
 
 export interface Cluster {

@@ -28,6 +28,8 @@ import {
   Network,
   Power,
   Server,
+  ToggleLeft,
+  ToggleRight,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
@@ -38,9 +40,15 @@ interface DeviceCardProps {
   device: Device;
   onEdit?: (device: Device) => void;
   onDelete?: (device: Device) => void;
+  onDeactivate?: (device: Device) => void;
 }
 
-export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
+export const DeviceCard = ({
+  device,
+  onEdit,
+  onDelete,
+  onDeactivate,
+}: DeviceCardProps) => {
   const { user, hasPermission } = useAuthStore();
   const [isWaking, setIsWaking] = useState(false);
 
@@ -99,39 +107,53 @@ export const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
               </p>
             </div>
           </div>
-          {canManageDevice && !isViewer && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleCopyMac}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy MAC Address
-                </DropdownMenuItem>
-                {onEdit && (
-                  <>
-                    <DropdownMenuSeparator />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleCopyMac}>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy MAC Address
+              </DropdownMenuItem>
+
+              {canManageDevice && !isViewer && (
+                <>
+                  <DropdownMenuSeparator />
+
+                  {onEdit && (
                     <DropdownMenuItem onClick={() => onEdit(device)}>
                       <Edit className="mr-2 h-4 w-4" />
                       Edit Device
                     </DropdownMenuItem>
-                  </>
-                )}
-                {onDelete && (
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onClick={() => onDelete(device)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Device
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+                  )}
+
+                  {onDeactivate && (
+                    <DropdownMenuItem onClick={() => onDeactivate(device)}>
+                      {device.is_active ? (
+                        <ToggleLeft className="mr-2 h-4 w-4" />
+                      ) : (
+                        <ToggleRight className="mr-2 h-4 w-4" />
+                      )}
+                      {device.is_active ? "Deactivate" : "Activate"} Device
+                    </DropdownMenuItem>
+                  )}
+
+                  {onDelete && (
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
+                      onClick={() => onDelete(device)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Device
+                    </DropdownMenuItem>
+                  )}
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

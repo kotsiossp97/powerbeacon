@@ -1,7 +1,7 @@
-import { Monitor, Plus } from "lucide-react";
-import type { Device } from "@/types";
-import { Button } from "@/components/ui/button";
 import { DeviceCard } from "@/components/devices/DeviceCard";
+import { Button } from "@/components/ui/button";
+import type { Device } from "@/types";
+import { Monitor, Plus } from "lucide-react";
 
 interface DeviceGridSectionProps {
   loading: boolean;
@@ -13,6 +13,7 @@ interface DeviceGridSectionProps {
   onAddDevice: () => void;
   onEditDevice: (device: Device) => void;
   onDeleteDevice: (device: Device) => void;
+  onDeactivateDevice: (device: Device) => void;
 }
 
 export const DeviceGridSection = ({
@@ -25,6 +26,7 @@ export const DeviceGridSection = ({
   onAddDevice,
   onEditDevice,
   onDeleteDevice,
+  onDeactivateDevice,
 }: DeviceGridSectionProps) => {
   if (loading) {
     return (
@@ -68,6 +70,7 @@ export const DeviceGridSection = ({
           device={device}
           onEdit={onEditDevice}
           onDelete={onDeleteDevice}
+          onDeactivate={onDeactivateDevice}
         />
       ))}
     </div>

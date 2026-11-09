@@ -8,6 +8,7 @@ import {
   DeleteDeviceDialog,
   DeviceGridSection,
 } from "@/components/dashboard";
+import { DeactivateDeviceDialog } from "@/components/dashboard/DeactivateDeviceDialog";
 import { DeviceFormDialog } from "@/components/devices/DeviceFormDialog";
 import { Button } from "@/components/ui/button";
 import type {
@@ -33,6 +34,9 @@ const DashboardPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDevice, setEditingDevice] = useState<Device | null>(null);
   const [deletingDevice, setDeletingDevice] = useState<Device | null>(null);
+  const [deactivatingDevice, setDeactivatingDevice] = useState<Device | null>(
+    null,
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -147,6 +151,28 @@ const DashboardPage = () => {
     }
   };
 
+  const handleDeactivateDevice = async () => {
+    if (!deactivatingDevice) return;
+
+    try {
+      await deviceApi.update(deactivatingDevice.id, {
+        is_active: !deactivatingDevice.is_active,
+      });
+      setDeactivatingDevice(null);
+      toast.success(
+        `${deactivatingDevice.name} has been ${
+          deactivatingDevice.is_active ? "deactivated" : "activated"
+        }`,
+      );
+      fetchDevices();
+    } catch (err) {
+      const apiError = err as { response?: { data?: { detail?: string } } };
+      toast.error(
+        apiError.response?.data?.detail || "Failed to update device status",
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -209,6 +235,7 @@ const DashboardPage = () => {
           setIsFormOpen(true);
         }}
         onDeleteDevice={setDeletingDevice}
+        onDeactivateDevice={setDeactivatingDevice}
       />
 
       <DeviceFormDialog
@@ -233,6 +260,15 @@ const DashboardPage = () => {
           }
         }}
         onConfirm={handleDeleteDevice}
+      />
+      <DeactivateDeviceDialog
+        device={deactivatingDevice}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeactivatingDevice(null);
+          }
+        }}
+        onConfirm={handleDeactivateDevice}
       />
     </div>
   );

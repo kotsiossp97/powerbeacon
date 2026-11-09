@@ -60,7 +60,7 @@ def _validate_agent_cluster_alignment(cluster_id: uuid.UUID | None, agents: list
     invalid_agents = [agent.hostname for agent in agents if agent.cluster_id != cluster_id]
     if invalid_agents:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=(
                 "Selected agents must belong to the same cluster as the device. "
                 f"Invalid agents: {', '.join(sorted(invalid_agents))}."
@@ -212,7 +212,7 @@ async def wake_device(
 
     if not device.agents:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Device has no associated agents. Associate at least one agent before sending a wake request.",
         )
 

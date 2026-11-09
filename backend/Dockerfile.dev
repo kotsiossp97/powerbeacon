@@ -1,6 +1,26 @@
+# Build Agent binaries
+FROM golang:1.26 AS builder
+
+WORKDIR /app
+
+COPY ./agent/go.mod ./
+COPY ./agent/go.sum ./
+
+RUN go mod download
+
+COPY ./agent/ ./
+
+RUN bash ./build.sh all
+
+# Build FastAPI server
 FROM python:3.12-slim
 
 WORKDIR /app
+
+# Copy agent binaries and install scripts
+COPY --from=builder /app/build /agents/binaries
+COPY --from=builder /app/install /agents/install
+
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -20,10 +40,10 @@ ENV UV_NO_DEV=1
 
 
 # Install dependencies and copy source code
-COPY pyproject.toml uv.lock ./
+COPY ./backend/pyproject.toml ./backend/uv.lock ./
 RUN uv sync --locked
 
-COPY . .
+COPY ./backend .
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"

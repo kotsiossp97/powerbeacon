@@ -20,8 +20,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./backend/Dockerfile.dev
     container_name: powerbeacon-backend-dev
     environment:
       DB_URL: ${DB_URL:-postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon}
@@ -63,6 +63,16 @@ services:
     networks:
       - powerbeacon-dev
     command: npm run dev -- --host 0.0.0.0
+
+  agent:
+    build:
+      context: ./agent
+    container_name: powerbeacon-agent-dev
+    environment:
+      BACKEND_URL: http://localhost:8000
+    network_mode: host
+    depends_on:
+      - backend
 
 volumes:
   postgres_data_dev:

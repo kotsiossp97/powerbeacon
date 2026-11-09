@@ -23,11 +23,13 @@ async def lifespan(app: FastAPI):
     # Perform any startup tasks here (e.g., initialize database, load models)
     from powerbeacon.core.db import init_db
 
-    init_db()
+    await init_db()
+    print("Database initialized.")
     device_reachability_service.fetch_config()
     if not device_reachability_service.enabled:
         device_reachability_service.clear_online_status()
     device_reachability_service.start()
+    print("FastAPI server started")
     yield  # This is where the application runs
 
     await device_reachability_service.stop()
@@ -90,9 +92,13 @@ async def get_linux_install_script():
     from fastapi.responses import PlainTextResponse
 
     script_path = os.path.join(os.path.dirname(__file__), "agents", "install", "install-agent.sh")
+    secondary_script_path = os.path.join("/", "agents", "install", "install-agent.sh")
 
     if not os.path.exists(script_path):
-        raise HTTPException(status_code=404, detail="Installation script not found")
+        if os.path.exists(secondary_script_path):
+            script_path = secondary_script_path
+        else:
+            raise HTTPException(status_code=404, detail="Installation script not found")
 
     with open(script_path, "r") as f:  # noqa: ASYNC230
         content = f.read()
@@ -136,9 +142,17 @@ async def get_agent_binary(platform: str, arch: str):
         "binaries",
         f"powerbeacon-agent-{platform}-{arch}{ext}",
     )
+    secondary_path = os.path.join(
+        "/", "agents", "binaries", f"powerbeacon-agent-{platform}-{arch}{ext}"
+    )
 
     if not os.path.exists(binary_path):
-        raise HTTPException(status_code=404, detail=f"Agent binary not found for {platform}-{arch}")
+        if os.path.exists(secondary_path):
+            binary_path = secondary_path
+        else:
+            raise HTTPException(
+                status_code=404, detail=f"Agent binary not found for {platform}-{arch}"
+            )
 
     # Set appropriate media type
     media_type = "application/octet-stream"

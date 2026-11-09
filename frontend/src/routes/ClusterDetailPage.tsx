@@ -2,6 +2,7 @@ import { agentsApi } from "@/api/agents";
 import { clustersApi } from "@/api/clusters";
 import { deviceApi } from "@/api/devices";
 import { useAuthStore } from "@/auth/useAuth";
+import ClusterDiscoveryDialog from "@/components/clusters/ClusterDiscoveryDialog";
 import { ClusterFormDialog } from "@/components/clusters/ClusterFormDialog";
 import SingleClusterStats from "@/components/clusters/SingleClusterStats";
 import { DeviceCard } from "@/components/devices/DeviceCard";
@@ -231,6 +232,17 @@ const ClusterDetailPage = () => {
               <Power className="mr-2 h-4 w-4" />
               Wake Cluster
             </Button>
+          )}
+          {canManageCluster && (
+            <ClusterDiscoveryDialog cluster={cluster} />
+            // <Button
+            //   variant="secondary"
+            //   onClick={handleDiscoverNetwork}
+            //   disabled={isDiscovering}
+            // >
+            //   <Network className="mr-2 h-4 w-4" />
+            //   {isDiscovering ? "Discovering..." : "Discover Network"}
+            // </Button>
           )}
           {canManageCluster && (
             <Button variant="secondary" onClick={() => setIsFormOpen(true)}>

@@ -54,6 +54,7 @@ ENV UV_NO_DEV=1
 
 # Install dependencies and copy source code
 RUN --mount=type=bind,source=./backend/uv.lock,target=uv.lock \
+  --mount=type=bind,source=./backend/.python-version,target=.python-version \
   --mount=type=bind,source=./backend/pyproject.toml,target=pyproject.toml \
   uv sync --locked
 

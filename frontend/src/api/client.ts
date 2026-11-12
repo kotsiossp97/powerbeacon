@@ -41,10 +41,10 @@ class ApiClient {
           // Don't redirect if this is a login request failing (bad credentials)
           // The login component will handle the error
           const isLoginRequest = error.config?.url?.includes("/auth/login");
-          console.log(
-            "🚀 ~ ApiClient ~ constructor ~ isLoginRequest:",
-            isLoginRequest,
-          );
+          // console.log(
+          //   "🚀 ~ ApiClient ~ constructor ~ isLoginRequest:",
+          //   isLoginRequest,
+          // );
           if (!isLoginRequest) {
             localStorage.removeItem("access_token");
             window.location.href = "/login";

@@ -22,7 +22,7 @@ class ApiClient {
         ...config.headers,
       },
     });
-    console.log("🚀 ~ ApiClient ~ constructor ~ baseURL:", config.baseURL);
+    // console.log("🚀 ~ ApiClient ~ constructor ~ baseURL:", config.baseURL);
 
     // Add token to requests
     this.client.interceptors.request.use((config) => {

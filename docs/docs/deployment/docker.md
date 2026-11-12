@@ -41,7 +41,9 @@ as it provides a good balance between ease of use and flexibility. It is also th
         image: kotsiossp97/powerbeacon:latest
         container_name: powerbeacon
         environment:
-          DB_URL: postgresql://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon
+          DB_URL: postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon
+          # SQLite Option
+          # DB_URL: ${DB_URL:-sqlite:////db_data/powerbeacon.db}
           JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
         ports:
           - "8000:80"
@@ -71,7 +73,7 @@ as it provides a good balance between ease of use and flexibility. It is also th
     docker run -d \
       --name powerbeacon \
       -p 8000:80 \
-      -e DB_URL=postgresql://powerbeacon:changeMe@db:5432/powerbeacon \
+      -e DB_URL=postgresql+psycopg2://powerbeacon:changeMe@db:5432/powerbeacon \
       -e JWT_SECRET=your-secret-key-change-in-production \
       powerbeacon:latest
     ```

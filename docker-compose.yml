@@ -22,7 +22,9 @@ services:
       dockerfile: backend/Dockerfile
     container_name: powerbeacon-backend
     environment:
-      DB_URL: postgresql://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon
+      DB_URL: postgresql+psycopg2://powerbeacon:${DB_PASSWORD:-changeMe}@db:5432/powerbeacon
+      # SQLite Option
+      # DB_URL: ${DB_URL:-sqlite:////db_data/powerbeacon.db}
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
     ports:
       - "8000:8000"

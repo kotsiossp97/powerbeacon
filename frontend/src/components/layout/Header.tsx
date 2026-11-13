@@ -144,7 +144,7 @@ export const Header = () => {
                   {updateAvailable && (
                     <DropdownMenuItem asChild>
                       <Link
-                        to="/settings"
+                        to="/settings/about"
                         className="flex items-center justify-between gap-3"
                       >
                         <span className="flex items-center gap-2">

@@ -6,6 +6,7 @@ import ClusterDiscoveryDialog from "@/components/clusters/ClusterDiscoveryDialog
 import { ClusterFormDialog } from "@/components/clusters/ClusterFormDialog";
 import SingleClusterStats from "@/components/clusters/SingleClusterStats";
 import { DeviceCard } from "@/components/devices/DeviceCard";
+import { OnlinePill } from "@/components/devices/OnlinePill";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -314,13 +315,9 @@ const ClusterDetailPage = () => {
                         {agent.ip}
                       </div>
                     </div>
-                    <Badge
-                      variant={
-                        agent.status === "online" ? "outline" : "secondary"
-                      }
-                    >
-                      {agent.status}
-                    </Badge>
+                    <OnlinePill
+                      device={{ is_online: agent.status === "online" }}
+                    />
                   </div>
                   <div className="text-muted-foreground mt-3 flex items-center justify-between text-sm">
                     <span>Assigned devices</span>

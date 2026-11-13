@@ -159,19 +159,11 @@ export const DeviceCard = ({
       <CardContent className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <OnlinePill device={device} />
-          <Badge
-            variant="outline"
-            className={
-              device.is_active
-                ? "border-success text-success"
-                : "border-muted-foreground text-muted-foreground"
-            }
-          >
-            <span
-              className={`mr-1.5 h-1.5 w-1.5 rounded-full ${device.is_active ? "bg-success" : "bg-muted-foreground"}`}
-            />
-            {device.is_active ? "Active" : "Inactive"}
-          </Badge>
+          <OnlinePill
+            device={{ is_online: device.is_active }}
+            textTrue="Active"
+            textFalse="Inactive"
+          />
           {device.tags.map((tag) => (
             <Badge
               key={tag}

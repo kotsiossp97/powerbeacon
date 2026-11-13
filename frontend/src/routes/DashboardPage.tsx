@@ -102,6 +102,8 @@ const DashboardPage = () => {
       total: devices.length,
       active: devices.filter((device) => device.is_active).length,
       inactive: devices.filter((device) => !device.is_active).length,
+      online: devices.filter((device) => device.is_online).length,
+      offline: devices.filter((device) => !device.is_online).length,
     };
   }, [devices]);
 
@@ -209,11 +211,7 @@ const DashboardPage = () => {
         </div>
       )}
 
-      <DashboardStats
-        total={stats.total}
-        active={stats.active}
-        inactive={stats.inactive}
-      />
+      <DashboardStats stats={stats} />
 
       <DashboardFilters
         searchQuery={searchQuery}

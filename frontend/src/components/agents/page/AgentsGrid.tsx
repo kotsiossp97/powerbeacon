@@ -1,3 +1,4 @@
+import { OnlinePill } from "@/components/devices/OnlinePill";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -7,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 import type { Agent } from "@/types";
 import { Copy, MoreVertical, Server, Trash2 } from "lucide-react";
 import { agentStatusConfig } from "./agentStatusConfig";
@@ -99,13 +99,11 @@ export const AgentsGrid = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={cn("gap-1.5", status.className)}
-                >
-                  <StatusIcon className="h-3 w-3" />
-                  {status.label}
-                </Badge>
+                <OnlinePill
+                  device={{ is_online: agent.status === "online" }}
+                  icon={StatusIcon}
+                  className={status.className}
+                />
                 <Badge
                   variant="secondary"
                   className="bg-secondary text-secondary-foreground"

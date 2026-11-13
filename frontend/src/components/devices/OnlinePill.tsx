@@ -4,11 +4,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import type { Device } from "@/types";
+import { type LucideIcon } from "lucide-react";
 import { DateTime } from "luxon";
 
 interface OnlinePillProps {
-  device: Device;
+  device: Partial<Device>;
+  textTrue?: string;
+  textFalse?: string;
+  icon?: LucideIcon;
+  className?: string;
 }
 
 const formatLastChecked = (value?: string) => {
@@ -25,22 +31,36 @@ const formatLastChecked = (value?: string) => {
   return checkedAtRelative;
 };
 
-export const OnlinePill = ({ device }: OnlinePillProps) => {
+export const OnlinePill = ({
+  device,
+  textTrue = "Online",
+  textFalse = "Offline",
+  icon: Ιcon,
+  className,
+}: OnlinePillProps) => {
   return (
     <Tooltip>
       <TooltipTrigger>
         <Badge
           variant="outline"
-          className={
+          className={cn(
+            "gap-1.5",
             device.is_online
               ? "border-green-500 text-green-500"
-              : "border-muted-foreground text-muted-foreground"
-          }
+              : "border-muted-foreground text-muted-foreground",
+            className,
+          )}
         >
-          <span
-            className={`mr-1.5 h-1.5 w-1.5 rounded-full ${device.is_online ? "bg-green-500" : "bg-muted-foreground"}`}
-          />
-          {device.is_online ? "Online" : "Offline"}
+          {Ιcon ? (
+            <Ιcon
+              className={`${device.is_online ? "text-green-500" : "text-muted-foreground"}`}
+            />
+          ) : (
+            <span
+              className={`mr-1.5 h-1.5 w-1.5 rounded-full ${device.is_online ? "bg-green-500" : "bg-muted-foreground"}`}
+            />
+          )}
+          {device.is_online ? textTrue : textFalse}
         </Badge>
         <TooltipContent className="capitalize">
           {device.is_online

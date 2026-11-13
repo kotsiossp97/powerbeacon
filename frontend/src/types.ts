@@ -93,6 +93,16 @@ export interface UserUpdate {
   is_active?: boolean;
 }
 
+export interface UserUpdateMe {
+  full_name?: string;
+  username?: string;
+}
+
+export interface UserUpdatePassword {
+  current_password: string;
+  new_password: string;
+}
+
 export interface UsersPublic {
   data: User[];
   count: number;

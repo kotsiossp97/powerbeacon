@@ -1,3 +1,4 @@
+import AccountCredentialsForm from "@/components/settings/PasswordChangeForm";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -6,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import { Separator } from "@/components/ui/separator";
 import type { User } from "@/types";
 import { User as UserIcon } from "lucide-react";
 
@@ -53,6 +56,9 @@ export const ProfileCard = ({ user }: ProfileCardProps) => {
             {user?.role || "unknown"}
           </Badge>
         </div>
+
+        <Separator className="my-4" />
+        <AccountCredentialsForm user={user} />
       </CardContent>
     </Card>
   );

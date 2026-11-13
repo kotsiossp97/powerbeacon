@@ -12,7 +12,15 @@ from powerbeacon.core.deps import (
 )
 from powerbeacon.crud import user_crud
 from powerbeacon.models.generic import Message
-from powerbeacon.models.users import User, UserCreate, UserPublic, UsersPublic, UserUpdate
+from powerbeacon.models.users import (
+    UpdatePassword,
+    User,
+    UserCreate,
+    UserPublic,
+    UsersPublic,
+    UserUpdate,
+    UserUpdateMe,
+)
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -97,6 +105,44 @@ async def read_user_by_id(
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@router.patch("/me", response_model=UserPublic)
+async def update_own_account(
+    *, session: SessionDep, current_user: CurrentUser, user_in: UserUpdateMe
+) -> Any:
+    """
+    Update the current user's own account.
+    """
+    db_user = session.get(User, current_user.id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db_user = user_crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    return db_user
+
+
+@router.patch(
+    "/me/password",
+    response_model=UserPublic,
+)
+async def update_own_password(
+    *, session: SessionDep, current_user: CurrentUser, user_in: UpdatePassword
+) -> Any:
+    """
+    Update the current user's own password.
+    """
+
+    db_user = user_crud.authenticate(
+        session=session, username=current_user.username, password=user_in.current_password
+    )
+    if not db_user:
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    db_user = user_crud.update_user(
+        session=session, db_user=db_user, user_in=UserUpdate(password=user_in.new_password)
+    )
+    return db_user
 
 
 @router.patch(

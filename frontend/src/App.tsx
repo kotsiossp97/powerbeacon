@@ -94,7 +94,7 @@ function App() {
           <Route path="/clusters/:clusterId" element={<ClusterDetailPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings/:sectionId?" element={<SettingsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

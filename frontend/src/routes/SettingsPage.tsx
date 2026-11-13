@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router";
 import { toast } from "sonner";
 
 const settingsSections = [
@@ -60,6 +61,7 @@ const settingsSections = [
 ];
 
 export const SettingsPage = () => {
+  const params = useParams();
   const { user } = useAuthStore();
   const metadata = useAppMetadataStore((state) => state.metadata);
   const metadataError = useAppMetadataStore((state) => state.error);
@@ -72,7 +74,9 @@ export const SettingsPage = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState(settingsSections[0].id);
+  const [activeSection, setActiveSection] = useState(
+    params.sectionId || settingsSections[0].id,
+  );
 
   const isSuperuser = user?.role === "superuser";
 
